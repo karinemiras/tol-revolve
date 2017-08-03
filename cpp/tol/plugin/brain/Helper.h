@@ -61,4 +61,4 @@ private:
 
 std::ostream& operator<<(std::ostream& os, tol::Helper::RobotType type);
 
-#endif // TOL_PLUGIN_HELPER_H_
+#endif  //  TOL_PLUGIN_HELPER_H_

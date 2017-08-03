@@ -12,14 +12,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *
-* Description: TODO: <Add brief description about file purpose>
-* Author: TODO <Add proper author>
+* Description: Milan Jelisavcic
+* Author: Marsh 28, 2016
 *
 */
-
-//
-// Created by Milan Jelisavcic on 28/03/16.
-//
 
 #ifndef TOL_PLUGIN_RLPOWER_H_
 #define TOL_PLUGIN_RLPOWER_H_
@@ -35,43 +31,46 @@
 #include "Evaluator.h"
 #include "brain/RLPower.h"
 
-namespace tol {
-
-class RLPower
-        : public revolve::gazebo::Brain
-        , private revolve::brain::RLPower
+namespace tol
 {
-  public:
 
-  /// \brief Constructor
-  /// \param modelName: name of a robot
-  /// \param brain: configuration file
-  /// \param evaluator: pointer to fitness evaluatior
-  /// \param n_actuators: number of actuators
-  /// \param n_sensors: number of sensors
-  /// \return pointer to the RLPower class object
-  RLPower(std::string modelName,
-          sdf::ElementPtr brain,
-          tol::EvaluatorPtr evaluator,
-          std::vector<revolve::gazebo::MotorPtr> &actuators,
-          std::vector<revolve::gazebo::SensorPtr> &sensors);
+  class RLPower
+          : public revolve::gazebo::Brain
+            , private revolve::brain::RLPower
+  {
+    public:
 
-  virtual ~RLPower();
+    /// \brief Constructor
+    /// \param modelName: name of a robot
+    /// \param brain: configuration file
+    /// \param evaluator: pointer to fitness evaluatior
+    /// \param n_actuators: number of actuators
+    /// \param n_sensors: number of sensors
+    /// \return pointer to the RLPower class object
+    RLPower(std::string modelName,
+            sdf::ElementPtr brain,
+            tol::EvaluatorPtr evaluator,
+            std::vector<revolve::gazebo::MotorPtr> &actuators,
+            std::vector<revolve::gazebo::SensorPtr> &sensors);
 
-  using revolve::brain::RLPower::update;
-  /// \brief Update sensors reading, actuators position, and `brain` state
-  /// \param[inout] actuators List of actuators
-  /// \param[inout] sensors List of sensors
-  /// \param[in] t Time value
-  /// \param[in] step Time step
-  virtual void update(const std::vector<revolve::gazebo::MotorPtr> &actuators,
-                      const std::vector<revolve::gazebo::SensorPtr> &sensors,
-                      double t,
-                      double step);
+    /// \brief
+    virtual ~RLPower();
 
-  static Config parseSDF(sdf::ElementPtr brain);
-};
+    using revolve::brain::RLPower::update;
+    /// \brief Update sensors reading, actuators position, and `brain` state
+    /// \param[inout] actuators List of actuators
+    /// \param[inout] sensors List of sensors
+    /// \param[in] t Time value
+    /// \param[in] step Time step
+    virtual void update(const std::vector<revolve::gazebo::MotorPtr> &actuators,
+                        const std::vector<revolve::gazebo::SensorPtr> &sensors,
+                        double t,
+                        double step);
+
+    /// \brief
+    static Config parseSDF(sdf::ElementPtr brain);
+  };
 
 } /* namespace tol */
 
-#endif // TOL_PLUGIN_RLPOWER_H_
+#endif  //  TOL_PLUGIN_RLPOWER_H_

@@ -116,4 +116,4 @@ namespace tol
 
 }
 
-#endif // TOL_PLUGIN_BODY_H_
+#endif  //  TOL_PLUGIN_BODY_H_

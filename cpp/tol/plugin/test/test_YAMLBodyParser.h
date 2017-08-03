@@ -388,4 +388,4 @@ static const std::string Spider17_yaml_source = "---\n"
 
 }
 
-#endif // TESTYAMLBODYPARSER_H
+#endif  //  TESTYAMLBODYPARSER_H

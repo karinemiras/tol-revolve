@@ -38,4 +38,4 @@ public:
                 double t, double step);
 };
 
-#endif // TESTSUPGBRAINPHOTOTAXIS_H
+#endif  //  TESTSUPGBRAINPHOTOTAXIS_H

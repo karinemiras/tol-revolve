@@ -59,4 +59,4 @@ private:
 
 }
 
-#endif // TOL_SUPGBRAINPHOTOTAXIS_H
+#endif  //  TOL_SUPGBRAINPHOTOTAXIS_H

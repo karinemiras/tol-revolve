@@ -64,4 +64,4 @@ private:
 
 }
 
-#endif // TOL_PLUGIN_ACTUATOR_H_
+#endif  //  TOL_PLUGIN_ACTUATOR_H_

@@ -68,4 +68,4 @@ namespace tol
 
 GZ_REGISTER_MODEL_PLUGIN(tol::RobotController)
 
-#endif // TTOL_PLUGIN_ROBOTCONTROLLER_H_
+#endif  //  TTOL_PLUGIN_ROBOTCONTROLLER_H_

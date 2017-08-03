@@ -17,12 +17,14 @@
 *
 */
 
-#include "SUPGBrain.h"
-#include "../Sensor.h"
-#include "../Actuator.h"
 #include "revolve/gazebo/sensors/VirtualSensor.h"
 #include "revolve/gazebo/motors/Motor.h"
+
+#include "../Sensor.h"
+#include "../Actuator.h"
 #include "Helper.h"
+
+#include "SUPGBrain.h"
 
 using namespace tol;
 

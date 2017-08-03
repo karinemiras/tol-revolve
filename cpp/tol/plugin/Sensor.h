@@ -59,4 +59,4 @@ private:
 
 }
 
-#endif // TOL_PLUGIN_SENSOR_H_
+#endif  //  TOL_PLUGIN_SENSOR_H_

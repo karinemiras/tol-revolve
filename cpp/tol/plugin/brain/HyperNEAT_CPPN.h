@@ -37,44 +37,46 @@
 namespace rb = revolve::brain;
 namespace rg = revolve::gazebo;
 
-namespace tol {
-
-class HyperNEAT_CPG
-        : public rg::Brain
-        , private rb::ConverterSplitBrain<rb::CPPNConfigPtr, cppneat::GeneticEncodingPtr>
+namespace tol
 {
-  public:
 
-  /// \brief Constructor
-  /// \param modelName: name of the model
-  /// \param evaluator: pointer to the evaluator that is used
-  /// \param node: the sdf file containing the necessary information to build the network
-  /// \param actuators: vector list of robot's actuators
-  /// \param sensors: vector list of robot's sensors
-  /// \return pointer to the neural network
-  HyperNEAT_CPG(std::string modelName,
-                sdf::ElementPtr brain,
-                tol::EvaluatorPtr evaluator,
-                const std::vector<rg::MotorPtr> &actuators,
-                const std::vector<rg::SensorPtr> &sensors);
+  class HyperNEAT_CPG
+          : public rg::Brain
+            , private rb::ConverterSplitBrain<rb::CPPNConfigPtr, cppneat::GeneticEncodingPtr>
+  {
+    public:
 
-  /// \brief Destructor
-  virtual ~HyperNEAT_CPG();
+    /// \brief Constructor
+    /// \param modelName: name of the model
+    /// \param evaluator: pointer to the evaluator that is used
+    /// \param node: the sdf file containing the necessary information to build the network
+    /// \param actuators: vector list of robot's actuators
+    /// \param sensors: vector list of robot's sensors
+    /// \return pointer to the neural network
+    HyperNEAT_CPG(std::string modelName,
+                  sdf::ElementPtr brain,
+                  tol::EvaluatorPtr evaluator,
+                  const std::vector<rg::MotorPtr> &actuators,
+                  const std::vector<rg::SensorPtr> &sensors);
 
-  using rb::ConverterSplitBrain<rb::CPPNConfigPtr, cppneat::GeneticEncodingPtr>::update;
-  /// \brief Update sensors reading, actuators position, and `brain` state
-  /// \param[inout] actuators List of actuators
-  /// \param[inout] sensors List of sensors
-  /// \param[in] t Time value
-  /// \param[in] step Time step
-  virtual void update(const std::vector<rg::MotorPtr> &actuators,
-                      const std::vector<rg::SensorPtr> &sensors,
-                      double t,
-                      double step);
+    /// \brief Destructor
+    virtual ~HyperNEAT_CPG();
 
-  static cppneat::NEATLearner::LearningConfiguration parseLearningSDF(sdf::ElementPtr brain);
-};
+    using rb::ConverterSplitBrain<rb::CPPNConfigPtr, cppneat::GeneticEncodingPtr>::update;
+    /// \brief Update sensors reading, actuators position, and `brain` state
+    /// \param[inout] actuators List of actuators
+    /// \param[inout] sensors List of sensors
+    /// \param[in] t Time value
+    /// \param[in] step Time step
+    virtual void update(const std::vector<rg::MotorPtr> &actuators,
+                        const std::vector<rg::SensorPtr> &sensors,
+                        double t,
+                        double step);
+
+    static cppneat::NEATLearner::LearningConfiguration
+    parseLearningSDF(sdf::ElementPtr brain);
+  };
 
 } /* namespace tol */
 
-#endif // TOL_PLUGIN_HYPERNEAT_CPPN_H_
+#endif  //  TOL_PLUGIN_HYPERNEAT_CPPN_H_

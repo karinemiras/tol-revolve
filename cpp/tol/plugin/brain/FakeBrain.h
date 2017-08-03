@@ -82,4 +82,4 @@ namespace tol
 
 } /* namespace tol */
 
-#endif // TOL_PLUGIN_FAKEBRAIN_H_
+#endif  //  TOL_PLUGIN_FAKEBRAIN_H_

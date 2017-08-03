@@ -81,6 +81,6 @@ class HyperNEAT_Splines
 
 } /* namespace tol */
 
-#endif // TOL_PLUGIN_HYPERNEAT_SPLINE_H_
+#endif  //  TOL_PLUGIN_HYPERNEAT_SPLINE_H_
 
 

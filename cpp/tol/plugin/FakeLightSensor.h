@@ -65,4 +65,4 @@ private:
 
 }
 
-#endif // FAKELIGHTSENSOR_H
+#endif  //  FAKELIGHTSENSOR_H

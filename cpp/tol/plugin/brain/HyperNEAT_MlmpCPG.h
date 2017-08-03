@@ -101,4 +101,4 @@ namespace tol
 
 } /* namespace tol */
 
-#endif //TOL_REVOLVE_HYPERNEAT_MLMPCPG_H
+#endif  // TOL_REVOLVE_HYPERNEAT_MLMPCPG_H

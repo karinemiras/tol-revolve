@@ -20,14 +20,14 @@
 #ifndef SUPGBRAIN_H
 #define SUPGBRAIN_H
 
-#include "brain/SUPGBrain.h"
-#include "Evaluator.h"
-#include "revolve/gazebo/brain/Brain.h"
+#include <vector>
+#include <memory>
 
 #include <gazebo/gazebo.hh>
 
-#include <vector>
-#include <memory>
+#include "Evaluator.h"
+#include "brain/SUPGBrain.h"
+#include "revolve/gazebo/brain/Brain.h"
 
 namespace tol {
 
@@ -58,7 +58,6 @@ class SUPGBrain
                       double t, double step) override;
 
 };
-
 }
 
-#endif // SUPGBRAIN_H
+#endif  //  SUPGBRAIN_H

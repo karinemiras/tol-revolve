@@ -48,4 +48,4 @@ public:
 
 };
 
-#endif // TESTFAKELIGHTSENSOR_H
+#endif  //  TESTFAKELIGHTSENSOR_H
