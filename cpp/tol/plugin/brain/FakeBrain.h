@@ -25,13 +25,15 @@
 #include <revolve/msgs/neural_net.pb.h>
 #include "revolve/gazebo/brain/Brain.h"
 
-namespace tol {
-
-class FakeBrain
-        : public revolve::gazebo::Brain
+namespace tol
 {
-public:
-    typedef const boost::shared_ptr<revolve::msgs::ModifyNeuralNetwork const> ConstModifyNeuralNetworkPtr;
+
+  class FakeBrain
+          : public revolve::gazebo::Brain
+  {
+    public:
+    typedef const boost::shared_ptr<revolve::msgs::ModifyNeuralNetwork const>
+            ConstModifyNeuralNetworkPtr;
 
     FakeBrain(std::string modelName,
               std::vector<revolve::gazebo::MotorPtr> &actuators,
@@ -40,8 +42,8 @@ public:
     virtual ~FakeBrain();
 
     /**
-     * @param Motor list
-     * @param Sensor list
+     /// \param Motor list
+     /// \param Sensor list
      */
     virtual void
     update(const std::vector<revolve::gazebo::MotorPtr> &motors,
@@ -49,14 +51,14 @@ public:
            double t,
            double step);
 
-protected:
+    protected:
     /**
      * Request handler to modify the neural network
      */
     void
     modify(ConstModifyNeuralNetworkPtr &req);
 
-    // Mutex for stepping / updating the network
+    // Mutex for stepping / updating the network§
     //boost::mutex networkMutex_;
 
     unsigned int nActuators_;
@@ -76,7 +78,7 @@ protected:
      * Network modification subscriber
      */
 //     ::gazebo::transport::SubscriberPtr alterSub_;
-};
+  };
 
 } /* namespace tol */
 

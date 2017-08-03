@@ -13,16 +13,10 @@
 * limitations under the License.
 *
 * Description: TODO: <Add brief description about file purpose>
-* Author: TODO <Add proper author>
+* Author: Elte Hupkes
+* Date: May 9, 2015
 *
 */
-
-/*
- * RobotController.h
- *
- *  Created on: May 9, 2015
- *      Author: elte
- */
 
 #ifndef TOL_PLUGIN_ROBOTCONTROLLER_H_
 #define TOL_PLUGIN_ROBOTCONTROLLER_H_
@@ -32,48 +26,43 @@
 #include "brain/Evaluator.h"
 #include "brain/RLPower.h"
 
-namespace tol {
-
-class RobotController
-        : public revolve::gazebo::RobotController
+namespace tol
 {
-public:
+
+  class RobotController
+          : public revolve::gazebo::RobotController
+  {
+    public:
     RobotController();
 
     virtual ~RobotController();
 
-    virtual void
-    Load(::gazebo::physics::ModelPtr _parent,
-         sdf::ElementPtr _sdf);
+    virtual void Load(::gazebo::physics::ModelPtr _parent,
+                      sdf::ElementPtr _sdf);
 
-    virtual void
-    LoadBrain(sdf::ElementPtr sdf);
+    virtual void LoadBrain(sdf::ElementPtr sdf);
 
-    virtual void
-    DoUpdate(const gazebo::common::UpdateInfo info);
+    virtual void DoUpdate(const gazebo::common::UpdateInfo info);
 
-private:
+    private:
     class Evaluator
             : public tol::Evaluator
     {
-    public:
-        Evaluator();
+      public:
+      Evaluator();
 
-        virtual void
-        start();
+      virtual void start();
 
-        virtual double
-        fitness();
+      virtual double fitness();
 
-        void
-        updatePosition(const ignition::math::Pose3d pose);
+      void updatePosition(const ignition::math::Pose3d pose);
 
-        ignition::math::Pose3d currentPosition_;
-        ignition::math::Pose3d previousPosition_;
+      ignition::math::Pose3d currentPosition_;
+      ignition::math::Pose3d previousPosition_;
     };
 
     boost::shared_ptr<Evaluator> evaluator_;
-};
+  };
 
 } /* namespace tol */
 

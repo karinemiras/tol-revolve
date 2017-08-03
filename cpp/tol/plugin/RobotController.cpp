@@ -18,32 +18,33 @@
 *
 */
 
-
-#include "RobotController.h"
-
-#include "brain/RLPower_Splines.h"
-#include "brain/RLPower_CPPN.h"
-#include "brain/HyperNEAT_CPPN.h"
-#include "brain/HyperNEAT_Splines.h"
-#include "brain/HyperNEAT_MlmpCPG.h"
-#include "brain/MLMPCPGBrain.h"
-#include "brain/GenericLearnerBrain.h"
-#include "brain/YamlBodyParser.h"
-#include "brain/SUPGBrain.h"
-#include "brain/SUPGBrainPhototaxis.h"
-#include "brain/supg/SUPGGenomeManager.h"
-#include "neat/accneat/src/neat.h"
-#include "brain/Helper.h"
-
 #include <iostream>
 #include <exception>
 #include <cmath>
+
 #include <boost/make_shared.hpp>
 
 #include <revolve/gazebo/motors/Motor.h>
 #include <revolve/gazebo/sensors/VirtualSensor.h>
-#include <brain/learner/HyperAccNEATLearner_CPGController.h>
-#include <neat/AsyncNEAT.h>
+
+#include "brain/GenericLearnerBrain.h"
+#include "brain/Helper.h"
+#include "brain/MLMPCPGBrain.h"
+#include "brain/HyperNEAT_CPPN.h"
+#include "brain/HyperNEAT_Splines.h"
+#include "brain/HyperNEAT_MlmpCPG.h"
+#include "brain/RLPower_Splines.h"
+#include "brain/RLPower_CPPN.h"
+#include "brain/SUPGBrain.h"
+#include "brain/SUPGBrainPhototaxis.h"
+#include "brain/YamlBodyParser.h"
+#include "brain/supg/SUPGGenomeManager.h"
+#include "brain/learner/HyperAccNEATLearner_CPGController.h"
+
+#include "neat/AsyncNEAT.h"
+#include "neat/accneat/src/neat.h"
+
+#include "RobotController.h"
 
 namespace tol {
 
@@ -58,7 +59,8 @@ const char* getVARenv(const char* var_name)
   return env_p;
 }
 
-const NEAT::GeneticSearchType getGeneticSearchType(const std::string &value) {
+const NEAT::GeneticSearchType getGeneticSearchType(const std::string &value)
+{
   if (value.compare("PHASED") == 0)
     return NEAT::GeneticSearchType::PHASED;
 
@@ -72,7 +74,8 @@ const NEAT::GeneticSearchType getGeneticSearchType(const std::string &value) {
   return NEAT::GeneticSearchType::PHASED;
 }
 
-const char* getGeneticSearchType(const NEAT::GeneticSearchType value) {
+const char* getGeneticSearchType(const NEAT::GeneticSearchType value)
+{
   switch (value) {
     case NEAT::GeneticSearchType::BLENDED:
       return "NEAT::GeneticSearchType::BLENDED";
@@ -85,7 +88,9 @@ const char* getGeneticSearchType(const NEAT::GeneticSearchType value) {
   }
 }
 
-void init_asyncneat(const std::string &robot_name, std::unique_ptr<NEAT::GenomeManager> custom_genome_manager) {
+void init_asyncneat(const std::string &robot_name,
+                    std::unique_ptr<NEAT::GenomeManager> custom_genome_manager)
+{
 
   if (custom_genome_manager) {
     AsyncNeat::Init(std::move(custom_genome_manager));
@@ -144,10 +149,12 @@ void init_asyncneat(const std::string &robot_name, std::unique_ptr<NEAT::GenomeM
   AsyncNeat::SetSearchType(geneticSearchType);
 }
 
-RobotController::RobotController() {
+RobotController::RobotController()
+{
 }
 
-RobotController::~RobotController() {
+RobotController::~RobotController()
+{
   AsyncNeat::CleanUp();
 }
 
