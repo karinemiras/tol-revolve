@@ -357,7 +357,7 @@ namespace tol
   BodyParser::IdToCoordinatesMap()
   {
     std::map<std::string, std::tuple<int, int, int> > ret;
-    for (std::pair<cppneat::NeuronGenePtr, std::tuple<int, int, int>> pair : neuron_coordinates)
+    for (auto pair : neuron_coordinates)
     {
       ret[pair.first->neuron->neuron_id] = pair.second;
     }
