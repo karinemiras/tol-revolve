@@ -92,8 +92,8 @@ namespace tol
 
     void make_empty(BodyPart *part);
 
-    void from_yaml(BodyPart *part,
-                   YAML::Node &node);
+    private: void ParseYaml(BodyPart *part,
+                            YAML::Node &node);
 
     //Network
 
@@ -104,9 +104,13 @@ namespace tol
     bool isMlmp_ = false;
 
     std::vector<cppneat::ConnectionGenePtr> connections;
+
     std::vector<cppneat::NeuronGenePtr> neurons;
+
     std::vector<cppneat::NeuronGenePtr> input_neurons;
+
     std::vector<cppneat::NeuronGenePtr> output_neurons;
+
     std::map<cppneat::NeuronGenePtr, std::tuple<int, int, int>> neuron_coordinates;
   };
 
