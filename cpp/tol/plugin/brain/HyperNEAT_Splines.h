@@ -39,7 +39,7 @@ namespace tol {
 class HyperNEAT_Splines
         : public revolve::gazebo::Brain
         , private revolve::brain::ConverterSplitBrain<revolve::brain::PolicyPtr,
-                                                      CPPNEAT::GeneticEncodingPtr>
+                                                      cppneat::GeneticEncodingPtr>
 {
   public:
 
@@ -60,7 +60,7 @@ class HyperNEAT_Splines
   virtual ~HyperNEAT_Splines();
 
   using revolve::brain::ConverterSplitBrain<revolve::brain::PolicyPtr,
-                                            CPPNEAT::GeneticEncodingPtr>::update;
+                                            cppneat::GeneticEncodingPtr>::update;
   /// \brief Update sensors reading, actuators position, and `brain` state
   /// \param[inout] actuators List of actuators
   /// \param[inout] sensors List of sensors
@@ -75,7 +75,7 @@ class HyperNEAT_Splines
   static revolve::brain::RLPowerLearner::Config parseSDF(sdf::ElementPtr brain);
 
   /// \brief
-  static CPPNEAT::NEATLearner::LearningConfiguration parseLearningSDF(sdf::ElementPtr brain);
+  static cppneat::NEATLearner::LearningConfiguration parseLearningSDF(sdf::ElementPtr brain);
 
 };
 

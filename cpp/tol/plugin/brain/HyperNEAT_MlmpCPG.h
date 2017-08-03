@@ -63,7 +63,7 @@ namespace tol
 
   class HyperNEAT_MlmpCPG
           : public rg::Brain
-          , private rb::ConverterSplitBrain<rb::CPPNConfigPtr, CPPNEAT::GeneticEncodingPtr>
+          , private rb::ConverterSplitBrain<rb::CPPNConfigPtr, cppneat::GeneticEncodingPtr>
   {
     public:
 
@@ -83,7 +83,7 @@ namespace tol
     /// \brief Destructor
     virtual ~HyperNEAT_MlmpCPG();
 
-    using rb::ConverterSplitBrain<rb::CPPNConfigPtr, CPPNEAT::GeneticEncodingPtr>::update;
+    using rb::ConverterSplitBrain<rb::CPPNConfigPtr, cppneat::GeneticEncodingPtr>::update;
 
     /// \brief Update sensors reading, actuators position, and `brain` state
     /// \param[inout] actuators List of actuators
@@ -95,7 +95,7 @@ namespace tol
                         double t,
                         double step);
 
-    static CPPNEAT::NEATLearner::LearningConfiguration
+    static cppneat::NEATLearner::LearningConfiguration
     parseLearningSDF(sdf::ElementPtr brain);
   };
 

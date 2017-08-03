@@ -38,7 +38,7 @@ namespace tol {
 class NeatExtNN
         : public revolve::gazebo::Brain
         , private revolve::brain::ConverterSplitBrain<revolve::brain::CPPNConfigPtr,
-                                                      CPPNEAT::GeneticEncodingPtr>
+                                                      cppneat::GeneticEncodingPtr>
 {
   public:
 
@@ -59,7 +59,7 @@ class NeatExtNN
   virtual ~NeatExtNN();
 
   using revolve::brain::ConverterSplitBrain<revolve::brain::CPPNConfigPtr,
-                                            CPPNEAT::GeneticEncodingPtr>::update;
+                                            cppneat::GeneticEncodingPtr>::update;
   /// \brief Update sensors reading, actuators position, and `brain` state
   /// \param[inout] actuators List of actuators
   /// \param[inout] sensors List of sensors
@@ -70,7 +70,7 @@ class NeatExtNN
                       double t,
                       double step);
 
-  static CPPNEAT::NEATLearner::LearningConfiguration parseLearningSDF(sdf::ElementPtr brain);
+  static cppneat::NEATLearner::LearningConfiguration parseLearningSDF(sdf::ElementPtr brain);
 };
 
 } /* namespace tol */

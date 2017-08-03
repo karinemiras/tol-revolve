@@ -89,8 +89,8 @@ namespace tol
             // exchanged i,j and //dont add selfreferential connection
             if (neighbour_is_motor[i] and neighbour_is_motor[j] and i != j)
             {
-              CPPNEAT::ConnectionGenePtr first_to_first(
-                      new CPPNEAT::ConnectionGene(cur_part->neighbours[i].differential_oscillator[0]->getInnovNumber(),
+              cppneat::ConnectionGenePtr first_to_first(
+                      new cppneat::ConnectionGene(cur_part->neighbours[i].differential_oscillator[0]->getInnovNumber(),
                                                   cur_part->neighbours[j].differential_oscillator[0]->getInnovNumber(),
                                                   0,
                                                   ++innov_number,
@@ -126,16 +126,14 @@ namespace tol
       //add neuron
       std::map<std::string, double> empty;
 
-      CPPNEAT::NeuronPtr neuron(
-              new CPPNEAT::Neuron(core->name + "-in-" + std::to_string(i),
-                                  CPPNEAT::Neuron::INPUT_LAYER,
-                                  CPPNEAT::Neuron::INPUT,
+      cppneat::NeuronPtr neuron(
+              new cppneat::Neuron(core->name + "-in-" + std::to_string(i),
+                                  cppneat::Neuron::INPUT_LAYER,
+                                  cppneat::Neuron::INPUT,
                                   empty)
       );
-      CPPNEAT::NeuronGenePtr neuron_gene(
-              new CPPNEAT::NeuronGene(neuron,
-                                      ++innov_number,
-                                      true)
+      cppneat::NeuronGenePtr neuron_gene(
+              new cppneat::NeuronGene(neuron, ++innov_number, true)
       );
       neurons.push_back(neuron_gene);
       input_neurons.push_back(neuron_gene);
@@ -147,8 +145,8 @@ namespace tol
       {
         if (core->neighbours[i].type == "ActiveHinge")
         {
-          CPPNEAT::ConnectionGenePtr input_to_first(
-                  new CPPNEAT::ConnectionGene(core->neighbours[i].differential_oscillator[0]->getInnovNumber(),
+          cppneat::ConnectionGenePtr input_to_first(
+                  new cppneat::ConnectionGene(core->neighbours[i].differential_oscillator[0]->getInnovNumber(),
                                               neuron_gene->getInnovNumber(),
                                               0,
                                               ++innov_number,
@@ -169,10 +167,12 @@ namespace tol
     delete core;
   }
 
-  CPPNEAT::GeneticEncodingPtr
+  cppneat::GeneticEncodingPtr
   BodyParser::CoupledCpgNetwork()
   {
-    CPPNEAT::GeneticEncodingPtr ret(new CPPNEAT::GeneticEncoding(neurons, connections));
+    cppneat::GeneticEncodingPtr ret(
+            new cppneat::GeneticEncoding(neurons, connections)
+    );
     return ret;
   }
 
@@ -265,24 +265,24 @@ namespace tol
     return std::make_pair(input_map, output_map);
   }
 
-  CPPNEAT::GeneticEncodingPtr
+  cppneat::GeneticEncodingPtr
   BodyParser::CppnNetwork()
   {
     int innov_number = 1;
-    CPPNEAT::GeneticEncodingPtr ret(new CPPNEAT::GeneticEncoding(true));
+    cppneat::GeneticEncodingPtr ret(new cppneat::GeneticEncoding(true));
     //add inputs
     std::map<std::string, double> empty;
     for (int i = 0; i < 6; i++)
     {
-      CPPNEAT::NeuronPtr neuron(
+      cppneat::NeuronPtr neuron(
               //better names (like input x1 etc) might help
-              new CPPNEAT::Neuron("Input-" + std::to_string(i),
-                                  CPPNEAT::Neuron::INPUT_LAYER,
-                                  CPPNEAT::Neuron::INPUT,
+              new cppneat::Neuron("Input-" + std::to_string(i),
+                                  cppneat::Neuron::INPUT_LAYER,
+                                  cppneat::Neuron::INPUT,
                                   empty)
       );
-      CPPNEAT::NeuronGenePtr neuron_gene(
-              new CPPNEAT::NeuronGene(neuron, innov_number++, true)
+      cppneat::NeuronGenePtr neuron_gene(
+              new cppneat::NeuronGene(neuron, innov_number++, true)
       ); //means innovation number is i + 1
       ret->add_neuron_gene(neuron_gene, 0, i == 0);
     }
@@ -290,34 +290,34 @@ namespace tol
     //add outputs
     empty["rv:bias"] = 0;
     empty["rv:gain"] = 0;
-    CPPNEAT::NeuronPtr weight_neuron(
-            new CPPNEAT::Neuron("weight",
-                                CPPNEAT::Neuron::OUTPUT_LAYER,
-                                CPPNEAT::Neuron::SIMPLE,
+    cppneat::NeuronPtr weight_neuron(
+            new cppneat::Neuron("weight",
+                                cppneat::Neuron::OUTPUT_LAYER,
+                                cppneat::Neuron::SIMPLE,
                                 empty)
     );
-    CPPNEAT::NeuronGenePtr weight_neuron_gene(
-            new CPPNEAT::NeuronGene(weight_neuron, innov_number++, true)
+    cppneat::NeuronGenePtr weight_neuron_gene(
+            new cppneat::NeuronGene(weight_neuron, innov_number++, true)
     );
     ret->add_neuron_gene(weight_neuron_gene, 1, true);
-    CPPNEAT::NeuronPtr bias_neuron(
-            new CPPNEAT::Neuron("rv:bias",
-                                CPPNEAT::Neuron::OUTPUT_LAYER,
-                                CPPNEAT::Neuron::SIMPLE,
+    cppneat::NeuronPtr bias_neuron(
+            new cppneat::Neuron("rv:bias",
+                                cppneat::Neuron::OUTPUT_LAYER,
+                                cppneat::Neuron::SIMPLE,
                                 empty)
     );
-    CPPNEAT::NeuronGenePtr bias_neuron_gene(
-            new CPPNEAT::NeuronGene(bias_neuron, innov_number++, true)
+    cppneat::NeuronGenePtr bias_neuron_gene(
+            new cppneat::NeuronGene(bias_neuron, innov_number++, true)
     );
     ret->add_neuron_gene(bias_neuron_gene, 1, false);
-    CPPNEAT::NeuronPtr gain_neuron(
-            new CPPNEAT::Neuron("rv:gain",
-                                CPPNEAT::Neuron::OUTPUT_LAYER,
-                                CPPNEAT::Neuron::SIMPLE,
+    cppneat::NeuronPtr gain_neuron(
+            new cppneat::Neuron("rv:gain",
+                                cppneat::Neuron::OUTPUT_LAYER,
+                                cppneat::Neuron::SIMPLE,
                                 empty)
     );
-    CPPNEAT::NeuronGenePtr gain_neuron_gene(
-            new CPPNEAT::NeuronGene(gain_neuron,
+    cppneat::NeuronGenePtr gain_neuron_gene(
+            new cppneat::NeuronGene(gain_neuron,
                                     innov_number++,
                                     true)
     );
@@ -326,24 +326,24 @@ namespace tol
     //connect every input with every output
     for (int i = 0; i < 6; i++)
     {
-      CPPNEAT::ConnectionGenePtr connection_to_weight(
-              new CPPNEAT::ConnectionGene(weight_neuron_gene->getInnovNumber(),
+      cppneat::ConnectionGenePtr connection_to_weight(
+              new cppneat::ConnectionGene(weight_neuron_gene->getInnovNumber(),
                                           i + 1, 0,
                                           innov_number++,
                                           true, "")
       );
       ret->add_connection_gene(connection_to_weight);
 
-      CPPNEAT::ConnectionGenePtr connection_to_bias(
-              new CPPNEAT::ConnectionGene(bias_neuron_gene->getInnovNumber(),
+      cppneat::ConnectionGenePtr connection_to_bias(
+              new cppneat::ConnectionGene(bias_neuron_gene->getInnovNumber(),
                                           i + 1, 0,
                                           innov_number++,
                                           true, "")
       );
       ret->add_connection_gene(connection_to_bias);
 
-      CPPNEAT::ConnectionGenePtr connection_to_gain(
-              new CPPNEAT::ConnectionGene(gain_neuron_gene->getInnovNumber(),
+      cppneat::ConnectionGenePtr connection_to_gain(
+              new cppneat::ConnectionGene(gain_neuron_gene->getInnovNumber(),
                                           i + 1, 0,
                                           innov_number++,
                                           true, "")
@@ -357,7 +357,7 @@ namespace tol
   BodyParser::IdToCoordinatesMap()
   {
     std::map<std::string, std::tuple<int, int, int> > ret;
-    for (std::pair<CPPNEAT::NeuronGenePtr, std::tuple<int, int, int>> pair : neuron_coordinates)
+    for (std::pair<cppneat::NeuronGenePtr, std::tuple<int, int, int>> pair : neuron_coordinates)
     {
       ret[pair.first->neuron->neuron_id] = pair.second;
     }
@@ -413,8 +413,8 @@ namespace tol
 
 
   void BodyParser::SetCoordinates(int x,
-                            int y,
-                            BodyPart *part)
+                                  int y,
+                                  BodyPart *part)
   {
     part->coordinates[0] = x;
     part->coordinates[1] = y;
@@ -432,8 +432,8 @@ namespace tol
   }
 
   int BodyParser::CalculateRotation(int arity,
-                              int slot,
-                              int parent_rotation)
+                                    int slot,
+                                    int parent_rotation)
   {
     if (arity == 2)
     {
@@ -463,7 +463,7 @@ namespace tol
   }
 
   void BodyParser::from_yaml(BodyPart *part,
-                       YAML::Node &node) //only works for slot: 0 currently
+                             YAML::Node &node) //only works for slot: 0 currently
   {
     std::string curname = node["id"].as<std::string>();
     part->name = node["id"].as<std::string>();
@@ -478,18 +478,19 @@ namespace tol
     {
       //add neurons
       std::map<std::string, double> empty;
-      if(this->isMlmp_){
+      if (this->isMlmp_)
+      {
         empty["rv:bias"] = 0;
         empty["rv:gain"] = 1;
 
-        CPPNEAT::NeuronPtr first_neuron(
-                new CPPNEAT::Neuron(part->name + "-hidden-0",
-                                    CPPNEAT::Neuron::HIDDEN_LAYER,
-                                    CPPNEAT::Neuron::RYTHM_GENERATOR_CPG,
+        cppneat::NeuronPtr first_neuron(
+                new cppneat::Neuron(part->name + "-hidden-0",
+                                    cppneat::Neuron::HIDDEN_LAYER,
+                                    cppneat::Neuron::RYTHM_GENERATOR_CPG,
                                     empty)
         );
-        part->differential_oscillator[0] = CPPNEAT::NeuronGenePtr(
-                new CPPNEAT::NeuronGene(first_neuron, ++innov_number, true)
+        part->differential_oscillator[0] = cppneat::NeuronGenePtr(
+                new cppneat::NeuronGene(first_neuron, ++innov_number, true)
         );
         neurons.push_back(part->differential_oscillator[0]);
         std::tuple<int, int, int> first_coord(part->coordinates[0],
@@ -497,14 +498,14 @@ namespace tol
                                               1);
         neuron_coordinates[part->differential_oscillator[0]] = first_coord;
 
-        CPPNEAT::NeuronPtr second_neuron(
-                new CPPNEAT::Neuron(part->name + "-hidden-1",
-                                    CPPNEAT::Neuron::HIDDEN_LAYER,
-                                    CPPNEAT::Neuron::RYTHM_GENERATOR_CPG,
+        cppneat::NeuronPtr second_neuron(
+                new cppneat::Neuron(part->name + "-hidden-1",
+                                    cppneat::Neuron::HIDDEN_LAYER,
+                                    cppneat::Neuron::RYTHM_GENERATOR_CPG,
                                     empty)
         );
-        part->differential_oscillator[1] = CPPNEAT::NeuronGenePtr(
-                new CPPNEAT::NeuronGene(second_neuron, ++innov_number, true)
+        part->differential_oscillator[1] = cppneat::NeuronGenePtr(
+                new cppneat::NeuronGene(second_neuron, ++innov_number, true)
         );
         neurons.push_back(part->differential_oscillator[1]);
         std::tuple<int, int, int> second_coord(part->coordinates[0],
@@ -516,14 +517,14 @@ namespace tol
         empty["rv:bias"] = 0;
         empty["rv:gain"] = 1;
 
-        CPPNEAT::NeuronPtr first_neuron(
-                new CPPNEAT::Neuron(part->name + "-hidden-0",
-                                    CPPNEAT::Neuron::HIDDEN_LAYER,
-                                    CPPNEAT::Neuron::DIFFERENTIAL_CPG,
+        cppneat::NeuronPtr first_neuron(
+                new cppneat::Neuron(part->name + "-hidden-0",
+                                    cppneat::Neuron::HIDDEN_LAYER,
+                                    cppneat::Neuron::DIFFERENTIAL_CPG,
                                     empty)
         );
-        part->differential_oscillator[0] = CPPNEAT::NeuronGenePtr(
-                new CPPNEAT::NeuronGene(first_neuron, ++innov_number, true));
+        part->differential_oscillator[0] = cppneat::NeuronGenePtr(
+                new cppneat::NeuronGene(first_neuron, ++innov_number, true));
 
         neurons.push_back(part->differential_oscillator[0]);
         std::tuple<int, int, int> first_coord(part->coordinates[0],
@@ -531,14 +532,14 @@ namespace tol
                                               1);
         neuron_coordinates[part->differential_oscillator[0]] = first_coord;
 
-        CPPNEAT::NeuronPtr second_neuron(
-                new CPPNEAT::Neuron(part->name + "-hidden-1",
-                                    CPPNEAT::Neuron::HIDDEN_LAYER,
-                                    CPPNEAT::Neuron::DIFFERENTIAL_CPG,
+        cppneat::NeuronPtr second_neuron(
+                new cppneat::Neuron(part->name + "-hidden-1",
+                                    cppneat::Neuron::HIDDEN_LAYER,
+                                    cppneat::Neuron::DIFFERENTIAL_CPG,
                                     empty)
         );
-        part->differential_oscillator[1] = CPPNEAT::NeuronGenePtr(
-                new CPPNEAT::NeuronGene(second_neuron, ++innov_number, true));
+        part->differential_oscillator[1] = cppneat::NeuronGenePtr(
+                new cppneat::NeuronGene(second_neuron, ++innov_number, true));
 
         neurons.push_back(part->differential_oscillator[1]);
         std::tuple<int, int, int> second_coord(part->coordinates[0],
@@ -547,14 +548,14 @@ namespace tol
         neuron_coordinates[part->differential_oscillator[1]] = second_coord;
       }
 
-      CPPNEAT::NeuronPtr output_neuron(
-              new CPPNEAT::Neuron(part->name + "-out-0",
-                                  CPPNEAT::Neuron::OUTPUT_LAYER,
-                                  CPPNEAT::Neuron::SIMPLE,
+      cppneat::NeuronPtr output_neuron(
+              new cppneat::Neuron(part->name + "-out-0",
+                                  cppneat::Neuron::OUTPUT_LAYER,
+                                  cppneat::Neuron::SIMPLE,
                                   empty)
       );
-      part->differential_oscillator[2] = CPPNEAT::NeuronGenePtr(
-              new CPPNEAT::NeuronGene(output_neuron, ++innov_number, true));
+      part->differential_oscillator[2] = cppneat::NeuronGenePtr(
+              new cppneat::NeuronGene(output_neuron, ++innov_number, true));
 
       neurons.push_back(part->differential_oscillator[2]);
       output_neurons.push_back(part->differential_oscillator[2]);
@@ -564,7 +565,7 @@ namespace tol
       neuron_coordinates[part->differential_oscillator[2]] = output_coord;
 
       //add connections between only these neurons (for now)
-      CPPNEAT::ConnectionGenePtr first_to_second(new CPPNEAT::ConnectionGene(
+      cppneat::ConnectionGenePtr first_to_second(new cppneat::ConnectionGene(
               part->differential_oscillator[1]->getInnovNumber(),
               part->differential_oscillator[0]->getInnovNumber(),
               0,
@@ -572,7 +573,7 @@ namespace tol
               true));
       connections.push_back(first_to_second);
 
-      CPPNEAT::ConnectionGenePtr second_to_first(new CPPNEAT::ConnectionGene(
+      cppneat::ConnectionGenePtr second_to_first(new cppneat::ConnectionGene(
               part->differential_oscillator[0]->getInnovNumber(),
               part->differential_oscillator[1]->getInnovNumber(),
               0,
@@ -580,7 +581,7 @@ namespace tol
               true));
       connections.push_back(second_to_first);
 
-      CPPNEAT::ConnectionGenePtr first_to_output(new CPPNEAT::ConnectionGene(
+      cppneat::ConnectionGenePtr first_to_output(new cppneat::ConnectionGene(
               part->differential_oscillator[2]->getInnovNumber(),
               part->differential_oscillator[0]->getInnovNumber(),
               0,
@@ -600,7 +601,9 @@ namespace tol
       }
       if (children[0].size() != 0 && part->type != "Core")
       { //child in parent socket
-        std::cout << "ERROR: child in parent socket (currently only 0 is accepted as parent socket)" << std::endl;
+        std::cout
+                << "ERROR: child in parent socket (currently only 0 is accepted as parent socket)"
+                << std::endl;
       }
       for (int i = 0; i < 4; i++)
       {
@@ -614,16 +617,24 @@ namespace tol
         switch (child->rotation)
         {
           case 0:
-            this->SetCoordinates(part->coordinates[0], part->coordinates[1] - 1, child);
+            this->SetCoordinates(part->coordinates[0],
+                                 part->coordinates[1] - 1,
+                                 child);
             break;
           case 1:
-            this->SetCoordinates(part->coordinates[0] - 1, part->coordinates[1], child);
+            this->SetCoordinates(part->coordinates[0] - 1,
+                                 part->coordinates[1],
+                                 child);
             break;
           case 2:
-            this->SetCoordinates(part->coordinates[0], part->coordinates[1] + 1, child);
+            this->SetCoordinates(part->coordinates[0],
+                                 part->coordinates[1] + 1,
+                                 child);
             break;
           case 3:
-            this->SetCoordinates(part->coordinates[0] + 1, part->coordinates[1], child);
+            this->SetCoordinates(part->coordinates[0] + 1,
+                                 part->coordinates[1],
+                                 child);
             break;
           default:
             std::cout << "unknown error in body parsing" << std::endl;

@@ -45,7 +45,7 @@ namespace tol
       int rotation;          // 0 -> 0, 1 -> 90 degrees, etc.
       int coordinates[2];    // the coordinates of this `bodypart`
       BodyPart *neighbours;  // the neighbours of this `bodypart`
-      CPPNEAT::NeuronGenePtr differential_oscillator[3];
+      cppneat::NeuronGenePtr differential_oscillator[3];
     };
     public:
     BodyParser(std::string &yaml_path);
@@ -54,13 +54,13 @@ namespace tol
 
     ~BodyParser();
 
-    CPPNEAT::GeneticEncodingPtr CoupledCpgNetwork();
+    cppneat::GeneticEncodingPtr CoupledCpgNetwork();
 
     std::pair<std::map<int, size_t>, std::map<int, size_t>>
     InputOutputMap(const std::vector<revolve::gazebo::MotorPtr> &actuators,
                    const std::vector<revolve::gazebo::SensorPtr> &sensors);
 
-    CPPNEAT::GeneticEncodingPtr CppnNetwork();
+    cppneat::GeneticEncodingPtr CppnNetwork();
 
     std::map<std::string, std::tuple<int, int, int>> IdToCoordinatesMap();
 
@@ -103,11 +103,11 @@ namespace tol
     /// \brief Is controller architecture MLMP; used as a small hack
     bool isMlmp_ = false;
 
-    std::vector<CPPNEAT::ConnectionGenePtr> connections;
-    std::vector<CPPNEAT::NeuronGenePtr> neurons;
-    std::vector<CPPNEAT::NeuronGenePtr> input_neurons;
-    std::vector<CPPNEAT::NeuronGenePtr> output_neurons;
-    std::map<CPPNEAT::NeuronGenePtr, std::tuple<int, int, int>> neuron_coordinates;
+    std::vector<cppneat::ConnectionGenePtr> connections;
+    std::vector<cppneat::NeuronGenePtr> neurons;
+    std::vector<cppneat::NeuronGenePtr> input_neurons;
+    std::vector<cppneat::NeuronGenePtr> output_neurons;
+    std::map<cppneat::NeuronGenePtr, std::tuple<int, int, int>> neuron_coordinates;
   };
 
 }
