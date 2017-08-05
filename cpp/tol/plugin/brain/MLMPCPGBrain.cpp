@@ -17,24 +17,23 @@
 *
 */
 
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include "MLMPCPGBrain.h"
 #include "Helper.h"
-
-#include <iostream>
-#include <exception>
 
 using namespace tol;
 
 tol::MlmpCPGBrain::MlmpCPGBrain(std::string robot_name,
-             tol::EvaluatorPtr evaluator,
-             unsigned int n_actuators,
-             unsigned int n_sensors)
-    : revolve::brain::CPGBrain(
-        robot_name,
-        evaluator,
-        n_actuators,
-        n_sensors
-    )
+                                tol::EvaluatorPtr evaluator,
+                                unsigned int n_actuators,
+                                unsigned int n_sensors)
+        : revolve::brain::CPGBrain(robot_name,
+                                   evaluator,
+                                   n_actuators,
+                                   n_sensors)
 {
 }
 
@@ -42,19 +41,20 @@ tol::MlmpCPGBrain::~MlmpCPGBrain()
 {
 }
 
-
-
-void MlmpCPGBrain::update(const std::vector< revolve::gazebo::MotorPtr >& actuators,
-                          const std::vector< revolve::gazebo::SensorPtr >& sensors,
-                          double t, double step)
+void MlmpCPGBrain::update(
+        const std::vector< revolve::gazebo::MotorPtr > &actuators,
+        const std::vector< revolve::gazebo::SensorPtr > &sensors,
+        double t,
+        double step)
 {
-    try {
-        revolve::brain::CPGBrain::update(
+  try
+  {
+    revolve::brain::CPGBrain::update(
             Helper::createWrapper(actuators),
             Helper::createWrapper(sensors),
-            t, step
-        );
-    } catch (std::exception &e) {
-        std::cerr << "exception: " << e.what() << std::endl;
-    }
+            t, step);
+  } catch (std::exception &e)
+  {
+    std::cerr << "exception: " << e.what() << std::endl;
+  }
 }

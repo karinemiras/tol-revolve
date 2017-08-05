@@ -22,30 +22,28 @@
 
 #include "../FakeLightSensor.h"
 
-class TestFakeLightSensor : public tol::FakeLightSensor
+class TestFakeLightSensor
+        : public tol::FakeLightSensor
 {
-public:
-    explicit TestFakeLightSensor(float fov,
-                                 const ignition::math::Pose3d robot_sensor_offset,
-                                 const ignition::math::Vector3d light_position)
-        : tol::FakeLightSensor(
-            "test_fake_light_sensor",
-            fov,
-            light_position
-        )
-    {
-        this->updateRobotPosition(robot_sensor_offset);
-    }
+  public:
+  explicit TestFakeLightSensor(float fov,
+                               const ignition::math::Pose3d robot_sensor_offset,
+                               const ignition::math::Vector3d light_position)
+          : tol::FakeLightSensor("test_fake_light_sensor", fov, light_position)
+  {
+    this->updateRobotPosition(robot_sensor_offset);
+  }
 
-// Expose protected methods
-    float expose_light_distance() {
-        return light_distance();
-    }
+  // Expose protected methods
+  float expose_light_distance()
+  {
+    return light_distance();
+  }
 
-    float expose_light_angle() {
-        return light_angle();
-    }
-
+  float expose_light_angle()
+  {
+    return light_angle();
+  }
 };
 
 #endif  //  TESTFAKELIGHTSENSOR_H

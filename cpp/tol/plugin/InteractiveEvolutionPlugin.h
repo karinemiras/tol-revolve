@@ -13,13 +13,10 @@
 * limitations under the License.
 *
 * Description: TODO: <Add brief description about file purpose>
-* Author: TODO <Add proper author>
+* Author: Elte Hupkes
+* Date: September 20, 2015
 *
 */
-
-//
-// Created by elte on 20-9-15.
-//
 
 #ifndef TOL_PLUGIN_INTERACTIVEEVOLUTION_H_
 #define TOL_PLUGIN_INTERACTIVEEVOLUTION_H_
@@ -35,36 +32,31 @@
 
 #endif
 
-namespace tol {
-
-class InteractiveEvolutionPlugin
-        : public ::gazebo::GUIPlugin
+namespace tol
 {
-Q_OBJECT
+  class InteractiveEvolutionPlugin
+          : public ::gazebo::GUIPlugin
+  {
+    Q_OBJECT
 
-public:
-
+    public:
     InteractiveEvolutionPlugin();
 
     ~InteractiveEvolutionPlugin();
 
-protected slots:
+    protected slots:
 
-    void
-    OnReproduceButton();
+    void OnReproduceButton();
 
-private:
-    bool
-    OnKeyDown(const ::gazebo::common::KeyEvent _event);
+    private:
+    bool OnKeyDown(const ::gazebo::common::KeyEvent _event);
 
     // Transport nodes for the contact messages
     ::gazebo::transport::NodePtr node_;
 
     // Key publisher
     ::gazebo::transport::PublisherPtr keyPub_;
-};
-
+  };
 }
-
 
 #endif  //  TOL_PLUGIN_INTERACTIVEEVOLUTION_H_

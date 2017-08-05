@@ -28,23 +28,27 @@
 
 #include "brain/FakeLightSensor.h"
 
-namespace tol {
-
-class FakeLightSensor : public revolve::brain::FakeLightSensor
-                      , public revolve::gazebo::VirtualSensor
+namespace tol
 {
-public:
+  class FakeLightSensor
+          : public revolve::brain::FakeLightSensor
+            , public revolve::gazebo::VirtualSensor
+  {
+    public:
     FakeLightSensor(std::string name,
                     float fov,
                     ignition::math::Vector3d light_pos);
+
     virtual ~FakeLightSensor();
 
     virtual double light_distance() override;
+
     virtual double light_angle() override;
 
     virtual std::string sensorId() const override;
 
-    virtual void updateRobotPosition(const ignition::math::Pose3d &robot_position);
+    virtual void updateRobotPosition(
+            const ignition::math::Pose3d &robot_position);
 
     /**
      * Reads the current value of this sensor into the given network
@@ -52,17 +56,17 @@ public:
      * the sensor specifies to have, i.e. if the sensor specifies 2
      * input neurons it should fill `input[0]` and `input[1]`
      */
-    virtual void read(double * input) override {
-//         std::cerr << "######## tol::FakeLightSensor::read()" << std::endl;
-        revolve::brain::FakeLightSensor::read(input);
+    virtual void read(double *input) override
+    {
+      //  std::cerr << "######## tol::FakeLightSensor::read()" << std::endl;
+      revolve::brain::FakeLightSensor::read(input);
     }
 
-private:
+    private:
     std::string sensor_name;
     ignition::math::Vector3d light_pos;
     ignition::math::Pose3d robot_position;
-};
-
+  };
 }
 
 #endif  //  FAKELIGHTSENSOR_H

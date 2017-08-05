@@ -38,7 +38,10 @@
  *
  */
 
-#include "HyperNEAT_MlmpCPG.h"
+#include <utility>
+#include <map>
+#include <string>
+#include <vector>
 
 #include "revolve/gazebo/motors/Motor.h"
 #include "revolve/gazebo/sensors/Sensor.h"
@@ -48,29 +51,30 @@
 #include "Helper.h"
 #include "brain/Conversion.h"
 
+#include "HyperNEAT_MlmpCPG.h"
+
 namespace rb = revolve::brain;
 namespace rg = revolve::gazebo;
 
 namespace tol
 {
-
-  HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(std::string modelName,
-                               sdf::ElementPtr brain,
-                               tol::EvaluatorPtr evaluator,
-                               const std::vector<rg::MotorPtr> &actuators,
-                               const std::vector<rg::SensorPtr> &sensors)
-          : rb::ConverterSplitBrain<rb::CPPNConfigPtr,
-                                    cppneat::GeneticEncodingPtr>
+  HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
+          std::string modelName,
+          sdf::ElementPtr brain,
+          tol::EvaluatorPtr evaluator,
+          const std::vector< rg::MotorPtr > &actuators,
+          const std::vector< rg::SensorPtr > &sensors)
+          : rb::ConverterSplitBrain< rb::CPPNConfigPtr,
+                                     cppneat::GeneticEncodingPtr >
                     (&rb::convertGEtoNN,
                      &rb::convertNNtoGE,
                      modelName)
   {
-
     // Initialise controller
     std::string name(modelName.substr(0, modelName.find("-")) + ".yaml");
     BodyParser body(name, true);
 
-    std::pair<std::map<int, size_t>, std::map<int, size_t >> in_out =
+    std::pair< std::map< int, size_t >, std::map< int, size_t >> in_out =
             body.InputOutputMap(actuators, sensors);
     rb::InputMap = in_out.first;
     rb::OutputMap = in_out.second;
@@ -83,69 +87,73 @@ namespace tol
                     modelName,
                     rb::RafCpgNetwork,
                     Helper::createWrapper(actuators),
-                    Helper::createWrapper(sensors))
-    );
+                    Helper::createWrapper(sensors)));
 
     // Initialise learner
-    cppneat::NEATLearner::LearningConfiguration learn_conf = parseLearningSDF(brain);
+    cppneat::NEATLearner::LearningConfiguration
+            learn_conf = parseLearningSDF(brain);
     rb::SetBrainSpec(true);
     learn_conf.start_from = body.CppnNetwork();
     cppneat::MutatorPtr mutator(
             new cppneat::Mutator(rb::brain_spec,
                                  0.8,
-                                 learn_conf.start_from->min_max_innov_numer().second,
+                                 learn_conf.start_from
+                                           ->min_max_innov_numer().second,
                                  100,
-                                 std::vector<cppneat::Neuron::Ntype>(),
-                                 true)
-    );
+                                 std::vector< cppneat::Neuron::Ntype >(),
+                                 true));
     std::string mutator_path =
             brain->HasAttribute("path_to_mutator") ?
             brain->GetAttribute("path_to_mutator")->GetAsString() : "none";
 
     // initialise learner
-    learner_ = boost::shared_ptr<cppneat::NEATLearner>(
+    learner_ = boost::shared_ptr< cppneat::NEATLearner >(
             new cppneat::NEATLearner(
                     mutator,
                     mutator_path,
-                    learn_conf)
-    );
+                    learn_conf));
 
-    //initialise starting population
+    // initialise starting population
     int number_of_brains_from_first =
             brain->HasAttribute("number_of_brains_from_first") ?
-            std::stoi(brain->GetAttribute("number_of_brains_from_first")->GetAsString()) : 0;
+            std::stoi(brain->GetAttribute("number_of_brains_from_first")
+                           ->GetAsString()) : 0;
     int number_of_brains_from_second =
             brain->HasAttribute("number_of_brains_from_second") ?
-            std::stoi(brain->GetAttribute("number_of_brains_from_second")->GetAsString()) : 0;
+            std::stoi(brain->GetAttribute("number_of_brains_from_second")
+                           ->GetAsString()) : 0;
     std::string path_to_first_brains =
             brain->HasAttribute("path_to_first_brains") ?
             brain->GetAttribute("path_to_first_brains")->GetAsString() : "";
 
-    std::vector<cppneat::GeneticEncodingPtr> brains_from_init =
-            boost::dynamic_pointer_cast<cppneat::NEATLearner>(learner_)->get_init_brains();
-    std::vector<cppneat::GeneticEncodingPtr> brains_from_first;
+    std::vector< cppneat::GeneticEncodingPtr > brains_from_init =
+            boost::dynamic_pointer_cast< cppneat::NEATLearner >(learner_)
+                    ->get_init_brains();
+    std::vector< cppneat::GeneticEncodingPtr > brains_from_first;
     if (path_to_first_brains == "" || path_to_first_brains == "none")
     {
       number_of_brains_from_first = 0;
-    } else
+    }
+    else
     {
-      brains_from_first = boost::dynamic_pointer_cast<cppneat::NEATLearner>(
+      brains_from_first = boost::dynamic_pointer_cast< cppneat::NEATLearner >(
               learner_)->get_brains_from_yaml(path_to_first_brains, -1);
     }
     std::string path_to_second_brains =
             brain->HasAttribute("path_to_second_brains") ?
             brain->GetAttribute("path_to_second_brains")->GetAsString() : "";
-    std::vector<cppneat::GeneticEncodingPtr> brains_from_second;
+    std::vector< cppneat::GeneticEncodingPtr > brains_from_second;
     if (path_to_second_brains == "" || path_to_second_brains == "none")
     {
       number_of_brains_from_second = 0;
-    } else
+    }
+    else
     {
-      brains_from_second = boost::dynamic_pointer_cast<cppneat::NEATLearner>(
+      brains_from_second = boost::dynamic_pointer_cast< cppneat::NEATLearner >(
               learner_)->get_brains_from_yaml(path_to_second_brains, -1);
     }
 
-    std::vector<cppneat::GeneticEncodingPtr> init_brains;
+    std::vector< cppneat::GeneticEncodingPtr > init_brains;
     int cur_number = 0;
     int i = 0;
     while (cur_number < number_of_brains_from_first)
@@ -155,7 +163,8 @@ namespace tol
       cur_number++;
     }
     i = 0;
-    while (cur_number < number_of_brains_from_first + number_of_brains_from_second)
+    while (cur_number < number_of_brains_from_first
+                        + number_of_brains_from_second)
     {
       init_brains.push_back(brains_from_second[i]);
       i++;
@@ -168,7 +177,7 @@ namespace tol
       i++;
       cur_number++;
     }
-    boost::dynamic_pointer_cast<cppneat::NEATLearner>(learner_)->initialise(
+    boost::dynamic_pointer_cast< cppneat::NEATLearner >(learner_)->initialise(
             init_brains);
 
     // initialise evaluator
@@ -179,19 +188,17 @@ namespace tol
   {
   }
 
-  void
-  HyperNEAT_MlmpCPG::update(const std::vector<rg::MotorPtr> &actuators,
-                        const std::vector<rg::SensorPtr> &sensors,
-                        double t,
-                        double step)
+  void HyperNEAT_MlmpCPG::update(const std::vector< rg::MotorPtr > &actuators,
+                                 const std::vector< rg::SensorPtr > &sensors,
+                                 double t,
+                                 double step)
   {
-    rb::ConverterSplitBrain<boost::shared_ptr<rb::CPPNConfig>,
-                            cppneat::GeneticEncodingPtr>::update(
+    rb::ConverterSplitBrain< boost::shared_ptr< rb::CPPNConfig >,
+                             cppneat::GeneticEncodingPtr >::update(
             Helper::createWrapper(actuators),
             Helper::createWrapper(sensors),
             t,
-            step
-    );
+            step);
   }
 
   cppneat::NEATLearner::LearningConfiguration
@@ -218,27 +225,33 @@ namespace tol
             cppneat::NEATLearner::NUM_CHILDREN;
     config.weight_mutation_probability =
             brain->HasAttribute("weight_mutation_probability") ?
-            std::stod(brain->GetAttribute("weight_mutation_probability")->GetAsString()) :
+            std::stod(brain->GetAttribute("weight_mutation_probability")
+                           ->GetAsString()) :
             cppneat::NEATLearner::WEIGHT_MUTATION_PROBABILITY;
     config.weight_mutation_sigma =
             brain->HasAttribute("weight_mutation_sigma") ?
-            std::stod(brain->GetAttribute("weight_mutation_sigma")->GetAsString()) :
+            std::stod(brain->GetAttribute("weight_mutation_sigma")
+                           ->GetAsString()) :
             cppneat::NEATLearner::WEIGHT_MUTATION_SIGMA;
     config.param_mutation_probability =
             brain->HasAttribute("param_mutation_probability") ?
-            std::stod(brain->GetAttribute("param_mutation_probability")->GetAsString()) :
+            std::stod(brain->GetAttribute("param_mutation_probability")
+                           ->GetAsString()) :
             cppneat::NEATLearner::PARAM_MUTATION_PROBABILITY;
     config.param_mutation_sigma =
             brain->HasAttribute("param_mutation_sigma") ?
-            std::stod(brain->GetAttribute("param_mutation_sigma")->GetAsString()) :
+            std::stod(brain->GetAttribute("param_mutation_sigma")
+                           ->GetAsString()) :
             cppneat::NEATLearner::PARAM_MUTATION_SIGMA;
     config.structural_augmentation_probability =
             brain->HasAttribute("structural_augmentation_probability") ?
-            std::stod(brain->GetAttribute("structural_augmentation_probability")->GetAsString()) :
+            std::stod(brain->GetAttribute("structural_augmentation_probability")
+                           ->GetAsString()) :
             cppneat::NEATLearner::STRUCTURAL_AUGMENTATION_PROBABILITY;
     config.structural_removal_probability =
             brain->HasAttribute("structural_removal_probability") ?
-            std::stod(brain->GetAttribute("structural_removal_probability")->GetAsString()) :
+            std::stod(brain->GetAttribute("structural_removal_probability")
+                           ->GetAsString()) :
             cppneat::NEATLearner::STRUCTURAL_REMOVAL_PROBABILITY;
     config.max_generations =
             brain->HasAttribute("max_generations") ?
@@ -246,21 +259,24 @@ namespace tol
             cppneat::NEATLearner::MAX_GENERATIONS;
     config.speciation_threshold =
             brain->HasAttribute("speciation_threshold") ?
-            std::stod(brain->GetAttribute("speciation_threshold")->GetAsString()) :
+            std::stod(brain->GetAttribute("speciation_threshold")
+                           ->GetAsString()) :
             cppneat::NEATLearner::SPECIATION_TRESHOLD;
     config.repeat_evaluations =
             brain->HasAttribute("repeat_evaluations") ?
-            std::stoi(brain->GetAttribute("repeat_evaluations")->GetAsString()) :
+            std::stoi(brain->GetAttribute("repeat_evaluations")
+                           ->GetAsString()) :
             cppneat::NEATLearner::REPEAT_EVALUATIONS;
     config.initial_structural_mutations =
             brain->HasAttribute("initial_structural_mutations") ?
-            std::stoi(brain->GetAttribute("initial_structural_mutations")->GetAsString()) :
+            std::stoi(brain->GetAttribute("initial_structural_mutations")
+                           ->GetAsString()) :
             cppneat::NEATLearner::INITIAL_STRUCTURAL_MUTATIONS;
     config.interspecies_mate_probability =
             brain->HasAttribute("interspecies_mate_probability") ?
-            std::stod(brain->GetAttribute("interspecies_mate_probability")->GetAsString()) :
+            std::stod(brain->GetAttribute("interspecies_mate_probability")
+                           ->GetAsString()) :
             cppneat::NEATLearner::INTERSPECIES_MATE_PROBABILITY;
     return config;
   }
-
-} /* namespace tol */
+}  /* namespace tol */

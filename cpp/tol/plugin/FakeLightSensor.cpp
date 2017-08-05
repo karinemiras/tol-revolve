@@ -17,42 +17,44 @@
 *
 */
 
+#include <string>
+
 #include "FakeLightSensor.h"
 
 using namespace tol;
 
-FakeLightSensor::FakeLightSensor(std::string name, float fov, ignition::math::Vector3d light_pos)
-    : revolve::brain::FakeLightSensor(fov)
-    , revolve::gazebo::VirtualSensor(nullptr, name, name, 1)
-    , sensor_name(name)
-    , light_pos(light_pos)
+FakeLightSensor::FakeLightSensor(std::string name,
+                                 float fov,
+                                 ignition::math::Vector3d light_pos)
+        : revolve::brain::FakeLightSensor(fov)
+          , revolve::gazebo::VirtualSensor(nullptr, name, name, 1)
+          , sensor_name(name)
+          , light_pos(light_pos)
 {
 }
-
-#include <iostream>
 
 FakeLightSensor::~FakeLightSensor()
 {
 //     std::cout << "~FakeLightSensor()" << std::endl;
 }
 
-
 double FakeLightSensor::light_distance()
 {
-    return 1/(robot_position.Pos() - light_pos).Length();
+  return 1 / (robot_position.Pos() - light_pos).Length();
 }
 
 double FakeLightSensor::light_angle()
 {
-    return 0;
+  return 0;
 }
 
 std::string FakeLightSensor::sensorId() const
 {
-    return this->sensor_name;
+  return this->sensor_name;
 }
 
-void tol::FakeLightSensor::updateRobotPosition(const ignition::math::Pose3d& robot_position)
+void FakeLightSensor::updateRobotPosition(
+        const ignition::math::Pose3d &robot_position)
 {
-    this->robot_position = ignition::math::Pose3d(robot_position);
+  this->robot_position = ignition::math::Pose3d(robot_position);
 }

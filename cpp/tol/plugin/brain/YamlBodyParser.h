@@ -23,23 +23,35 @@
 #include <string>
 #include <memory>
 #include <tuple>
+#include <vector>
 
 #include <yaml-cpp/yaml.h>
 
-namespace tol {
+namespace tol
+{
+  const std::string CORE = "Core";
 
-const std::string CORE = "Core";
-const std::string A_HINGE = "ActiveHinge";
-const std::string P_HINGE = "PassiveHinge";
-const std::string BRICK = "FixedBrick";
+  const std::string A_HINGE = "ActiveHinge";
 
-const size_t MAX_SLOTS = 4;
+  const std::string P_HINGE = "PassiveHinge";
 
-class BodyPart {
-public:
+  const std::string BRICK = "FixedBrick";
+
+  const size_t MAX_SLOTS = 4;
+
+  class BodyPart
+  {
+    public:
     BodyPart();
-    BodyPart(const std::string &name, const std::string &type, int x, int y, size_t rotation);
+
+    BodyPart(const std::string &name,
+             const std::string &type,
+             int x,
+             int y,
+             size_t rotation);
+
     ~BodyPart();
+
     std::string name = "none";
     std::string type = "none";
     int x = 0;
@@ -47,52 +59,87 @@ public:
     size_t id = 0;
     size_t arity = 4;
     size_t rotation = 0;
-    BodyPart* neighbours[MAX_SLOTS];
-};
-typedef std::vector<std::vector<bool>> ConnectionMatrix;
-typedef std::vector<std::vector<float>> CoordinatesMatrix;
+    BodyPart *neighbours[MAX_SLOTS];
+  };
 
-class YamlBodyParser {
+  typedef std::vector<std::vector<bool>> ConnectionMatrix;
 
+  typedef std::vector<std::vector<float>> CoordinatesMatrix;
+
+  class YamlBodyParser
+  {
     public:
+    /// \brief
     YamlBodyParser();
 
+    /// \brief
     ~YamlBodyParser();
 
+    /// \brief
     ConnectionMatrix connections();
 
+    /// \brief
     CoordinatesMatrix coordinates();
 
+    /// \brief
     void parseFile(const std::string &filename);
+
+    /// \brief
     void parseCode(const std::string &code);
 
     private:
+    /// \brief
     void init(const YAML::Node &root_genome_node);
 
-    BodyPart *parseModule(BodyPart *parent, const YAML::Node &offspring, const size_t rotation, int x, int y);
+    /// \brief
+    BodyPart *parseModule(BodyPart *parent,
+                          const YAML::Node &offspring,
+                          const size_t rotation,
+                          int x,
+                          int y);
 
-    size_t calculateRotation(const size_t arity, const size_t slot, const size_t parents_rotation) const;
+    /// \brief
+    size_t calculateRotation(const size_t arity,
+                             const size_t slot,
+                             const size_t parents_rotation) const;
 
-    std::tuple<int, int> setCoordinates(const size_t rotation, const int init_x, const int init_y);
+    /// \brief
+    std::tuple<int, int> setCoordinates(const size_t rotation,
+                                        const int init_x,
+                                        const int init_y);
 
-    void setNormalisedCoordinates(BodyPart *module, const int range_x, const int range_y);
+    /// \brief
+    void setNormalisedCoordinates(BodyPart *module,
+                                  const int range_x,
+                                  const int range_y);
 
+    /// \brief
     void setConnections(BodyPart *module);
 
+    /// \brief
     size_t n_actuators_ = 0;
 
+    /// \brief
     int max_x = 0;
+
+    /// \brief
     int max_y = 0;
+
+    /// \brief
     int min_x = 0;
+
+    /// \brief
     int min_y = 0;
 
-    BodyPart* bodyMap_ = nullptr;
+    /// \brief
+    BodyPart *bodyMap_ = nullptr;
 
+    /// \brief
     ConnectionMatrix connections_;
+
+    /// \brief
     CoordinatesMatrix coordinates_;
-
-};
-
+  };
 }
 
 #endif  // PARSEYAMLGENOME_YAMLBODYPARSER_H

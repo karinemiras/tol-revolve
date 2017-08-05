@@ -20,6 +20,9 @@
 #ifndef TOL_PLUGIN_FAKEBRAIN_H_
 #define TOL_PLUGIN_FAKEBRAIN_H_
 
+#include <string>
+#include <vector>
+
 #include <gazebo/gazebo.hh>
 
 #include <revolve/msgs/neural_net.pb.h>
@@ -27,7 +30,6 @@
 
 namespace tol
 {
-
   class FakeBrain
           : public revolve::gazebo::Brain
   {
@@ -59,14 +61,14 @@ namespace tol
     modify(ConstModifyNeuralNetworkPtr &req);
 
     // Mutex for stepping / updating the network§
-    //boost::mutex networkMutex_;
+    // boost::mutex networkMutex_;
 
     unsigned int nActuators_;
     unsigned int nSensors_;
 
     double start_eval_time_;
 
-//private:
+// private:
 //    double cycle_start_time_;
 
     /**
@@ -79,7 +81,6 @@ namespace tol
      */
 //     ::gazebo::transport::SubscriberPtr alterSub_;
   };
-
 } /* namespace tol */
 
 #endif  //  TOL_PLUGIN_FAKEBRAIN_H_

@@ -35,11 +35,11 @@
 
 namespace tol
 {
-
   class NeatExtNN
           : public revolve::gazebo::Brain
-            , private revolve::brain::ConverterSplitBrain<revolve::brain::CPPNConfigPtr,
-                                                          cppneat::GeneticEncodingPtr>
+            , private revolve::brain::ConverterSplitBrain
+                  < revolve::brain::CPPNConfigPtr,
+                    cppneat::GeneticEncodingPtr >
   {
     public:
 
@@ -54,30 +54,31 @@ namespace tol
     NeatExtNN(std::string modelName,
               sdf::ElementPtr node,
               tol::EvaluatorPtr evaluator,
-              const std::vector<revolve::gazebo::MotorPtr> &actuators,
-              const std::vector<revolve::gazebo::SensorPtr> &sensors);
+              const std::vector< revolve::gazebo::MotorPtr > &actuators,
+              const std::vector< revolve::gazebo::SensorPtr > &sensors);
 
     /// \brief Destructor
     virtual ~NeatExtNN();
 
-    using revolve::brain::ConverterSplitBrain<revolve::brain::CPPNConfigPtr,
-                                              cppneat::GeneticEncodingPtr>::update;
+    using revolve::brain::ConverterSplitBrain
+            < revolve::brain::CPPNConfigPtr,
+              cppneat::GeneticEncodingPtr >::update;
 
     /// \brief Update sensors reading, actuators position, and `brain` state
     /// \param[inout] actuators List of actuators
     /// \param[inout] sensors List of sensors
     /// \param[in] t Time value
     /// \param[in] step Time step
-    virtual void update(const std::vector<revolve::gazebo::MotorPtr> &actuators,
-                        const std::vector<revolve::gazebo::SensorPtr> &sensors,
-                        double t,
-                        double step);
+    virtual void
+    update(const std::vector< revolve::gazebo::MotorPtr > &actuators,
+           const std::vector< revolve::gazebo::SensorPtr > &sensors,
+           double t,
+           double step);
 
     static cppneat::NEATLearner::LearningConfiguration
     parseLearningSDF(sdf::ElementPtr brain);
   };
-
-} /* namespace tol */
+}  /* namespace tol */
 
 #endif  //  TOL_PLUGIN_NEAT_CPPN_H_
 

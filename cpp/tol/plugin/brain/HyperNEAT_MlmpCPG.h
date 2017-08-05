@@ -63,14 +63,16 @@ namespace tol
 
   class HyperNEAT_MlmpCPG
           : public rg::Brain
-          , private rb::ConverterSplitBrain<rb::CPPNConfigPtr, cppneat::GeneticEncodingPtr>
+            , private rb::ConverterSplitBrain<rb::CPPNConfigPtr,
+                                              cppneat::GeneticEncodingPtr>
   {
     public:
 
     /// \brief Constructor
     /// \param modelName: name of the model
     /// \param evaluator: pointer to the evaluator that is used
-    /// \param node: the sdf file containing the necessary information to build the network
+    /// \param node: the sdf file containing the necessary information to build
+    /// the network
     /// \param actuators: vector list of robot's actuators
     /// \param sensors: vector list of robot's sensors
     /// \return pointer to the neural network
@@ -83,7 +85,8 @@ namespace tol
     /// \brief Destructor
     virtual ~HyperNEAT_MlmpCPG();
 
-    using rb::ConverterSplitBrain<rb::CPPNConfigPtr, cppneat::GeneticEncodingPtr>::update;
+    using rb::ConverterSplitBrain<rb::CPPNConfigPtr,
+                                  cppneat::GeneticEncodingPtr>::update;
 
     /// \brief Update sensors reading, actuators position, and `brain` state
     /// \param[inout] actuators List of actuators

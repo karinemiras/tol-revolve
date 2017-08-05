@@ -33,7 +33,6 @@
 
 namespace tol
 {
-
   class RLPower
           : public revolve::gazebo::Brain
             , private revolve::brain::RLPower
@@ -70,7 +69,6 @@ namespace tol
     /// \brief
     static Config parseSDF(sdf::ElementPtr brain);
   };
-
 } /* namespace tol */
 
 #endif  //  TOL_PLUGIN_RLPOWER_H_

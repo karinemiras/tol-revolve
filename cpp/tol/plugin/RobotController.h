@@ -28,7 +28,6 @@
 
 namespace tol
 {
-
   class RobotController
           : public revolve::gazebo::RobotController
   {

@@ -385,7 +385,6 @@ static const std::string Spider17_yaml_source = "---\n"
         "                                 id          : Leg33\n"
         "                                 type        : FixedBrick\n"
         "                                 orientation : 0";
-
 }
 
 #endif  //  TESTYAMLBODYPARSER_H

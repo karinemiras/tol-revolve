@@ -35,11 +35,11 @@
 
 namespace tol
 {
-
   class RLPower_CPG
           : public revolve::gazebo::Brain
-            , private revolve::brain::ConverterSplitBrain<std::vector<double>,
-                                                          revolve::brain::PolicyPtr>
+            , private revolve::brain::ConverterSplitBrain
+                  <std::vector<double>,
+                   revolve::brain::PolicyPtr>
   {
     public:
 
@@ -58,7 +58,9 @@ namespace tol
 
     virtual ~RLPower_CPG();
 
-    using revolve::brain::ConverterSplitBrain<std::vector<double>, revolve::brain::PolicyPtr>::update;
+    using revolve::brain::ConverterSplitBrain
+            <std::vector<double>,
+             revolve::brain::PolicyPtr>::update;
 
     /// \brief Update sensors reading, actuators position, and `brain` state
     /// \param[inout] actuators List of actuators
@@ -74,7 +76,6 @@ namespace tol
     static revolve::brain::RLPowerLearner::Config
     parseSDF(sdf::ElementPtr brain);
   };
-
 } /* namespace tol */
 
 #endif  //  TOL_PLUGIN_RLPOWER_CPPN_H_

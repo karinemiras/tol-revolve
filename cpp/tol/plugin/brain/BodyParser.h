@@ -24,6 +24,7 @@
 #include <map>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include <yaml-cpp/yaml.h>
 
@@ -34,7 +35,6 @@
 
 namespace tol
 {
-
   class BodyParser
   {
     struct BodyPart
@@ -50,7 +50,8 @@ namespace tol
     public:
     BodyParser(std::string &yaml_path);
 
-    BodyParser(const std::string &yaml_path, const bool _isMlmp);
+    BodyParser(const std::string &yaml_path,
+               const bool _isMlmp);
 
     ~BodyParser();
 
@@ -64,10 +65,10 @@ namespace tol
 
     std::map<std::string, std::tuple<int, int, int>> IdToCoordinatesMap();
 
-    //returns the coordinates of the actuators matching the order the actuators are given
-    //coordinate of actuators[0] is in sorted_coordinates[0]
-    std::vector<std::pair<int, int>>
-    get_coordinates_sorted(const std::vector<revolve::gazebo::MotorPtr> &actuators);
+    /// \brief returns the coordinates of the actuators matching the order the
+    /// actuators give coordinate of actuators[0] is in sorted_coordinates[0]
+    std::vector<std::pair<int, int>> get_coordinates_sorted(
+            const std::vector<revolve::gazebo::MotorPtr> &actuators);
 
     int InnovationNumber()
     {
@@ -75,7 +76,7 @@ namespace tol
     };
 
     private:
-    //Body parsing
+    // Body parsing
     std::map<std::string, int> part_arity;
     std::vector<BodyPart *> to_parse;
     BodyPart *core;
@@ -92,10 +93,11 @@ namespace tol
 
     void make_empty(BodyPart *part);
 
-    private: void ParseYaml(BodyPart *part,
-                            YAML::Node &node);
+    private:
+    void ParseYaml(BodyPart *part,
+                   YAML::Node &node);
 
-    //Network
+    // Network
 
     /// \brief innovation number
     int innov_number;
@@ -111,9 +113,9 @@ namespace tol
 
     std::vector<cppneat::NeuronGenePtr> output_neurons;
 
-    std::map<cppneat::NeuronGenePtr, std::tuple<int, int, int>> neuron_coordinates;
+    std::map<cppneat::NeuronGenePtr, std::tuple<int, int, int>>
+            neuron_coordinates;
   };
-
 }
 
 #endif  //  TOL_PLUGIN_BODY_H_

@@ -20,45 +20,48 @@
 #ifndef TOL_PLUGIN_HELPER_H_
 #define TOL_PLUGIN_HELPER_H_
 
+#include <string>
 #include <vector>
 
 #include "../Actuator.h"
 #include "../Sensor.h"
 
-namespace tol {
-
-class Helper
+namespace tol
 {
-public:
-    static const std::vector<revolve::brain::ActuatorPtr>
-    createWrapper(const std::vector<revolve::gazebo::MotorPtr> &original);
+  class Helper
+  {
+    public:
+    static const std::vector< revolve::brain::ActuatorPtr > createWrapper(
+            const std::vector< revolve::gazebo::MotorPtr > &original);
 
-    static const std::vector<revolve::brain::SensorPtr>
-    createWrapper(const std::vector<revolve::gazebo::SensorPtr> &original);
+    static const std::vector< revolve::brain::SensorPtr > createWrapper(
+            const std::vector< revolve::gazebo::SensorPtr > &original);
 
-    enum RobotType {
-        spider9,
-        spider13,
-        spider17,
-        gecko7,
-        gecko12,
-        gecko17,
-        snake5,
-        snake7,
-        snake9,
-        babyA,
-        babyB,
-        babyC
+    enum RobotType
+    {
+      spider9,
+      spider13,
+      spider17,
+      gecko7,
+      gecko12,
+      gecko17,
+      snake5,
+      snake7,
+      snake9,
+      babyA,
+      babyB,
+      babyC
     };
 
     static RobotType parseRobotType(const std::string &str);
 
-private:
+    private:
     explicit Helper()
     {}
-};
+  };
 }
 
-std::ostream& operator<<(std::ostream& os, tol::Helper::RobotType type);
+std::ostream &operator<<(std::ostream &os,
+                         tol::Helper::RobotType type);
 
 #endif  //  TOL_PLUGIN_HELPER_H_

@@ -20,43 +20,52 @@
 #ifndef TOL_SUPGBRAINPHOTOTAXIS_H
 #define TOL_SUPGBRAINPHOTOTAXIS_H
 
+#include <string>
+#include <vector>
+
 #include "revolve/gazebo/brain/Brain.h"
 
 #include "brain/SUPGBrainPhototaxis.h"
 
 #include "../FakeLightSensor.h"
 
-namespace tol {
-
-class SUPGBrainPhototaxis : public revolve::gazebo::Brain
-                          , private revolve::brain::SUPGBrainPhototaxis
+namespace tol
 {
-public:
-    SUPGBrainPhototaxis(const std::string &robot_name,
-                        revolve::brain::EvaluatorPtr evaluator,
-                        double light_radius_distance,
-                        const std::vector< std::vector< float > >& neuron_coordinates,
-                        const std::vector< revolve::gazebo::MotorPtr >& actuators,
-                        std::vector< revolve::gazebo::SensorPtr >& sensors);
+  class SUPGBrainPhototaxis
+          : public revolve::gazebo::Brain
+            , private revolve::brain::SUPGBrainPhototaxis
+  {
+    public:
+    SUPGBrainPhototaxis(
+            const std::string &robot_name,
+            revolve::brain::EvaluatorPtr evaluator,
+            double light_radius_distance,
+            const std::vector< std::vector< float > > &neuron_coordinates,
+            const std::vector< revolve::gazebo::MotorPtr > &actuators,
+            std::vector< revolve::gazebo::SensorPtr > &sensors);
+
     virtual ~SUPGBrainPhototaxis();
 
+    using revolve::brain::SUPGBrainPhototaxis::update;
     void update(const std::vector< revolve::gazebo::MotorPtr > &motors,
                 const std::vector< revolve::gazebo::SensorPtr > &sensors,
-                double t, double step) override;
+                double t,
+                double step) override;
 
     void updateRobotPosition(ignition::math::Pose3d &robot_position);
 
-private: // methods
-    static const std::vector<revolve::brain::SensorPtr>
-    createEnhancedSensorWrapper(const std::vector<revolve::gazebo::SensorPtr> &original);
+    private:  // methods
+    static const std::vector< revolve::brain::SensorPtr >
+    createEnhancedSensorWrapper(
+            const std::vector< revolve::gazebo::SensorPtr > &original);
 
+    private:
+    boost::shared_ptr< FakeLightSensor > light_sensor_left;
 
-private:
-    boost::shared_ptr<FakeLightSensor> light_sensor_left,
-                                       light_sensor_right;
-    ignition::math::Pose3<double> robot_position;
-};
+    boost::shared_ptr< FakeLightSensor > light_sensor_right;
 
+    ignition::math::Pose3< double > robot_position;
+  };
 }
 
 #endif  //  TOL_SUPGBRAINPHOTOTAXIS_H

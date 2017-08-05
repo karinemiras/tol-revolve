@@ -20,43 +20,39 @@
 #ifndef TOL_PLUGIN_SENSOR_H_
 #define TOL_PLUGIN_SENSOR_H_
 
+#include <string>
+
 #include "brain/Sensor.h"
 #include "revolve/gazebo/sensors/Sensor.h"
 
-namespace tol {
-
-class Sensor
-        : public revolve::brain::Sensor
+namespace tol
 {
-
-public:
+  class Sensor
+          : public revolve::brain::Sensor
+  {
+    public:
     explicit Sensor(revolve::gazebo::SensorPtr sensorPtr)
-            :
-            sensorPtr(sensorPtr)
+            : sensorPtr(sensorPtr)
     {}
 
-    virtual unsigned int
-    inputs() const
+    virtual unsigned int inputs() const
     {
       return sensorPtr->inputs();
     }
 
-    virtual void
-    read(double *input_vector)
+    virtual void read(double *input_vector)
     {
       sensorPtr->read(input_vector);
     }
 
-    virtual std::string
-    sensorId() const
+    virtual std::string sensorId() const
     {
       return sensorPtr->sensorId();
     }
 
-private:
+    private:
     revolve::gazebo::SensorPtr sensorPtr;
-};
-
+  };
 }
 
 #endif  //  TOL_PLUGIN_SENSOR_H_

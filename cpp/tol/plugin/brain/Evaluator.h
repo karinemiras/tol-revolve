@@ -24,21 +24,18 @@
 
 #include <brain/Evaluator.h>
 
-namespace tol {
-
-class Evaluator
-        : public revolve::brain::Evaluator
+namespace tol
 {
-public:
-    virtual double
-    fitness();
+  class Evaluator
+          : public revolve::brain::Evaluator
+  {
+    public:
+    virtual double fitness();
 
-    virtual void
-    start();
-};
+    virtual void start();
+  };
 
-typedef boost::shared_ptr<tol::Evaluator> EvaluatorPtr;
-
+  typedef boost::shared_ptr<tol::Evaluator> EvaluatorPtr;
 }
 
 #endif  //  TOL_PLUGIN_EVALUATOR_H_

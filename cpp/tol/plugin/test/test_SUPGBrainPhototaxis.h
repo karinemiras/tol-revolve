@@ -20,22 +20,29 @@
 #ifndef TESTSUPGBRAINPHOTOTAXIS_H
 #define TESTSUPGBRAINPHOTOTAXIS_H
 
+#include <vector>
+
 #include "../brain/SUPGBrainPhototaxis.h"
 
-class testSUPGBrainPhototaxis : private tol::SUPGBrainPhototaxis
+class testSUPGBrainPhototaxis
+        : private tol::SUPGBrainPhototaxis
 {
-public:
-    testSUPGBrainPhototaxis(revolve::brain::EvaluatorPtr evaluator,
-                            std::function<revolve::brain::FakeLightSensor *(std::vector<float> coordinates)> _light_constructor_left,
-                            std::function<revolve::brain::FakeLightSensor *(std::vector<float> coordinates)> _light_constructor_right,
-                            double light_radius_distance,
-                            const std::vector< std::vector< float > > &neuron_coordinates,
-                            const std::vector< revolve::gazebo::MotorPtr >& motors,
-                            const std::vector< revolve::gazebo::SensorPtr >& sensors);
+  public:
+  testSUPGBrainPhototaxis(
+          revolve::brain::EvaluatorPtr evaluator,
+          std::function< revolve::brain::FakeLightSensor *(
+                  std::vector< float > coordinates) > _light_constructor_left,
+          std::function< revolve::brain::FakeLightSensor *(
+                  std::vector< float > coordinates) > _light_constructor_right,
+          double light_radius_distance,
+          const std::vector< std::vector< float > > &neuron_coordinates,
+          const std::vector< revolve::gazebo::MotorPtr > &motors,
+          const std::vector< revolve::gazebo::SensorPtr > &sensors);
 
-    void update(const std::vector< revolve::gazebo::MotorPtr >& motors,
-                const std::vector< revolve::gazebo::SensorPtr >& sensors,
-                double t, double step);
+  void update(const std::vector< revolve::gazebo::MotorPtr > &motors,
+              const std::vector< revolve::gazebo::SensorPtr > &sensors,
+              double t,
+              double step);
 };
 
 #endif  //  TESTSUPGBRAINPHOTOTAXIS_H

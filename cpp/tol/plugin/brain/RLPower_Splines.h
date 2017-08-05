@@ -40,11 +40,11 @@
 
 namespace tol
 {
-
   class RLPower_Splines
           : public revolve::gazebo::Brain
-            , private revolve::brain::ConverterSplitBrain<revolve::brain::PolicyPtr,
-                                                          revolve::brain::PolicyPtr>
+            , private revolve::brain::ConverterSplitBrain
+                  < revolve::brain::PolicyPtr,
+                    revolve::brain::PolicyPtr >
   {
     public:
 
@@ -58,29 +58,31 @@ namespace tol
     RLPower_Splines(std::string model_name,
                     sdf::ElementPtr brain,
                     tol::EvaluatorPtr evaluator,
-                    std::vector<revolve::gazebo::MotorPtr> &actuators,
-                    std::vector<revolve::gazebo::SensorPtr> &sensors);
+                    std::vector< revolve::gazebo::MotorPtr > &actuators,
+                    std::vector< revolve::gazebo::SensorPtr > &sensors);
 
     /// \brief Destructor
     virtual ~RLPower_Splines();
 
-    using revolve::brain::ConverterSplitBrain<revolve::brain::PolicyPtr,
-                                              revolve::brain::PolicyPtr>::update;
+    using revolve::brain::ConverterSplitBrain
+            < revolve::brain::PolicyPtr,
+              revolve::brain::PolicyPtr >::update;
+
     /// \brief Update sensors reading, actuators position, and `brain` state
     /// \param[inout] actuators List of actuators
     /// \param[inout] sensors List of sensors
     /// \param[in] t Time value
     /// \param[in] step Time step
-    virtual void update(const std::vector<revolve::gazebo::MotorPtr> &actuators,
-                        const std::vector<revolve::gazebo::SensorPtr> &sensors,
-                        double t,
-                        double step);
+    virtual void
+    update(const std::vector< revolve::gazebo::MotorPtr > &actuators,
+           const std::vector< revolve::gazebo::SensorPtr > &sensors,
+           double t,
+           double step);
 
     /// \brief
     static revolve::brain::RLPowerLearner::Config
     parseSDF(sdf::ElementPtr brain);
   };
-
 } /* namespace tol */
 
 #endif  //  TOL_PLUGIN_RLPOWER_SPLINES_H_
