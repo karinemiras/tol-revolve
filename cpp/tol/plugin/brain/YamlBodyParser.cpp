@@ -188,8 +188,8 @@ namespace tol
                   this->parseModule(module,
                                     offspring["children"][parents_slot],
                                     offsprings_rotation,
-                                    offsprings_y,
-                                    offsprings_x);
+                                    offsprings_x,
+                                    offsprings_y);
         }
       }
     }

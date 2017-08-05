@@ -30,14 +30,14 @@
 #include "test_YAMLBodyParser.h"
 
 void testRobot(const std::string &yaml_source,
-               const std::vector<std::vector<bool>> &connections_target,
-               const std::vector<std::vector<float>> &coordinates_target)
+               const std::vector< std::vector< bool>> &connections_target,
+               const std::vector< std::vector< float>> &coordinates_target)
 {
   tol::YamlBodyParser *parser = new tol::YamlBodyParser();
   parser->parseCode(yaml_source);
 
   // Check connections
-  std::vector<std::vector<bool>> connections = parser->connections();
+  std::vector< std::vector< bool>> connections = parser->connections();
   BOOST_CHECK_EQUAL(connections.size(), connections_target.size());
   for (size_t i = 0; i < connections.size(); i++)
   {
@@ -49,7 +49,7 @@ void testRobot(const std::string &yaml_source,
   }
 
   // Check coordinates
-  std::vector<std::vector<float>> coordinates = parser->coordinates();
+  std::vector< std::vector< float>> coordinates = parser->coordinates();
   BOOST_CHECK_EQUAL(coordinates.size(), coordinates_target.size());
   for (size_t i = 0; i < coordinates.size(); i++)
   {
@@ -65,8 +65,8 @@ BOOST_AUTO_TEST_CASE(yaml_body_parser_just_runs)
 {
   tol::YamlBodyParser *parser = new tol::YamlBodyParser();
   parser->parseFile("../res/robots/spider9.yaml");
-  std::vector<std::vector<bool>> connections = parser->connections();
-  std::vector<std::vector<float>> coordinates = parser->coordinates();
+  std::vector< std::vector< bool>> connections = parser->connections();
+  std::vector< std::vector< float>> coordinates = parser->coordinates();
 }
 
 BOOST_AUTO_TEST_CASE(yaml_body_parser_spider)
@@ -161,27 +161,27 @@ BOOST_AUTO_TEST_CASE(yaml_body_parser_spider)
                   {_ _ _ _ _ _ _ _ _ _ _ _ _ _ X _},
 #undef X
 #undef _
-                  },
-                  {
-                          // Leg00Joint Leg01Joint Leg02Joint
-                          {-.125f, 0},
-                          {-.375f, 0},
-                          {-.625f, 0},
-                          {-.875f, 0},
-                          // Leg10Joint Leg11Joint Leg12Joint
-                          {.125f, 0},
-                          {.375f, 0},
-                          {.625f, 0},
-                          {.875f, 0},
-                          // Leg20Joint Leg21Joint Leg22Joint
-                          {0, -.125f},
-                          {0, -.375f},
-                          {0, -.625f},
-                          {0, -.875f},
-                          // Leg30Joint Leg31Joint Leg32Joint
-                          {0, .125f},
-                          {0, .375f},
-                          {0, .625f},
-                          {0, .875f},
-                  });
-          }
+          },
+            {
+                    // Leg00Joint Leg01Joint Leg02Joint
+                    {-.125f, 0},
+                    {-.375f, 0},
+                    {-.625f, 0},
+                    {-.875f, 0},
+                    // Leg10Joint Leg11Joint Leg12Joint
+                    {.125f,  0},
+                    {.375f,  0},
+                    {.625f,  0},
+                    {.875f,  0},
+                    // Leg20Joint Leg21Joint Leg22Joint
+                    {0,      -.125f},
+                    {0,      -.375f},
+                    {0,      -.625f},
+                    {0,      -.875f},
+                    // Leg30Joint Leg31Joint Leg32Joint
+                    {0,      .125f},
+                    {0,      .375f},
+                    {0,      .625f},
+                    {0,      .875f},
+            });
+}
