@@ -21,12 +21,10 @@
 
 using namespace tol;
 
-double
-Evaluator::fitness()
+double Evaluator::fitness()
 {
 }
 
-void
-Evaluator::start()
+void Evaluator::start()
 {
 }
