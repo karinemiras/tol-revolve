@@ -12,14 +12,11 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *
-* Description: TODO: <Add brief description about file purpose>
+* Description: World controller for now just registers Revolve's world
+*              controller
 * Author: TODO <Add proper author>
 *
 */
-
-/**
- * World controller for now just registers Revolve's world controller.
- */
 
 #include <revolve/gazebo/plugin/WorldController.h>
 

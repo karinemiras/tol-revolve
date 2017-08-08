@@ -29,11 +29,13 @@ using namespace tol;
 GenericLearnerBrain::GenericLearnerBrain(
         std::unique_ptr< revolve::brain::BaseLearner > learner)
         : revolve::brain::GenericLearnerBrain(std::move(learner))
-{}
+{
+}
 
 GenericLearnerBrain::GenericLearnerBrain(revolve::brain::BaseLearner *learner)
         : revolve::brain::GenericLearnerBrain(learner)
-{}
+{
+}
 
 void GenericLearnerBrain::update(
         const std::vector< revolve::gazebo::MotorPtr > &actuators,

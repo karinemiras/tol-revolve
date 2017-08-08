@@ -33,7 +33,8 @@ namespace tol
     public:
     explicit Sensor(revolve::gazebo::SensorPtr sensorPtr)
             : sensorPtr(sensorPtr)
-    {}
+    {
+    }
 
     virtual unsigned int inputs() const
     {

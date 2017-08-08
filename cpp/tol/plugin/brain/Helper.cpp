@@ -107,11 +107,8 @@ Helper::RobotType Helper::parseRobotType(const std::string &value)
   }
 
   // default value
-  std::cerr
-          << "Impossible to parse robot type ("
-          << value
-          << ")\nThrowing exception!"
-          << std::endl;
+  std::cerr << "Impossible to parse robot type (" << value
+            << ")\nThrowing exception!" << std::endl;
   throw std::invalid_argument("robot type impossible to parse");
 }
 

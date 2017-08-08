@@ -60,11 +60,11 @@ namespace tol
             const std::vector< revolve::gazebo::SensorPtr > &original);
 
     private:
-    boost::shared_ptr< FakeLightSensor > light_sensor_left;
+    boost::shared_ptr< FakeLightSensor > lightSensorLeft_;
 
-    boost::shared_ptr< FakeLightSensor > light_sensor_right;
+    boost::shared_ptr< FakeLightSensor > lightSensorRight_;
 
-    ignition::math::Pose3< double > robot_position;
+    ignition::math::Pose3< double > robotPosition_;
   };
 }
 

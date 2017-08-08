@@ -52,11 +52,10 @@ SUPGBrain::~SUPGBrain()
 {
 }
 
-void tol::SUPGBrain::update(
-        const std::vector< revolve::gazebo::MotorPtr > &motors,
-        const std::vector< revolve::gazebo::SensorPtr > &sensors,
-        double t,
-        double step)
+void SUPGBrain::update(const std::vector< revolve::gazebo::MotorPtr > &motors,
+                       const std::vector< revolve::gazebo::SensorPtr > &sensors,
+                       double t,
+                       double step)
 {
   revolve::brain::SUPGBrain::update(
           Helper::createWrapper(motors),

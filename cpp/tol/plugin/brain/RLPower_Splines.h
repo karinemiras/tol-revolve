@@ -57,9 +57,8 @@ namespace tol
     /// \return pointer to the RLPower class object
     RLPower_Splines(std::string model_name,
                     sdf::ElementPtr brain,
-                    tol::EvaluatorPtr evaluator,
-                    std::vector< revolve::gazebo::MotorPtr > &actuators,
-                    std::vector< revolve::gazebo::SensorPtr > &sensors);
+                    EvaluatorPtr evaluator,
+                    std::vector< revolve::gazebo::MotorPtr > &actuators);
 
     /// \brief Destructor
     virtual ~RLPower_Splines();

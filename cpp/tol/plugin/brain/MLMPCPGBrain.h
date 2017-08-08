@@ -27,11 +27,14 @@
 #include "Evaluator.h"
 #include "revolve/gazebo/brain/Brain.h"
 
+namespace rb  = revolve::brain;
+namespace rg  = revolve::gazebo;
+
 namespace tol
 {
   class MlmpCPGBrain
-          : public revolve::gazebo::Brain
-            , private revolve::brain::CPGBrain
+          : public rg::Brain
+            , private rb::CPGBrain
   {
     public:
     /// \brief Constructor
@@ -43,7 +46,7 @@ namespace tol
     /// \brief Destructor
     virtual ~MlmpCPGBrain();
 
-    using revolve::brain::CPGBrain::update;
+    using rb::CPGBrain::update;
 
     /// \brief Update sensors reading, actuators position, and `brain` state
     /// \param[inout] actuators List of actuators
@@ -51,8 +54,8 @@ namespace tol
     /// \param[in] t Time value
     /// \param[in] step Time step
     virtual void update(
-            const std::vector< revolve::gazebo::MotorPtr > &actuators,
-            const std::vector< revolve::gazebo::SensorPtr > &sensors,
+            const std::vector< rg::MotorPtr > &actuators,
+            const std::vector< rg::SensorPtr > &sensors,
             double t,
             double step) override;
   };
