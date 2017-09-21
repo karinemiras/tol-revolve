@@ -1,0 +1,181 @@
+body:
+  children:
+    0:
+      id: bodygen-9
+      label: ''
+      orientation: 0
+      params:
+        blue: 0.4560333565768647
+        green: 0.8936677105639306
+        red: 0.8587095597626769
+      slot: 1
+      type: FixedBrick
+    2:
+      children:
+        1:
+          children:
+            0:
+              children:
+                1:
+                  children:
+                    0:
+                      id: bodygen-16
+                      label: ''
+                      orientation: 0
+                      params:
+                        blue: 0.4560333565768647
+                        green: 0.8936677105639306
+                        red: 0.8587095597626769
+                      slot: 1
+                      type: FixedBrick
+                  id: bodygen-15
+                  label: ''
+                  orientation: 0
+                  params:
+                    blue: 0.4560333565768647
+                    green: 0.8936677105639306
+                    red: 0.8587095597626769
+                  slot: 3
+                  type: FixedBrick
+                2:
+                  id: bodygen-11
+                  label: ''
+                  orientation: 270
+                  params:
+                    blue: 0.4560333565768647
+                    green: 0.8936677105639306
+                    red: 0.8587095597626769
+                  slot: 1
+                  type: ActiveHinge
+              id: bodygen-7
+              label: ''
+              orientation: 0
+              params:
+                blue: 0.4560333565768647
+                green: 0.8936677105639306
+                red: 0.8587095597626769
+              slot: 0
+              type: FixedBrick
+            1:
+              children:
+                3:
+                  id: bodygen-14
+                  label: ''
+                  orientation: 270
+                  params:
+                    blue: 0.4560333565768647
+                    green: 0.8936677105639306
+                    red: 0.8587095597626769
+                  slot: 1
+                  type: ActiveHinge
+              id: bodygen-8
+              label: ''
+              orientation: 0
+              params:
+                blue: 0.4560333565768647
+                green: 0.8936677105639306
+                red: 0.8587095597626769
+              slot: 0
+              type: FixedBrick
+            3:
+              children:
+                0:
+                  id: bodygen-12
+                  label: ''
+                  orientation: 0
+                  params:
+                    blue: 0.4560333565768647
+                    green: 0.8936677105639306
+                    red: 0.8587095597626769
+                  slot: 1
+                  type: ActiveHinge
+              id: bodygen-6
+              label: ''
+              orientation: 90
+              params:
+                blue: 0.4560333565768647
+                green: 0.8936677105639306
+                red: 0.8587095597626769
+              slot: 1
+              type: ActiveHinge
+          id: bodygen-5
+          label: ''
+          orientation: 270
+          params:
+            blue: 0.4560333565768647
+            green: 0.8936677105639306
+            red: 0.8587095597626769
+          slot: 2
+          type: FixedBrick
+      id: bodygen-1
+      label: ''
+      orientation: 90
+      params:
+        blue: 0.4560333565768647
+        green: 0.8936677105639306
+        red: 0.8587095597626769
+      slot: 0
+      type: ActiveHinge
+    3:
+      children:
+        1:
+          children:
+            1:
+              children:
+                1:
+                  children:
+                    1:
+                      id: bodygen-13
+                      label: ''
+                      orientation: 180
+                      params:
+                        blue: 0.4560333565768647
+                        green: 0.8936677105639306
+                        red: 0.8587095597626769
+                      slot: 1
+                      type: ActiveHinge
+                  id: bodygen-10
+                  label: ''
+                  orientation: 180
+                  params:
+                    blue: 0.4560333565768647
+                    green: 0.8936677105639306
+                    red: 0.8587095597626769
+                  slot: 0
+                  type: ActiveHinge
+              id: bodygen-4
+              label: ''
+              orientation: 0
+              params:
+                blue: 0.4560333565768647
+                green: 0.8936677105639306
+                red: 0.8587095597626769
+              slot: 0
+              type: ActiveHinge
+          id: bodygen-3
+          label: ''
+          orientation: 180
+          params:
+            blue: 0.4560333565768647
+            green: 0.8936677105639306
+            red: 0.8587095597626769
+          slot: 0
+          type: ActiveHinge
+      id: bodygen-2
+      label: ''
+      orientation: 0
+      params:
+        blue: 0.4560333565768647
+        green: 0.8936677105639306
+        red: 0.8587095597626769
+      slot: 0
+      type: ActiveHinge
+  id: bodygen-root
+  label: ''
+  orientation: 0
+  params:
+    blue: 0.4560333565768647
+    green: 0.8936677105639306
+    red: 0.8587095597626769
+  type: Core
+id: 80

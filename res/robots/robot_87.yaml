@@ -1,0 +1,31 @@
+body:
+  children:
+    2:
+      id: bodygen-1
+      label: ''
+      orientation: 90
+      params:
+        blue: 0.6265517762867475
+        green: 0.0597556525107833
+        red: 0.8175617521120605
+      slot: 1
+      type: ActiveHinge
+    3:
+      id: bodygen-2
+      label: ''
+      orientation: 0
+      params:
+        blue: 0.6265517762867475
+        green: 0.0597556525107833
+        red: 0.8175617521120605
+      slot: 2
+      type: FixedBrick
+  id: bodygen-root
+  label: ''
+  orientation: 0
+  params:
+    blue: 0.6265517762867475
+    green: 0.0597556525107833
+    red: 0.8175617521120605
+  type: Core
+id: 87
