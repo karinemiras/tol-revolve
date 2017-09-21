@@ -31,10 +31,21 @@
 #include "revolve/gazebo/motors/Motor.h"
 #include "revolve/gazebo/sensors/Sensor.h"
 
+#include "brain/learner/cppneat/CPPNNeuron.h"
 #include "brain/learner/cppneat/GeneticEncoding.h"
 
 namespace tol
 {
+  const std::string CORE = "Core";
+
+  const std::string A_HINGE = "ActiveHinge";
+
+  const std::string P_HINGE = "PassiveHinge";
+
+  const std::string BRICK = "FixedBrick";
+
+  const size_t MAX_SLOTS = 4;
+
   class BodyParser
   {
     struct BodyPart
@@ -48,10 +59,7 @@ namespace tol
       cppneat::NeuronGenePtr differential_oscillator[3];
     };
     public:
-    BodyParser(std::string &yaml_path);
-
-    BodyParser(const std::string &yaml_path,
-               const bool _isMlmp);
+    BodyParser(const std::string &_yamlPath);
 
     ~BodyParser();
 
@@ -76,45 +84,45 @@ namespace tol
     };
 
     private:
-    // Body parsing
-    std::map<std::string, int> part_arity;
-    std::vector<BodyPart *> to_parse;
-    BodyPart *core;
-    std::vector<BodyPart *> delete_later;
-    std::map<BodyPart *, YAML::Node> body_to_node;
-
-    static void SetCoordinates(int x,
-                               int y,
-                               BodyPart *part);
+    static std::tuple< int, int > setCoordinates(const size_t _rotation,
+                                                 const int _init_x,
+                                                 const int _init_y);
 
     static int CalculateRotation(int arity,
                                  int slot,
                                  int parent_rotation);
 
-    void make_empty(BodyPart *part);
+    void InitPart(BodyPart *_part);
 
     private:
-    void ParseYaml(BodyPart *part,
-                   YAML::Node &node);
+    void ParseYaml(BodyPart *_module,
+                   YAML::Node &_yaml);
+
+    void initParser(const YAML::Node &_yaml);
 
     // Network
 
     /// \brief innovation number
     int innov_number;
 
-    /// \brief Is controller architecture MLMP; used as a small hack
-    bool isMlmp_ = false;
+    std::vector<cppneat::NeuronGenePtr> neurons_;
 
-    std::vector<cppneat::ConnectionGenePtr> connections;
+    std::vector<cppneat::NeuronGenePtr> inputNeurons_;
 
-    std::vector<cppneat::NeuronGenePtr> neurons;
+    std::vector<cppneat::NeuronGenePtr> outputNeurons_;
 
-    std::vector<cppneat::NeuronGenePtr> input_neurons;
+    std::vector<cppneat::ConnectionGenePtr> connections_;
 
-    std::vector<cppneat::NeuronGenePtr> output_neurons;
+    std::map<cppneat::NeuronGenePtr, std::tuple<int, int, int>> coordinates_;
 
-    std::map<cppneat::NeuronGenePtr, std::tuple<int, int, int>>
-            neuron_coordinates;
+    // Body parsing
+    std::map<std::string, int> arity_;
+    std::vector<BodyPart *> toParse_;
+    std::vector<BodyPart *> toDelete_;
+    std::map<BodyPart *, YAML::Node> bodyToNode_;
+
+    /// \brief A tree data structure representing a robot
+    BodyPart *bodyMap_ = nullptr;
   };
 }
 

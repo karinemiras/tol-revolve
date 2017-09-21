@@ -18,9 +18,10 @@
 */
 
 #include <map>
-#include <utility>
 #include <string>
 #include <vector>
+
+#include "brain/learner/cppneat/CPPNNeuron.h"
 
 #include "BodyParser.h"
 
@@ -28,55 +29,49 @@ namespace rg = revolve::gazebo;
 
 using namespace tol;
 
-BodyParser::BodyParser(std::string &yaml_path)
-        : BodyParser(yaml_path, false)
-{
-}
-
-BodyParser::BodyParser(const std::string &yaml_path,
-                       const bool _isMlmp)
+BodyParser::BodyParser(const std::string &_yamlPath)
         : innov_number(0)
 {
-  this->isMlmp_ = _isMlmp;
-
-  part_arity["Core"] = 4;
-  part_arity["CoreWithMics"] = 4;
-  part_arity["FixedBrick"] = 4;
-  part_arity["ActiveHinge"] = 2;
-  part_arity["Hinge"] = 2;
-  part_arity["ParametricBarJoint"] = 2;
-
-  YAML::Node policy_file = YAML::LoadFile(yaml_path);
-
-  if (policy_file.IsNull())
+  YAML::Node yaml_genome = YAML::LoadFile(_yamlPath);
+  if (yaml_genome.IsNull())
   {
-    std::cout << "Failed to load the policy file." << std::endl;
+    std::cerr << "Failed to load a YAML 'genome' file." << std::endl;
     return;
   }
+  this->initParser(yaml_genome);
+}
+
+void BodyParser::initParser(const YAML::Node &_yaml)
+{
+  this->arity_["Core"] = 4;
+  this->arity_["CoreWithMics"] = 4;
+  this->arity_["FixedBrick"] = 4;
+  this->arity_["ActiveHinge"] = 2;
+  this->arity_["Hinge"] = 2;
+  this->arity_["ParametricBarJoint"] = 2;
 
   // read body structure from yaml file
   // includes adding the rotation of the parts and their coordinates
-  core = new BodyPart();
-  to_parse.push_back(core);
-  body_to_node[core] = policy_file["body"];
-  make_empty(core);
-  core->rotation = 0;
-  SetCoordinates(0, 0, core);
+  this->bodyMap_ = new BodyPart();
+  this->toParse_.push_back(this->bodyMap_);
+  this->bodyToNode_[bodyMap_] = _yaml["body"];
+  this->InitPart(bodyMap_);
+
   BodyPart *cur_part;
-  while (!to_parse.empty())
+  while (not this->toParse_.empty())
   {
-    cur_part = to_parse.back();
-    to_parse.pop_back();
-    this->ParseYaml(cur_part, body_to_node[cur_part]);
+    cur_part = this->toParse_.back();
+    this->toParse_.pop_back();
+    this->ParseYaml(cur_part, this->bodyToNode_[cur_part]);
   }
 
   // couple neighbouring differential oscillators
   // here all oscillators must already be initialised
-  to_parse.push_back(core);
-  while (!to_parse.empty())
+  this->toParse_.push_back(this->bodyMap_);
+  while (not this->toParse_.empty())
   {
-    cur_part = to_parse.back();
-    to_parse.pop_back();
+    cur_part = this->toParse_.back();
+    this->toParse_.pop_back();
     if (cur_part->type != "ActiveHinge")
     {
       bool neighbour_is_motor[4];
@@ -102,7 +97,7 @@ BodyParser::BodyParser(const std::string &yaml_path,
                             0,
                             ++innov_number,
                             true));
-            connections.push_back(first_to_first);
+            this->connections_.push_back(first_to_first);
           }
         }
       }
@@ -110,18 +105,18 @@ BodyParser::BodyParser(const std::string &yaml_path,
 
     // add neighbours to queue
     // watch out for parent
-    if (cur_part == core)
+    if (cur_part == this->bodyMap_)
     {
       if (cur_part->neighbours[0].name != "empty")
       {
-        to_parse.push_back(&(cur_part->neighbours[0]));
+        this->toParse_.push_back(&(cur_part->neighbours[0]));
       }
     }
     for (int i = 1; i < 4; i++)
     {
       if (cur_part->neighbours[i].name != "empty")
       {
-        to_parse.push_back(&(cur_part->neighbours[i]));
+        this->toParse_.push_back(&(cur_part->neighbours[i]));
       }
     }
   }
@@ -133,31 +128,31 @@ BodyParser::BodyParser(const std::string &yaml_path,
     std::map< std::string, double > empty;
 
     cppneat::NeuronPtr neuron(
-            new cppneat::Neuron(core->name + "-in-" + std::to_string(i),
+            new cppneat::Neuron(bodyMap_->name + "-in-" + std::to_string(i),
                                 cppneat::Neuron::INPUT_LAYER,
                                 cppneat::Neuron::INPUT,
                                 empty));
     cppneat::NeuronGenePtr neuron_gene(
             new cppneat::NeuronGene(neuron, ++innov_number, true));
-    neurons.push_back(neuron_gene);
-    input_neurons.push_back(neuron_gene);
+    this->neurons_.push_back(neuron_gene);
+    this->inputNeurons_.push_back(neuron_gene);
     std::tuple< int, int, int > coord(0, 0, 0);
-    neuron_coordinates[neuron_gene] = coord;
+    this->coordinates_[neuron_gene] = coord;
 
     // connect to neighbouring oscillators
     for (int i = 0; i < 4; i++)
     {
-      if (core->neighbours[i].type == "ActiveHinge")
+      if (this->bodyMap_->neighbours[i].type == "ActiveHinge")
       {
         cppneat::ConnectionGenePtr input_to_first(
                 new cppneat::ConnectionGene(
-                        core->neighbours[i].differential_oscillator[0]
+                        bodyMap_->neighbours[i].differential_oscillator[0]
                                 ->getInnovNumber(),
                         neuron_gene->getInnovNumber(),
                         0,
                         ++innov_number,
                         true));
-        connections.push_back(input_to_first);
+        this->connections_.push_back(input_to_first);
       }
     }
   }
@@ -165,18 +160,18 @@ BodyParser::BodyParser(const std::string &yaml_path,
 
 BodyParser::~BodyParser()
 {
-  for (BodyPart *todel : delete_later)
+  for (BodyPart *todel : this->toDelete_)
   {
     delete[] todel;
   }
-  delete core;
+  delete this->bodyMap_;
 }
 
 cppneat::GeneticEncodingPtr
 BodyParser::CoupledCpgNetwork()
 {
   cppneat::GeneticEncodingPtr ret(
-          new cppneat::GeneticEncoding(neurons, connections));
+          new cppneat::GeneticEncoding(this->neurons_, this->connections_));
   return ret;
 }
 
@@ -208,20 +203,20 @@ BodyParser::InputOutputMap(const std::vector< rg::MotorPtr > &actuators,
       outputCountMap[partId]++;
 
       size_t j;
-      for (j = 0; j < output_neurons.size(); j++)
+      for (j = 0; j < this->outputNeurons_.size(); j++)
       {
-        if (output_neurons[j]->neuron->neuron_id == neuronId.str())
+        if (this->outputNeurons_[j]->neuron->neuron_id == neuronId.str())
         {
           break;
         }
       }
-      if (j == output_neurons.size())
-      {
-        std::cerr << "Required output neuron " << neuronId.str()
-                  << " for motor could not be located" << std::endl;
-        throw std::runtime_error("Robot brain error");
-      }
-      output_map[output_neurons[j]->getInnovNumber()] = p++;
+//      if (j == output_neurons.size())
+//      {
+//        std::cerr << "Required output neuron " << neuronId.str()
+//                  << " for motor could not be located" << std::endl;
+//        throw std::runtime_error("Robot brain error");
+//      }
+      output_map[this->outputNeurons_[j]->getInnovNumber()] = p++;
     }
   }
 
@@ -250,20 +245,20 @@ BodyParser::InputOutputMap(const std::vector< rg::MotorPtr > &actuators,
       inputCountMap[partId]++;
 
       size_t j;
-      for (j = 0; j < input_neurons.size(); j++)
+      for (j = 0; j < this->inputNeurons_.size(); j++)
       {
-        if (input_neurons[j]->neuron->neuron_id == neuronId.str())
+        if (this->inputNeurons_[j]->neuron->neuron_id == neuronId.str())
         {
           break;
         }
       }
-      if (j == input_neurons.size())
+      if (j == this->inputNeurons_.size())
       {
         std::cerr << "Required input neuron " << neuronId.str()
                   << " for sensor could not be located" << std::endl;
         throw std::runtime_error("Robot brain error");
       }
-      input_map[input_neurons[j]->getInnovNumber()] = p++;
+      input_map[this->inputNeurons_[j]->getInnovNumber()] = p++;
     }
   }
   return std::make_pair(input_map, output_map);
@@ -351,7 +346,7 @@ std::map< std::string, std::tuple< int, int, int > >
 BodyParser::IdToCoordinatesMap()
 {
   std::map< std::string, std::tuple< int, int, int > > ret;
-  for (auto pair : neuron_coordinates)
+  for (auto pair : this->coordinates_)
   {
     ret[pair.first->neuron->neuron_id] = pair.second;
   }
@@ -383,43 +378,68 @@ std::vector< std::pair< int, int > > BodyParser::get_coordinates_sorted(
       outputCountMap[partId]++;
 
       size_t j;
-      for (j = 0; j < output_neurons.size(); j++)
+      for (j = 0; j < this->outputNeurons_.size(); j++)
       {
-        if (output_neurons[j]->neuron->neuron_id == neuronId.str())
+        if (this->outputNeurons_[j]->neuron->neuron_id == neuronId.str())
         {
           break;
         }
       }
-      if (j == output_neurons.size())
+      if (j == this->outputNeurons_.size())
       {
         std::cerr << "Required output neuron " << neuronId.str()
                   << " for motor could not be located" << std::endl;
         throw std::runtime_error("Robot brain error");
       }
       ret.push_back(std::pair< int, int >(
-              std::get< 0 >(neuron_coordinates[output_neurons[j]]),
-              std::get< 1 >(neuron_coordinates[output_neurons[j]])));
+              std::get< 0 >(this->coordinates_[this->outputNeurons_[j]]),
+              std::get< 1 >(this->coordinates_[this->outputNeurons_[j]])));
     }
   }
   return ret;
 }
 
-void BodyParser::SetCoordinates(int x,
-                                int y,
-                                BodyPart *part)
+std::tuple< int, int > BodyParser::setCoordinates(const size_t _rotation,
+                                                  const int _init_x,
+                                                  const int _init_y)
 {
-  part->coordinates[0] = x;
-  part->coordinates[1] = y;
+  int x = _init_x;
+  int y = _init_y;
+
+  switch (_rotation)
+  {
+    case 0:
+      x += 1;
+      break;
+    case 1:
+      y += 1;
+      break;
+    case 2:
+      x -= 1;
+      break;
+    case 3:
+      y -= 1;
+      break;
+    default:
+      std::cerr << "Wrong rotation calculated." << std::endl;
+      std::exit(-1);
+  }
+
+  return std::make_tuple(x, y);
 }
 
-void BodyParser::make_empty(BodyPart *part)
+void BodyParser::InitPart(BodyPart *_part)
 {
-  part->name = "empty";
-  part->neighbours = new BodyPart[4];
-  delete_later.push_back(part->neighbours);
+  _part->name = "empty";
+  _part->rotation = 0;
+  _part->coordinates[0] = 0;
+  _part->coordinates[1] = 0;
+
+  _part->neighbours = new BodyPart[4];
+  this->toDelete_.push_back(_part->neighbours);
   for (int i = 0; i < 4; i++)
   {
-    part->neighbours[i].name = "empty";
+    _part->neighbours[i].name = "empty";
   }
 }
 
@@ -429,16 +449,10 @@ int BodyParser::CalculateRotation(int arity,
 {
   if (arity == 2)
   {
-    /*  slot 0
-     *  Block
-     *  slot 1 */
     return ((slot == 0) ? parent_rotation + 2 : parent_rotation) % 4;
   }
   else
   {
-    /*  		slot 0
-     *  	slot 3	Block	slot 2
-     *  		slot 1 */
     switch (slot)
     {
       case 0:
@@ -456,229 +470,173 @@ int BodyParser::CalculateRotation(int arity,
 }
 
 // only works for slot: 0 currently
-void BodyParser::ParseYaml(BodyPart *part,
-                           YAML::Node &node)
+void BodyParser::ParseYaml(BodyPart *_module,
+                           YAML::Node &_yaml)
 {
-  std::string curname = node["id"].as< std::string >();
-  part->name = node["id"].as< std::string >();
-  part->type = node[(std::string)("type")].as< std::string >();
-  part->arity = part_arity[part->type];
+  std::string current_name = _yaml["id"].as< std::string >();
+  _module->name = _yaml["id"].as< std::string >();
+  _module->type = _yaml["type"].as< std::string >();
+  _module->arity = arity_[_module->type];
 
   // add differential oscillator in case of the current part being an
   // ActiveHinge output is also added here needs to be done before adding the
   // parent as a neighbour to the children since the neighbours are remembered
   // by value and not reference
-  if (part->type == "ActiveHinge")
+  if (_module->type == "ActiveHinge")
   {
     // add neurons
     std::map< std::string, double > params;
-    if (this->isMlmp_)
     {
       params["rv:bias"] = 0;
       params["rv:gain"] = 1;
 
       cppneat::NeuronPtr first_neuron(
-              new cppneat::Neuron(part->name + "-hidden-0",
-                                  cppneat::Neuron::HIDDEN_LAYER,
-                                  cppneat::Neuron::RYTHM_GENERATOR_CPG,
-                                  params));
-      part->differential_oscillator[0] = cppneat::NeuronGenePtr(
-              new cppneat::NeuronGene(first_neuron, ++innov_number, true));
-      neurons.push_back(part->differential_oscillator[0]);
-      std::tuple< int, int, int > first_coord(part->coordinates[0],
-                                              part->coordinates[1],
-                                              1);
-      neuron_coordinates[part->differential_oscillator[0]] = first_coord;
-
-      cppneat::NeuronPtr second_neuron(
-              new cppneat::Neuron(part->name + "-hidden-1",
-                                  cppneat::Neuron::HIDDEN_LAYER,
-                                  cppneat::Neuron::RYTHM_GENERATOR_CPG,
-                                  params));
-      part->differential_oscillator[1] = cppneat::NeuronGenePtr(
-              new cppneat::NeuronGene(second_neuron, ++innov_number, true));
-      neurons.push_back(part->differential_oscillator[1]);
-      std::tuple< int, int, int > second_coord(part->coordinates[0],
-                                               part->coordinates[1],
-                                               -1);
-      neuron_coordinates[part->differential_oscillator[1]] = second_coord;
-    }
-    else
-    {
-      params["rv:bias"] = 0;
-      params["rv:gain"] = 1;
-
-      cppneat::NeuronPtr first_neuron(
-              new cppneat::Neuron(part->name + "-hidden-0",
+              new cppneat::Neuron(_module->name + "-hidden-0",
                                   cppneat::Neuron::HIDDEN_LAYER,
                                   cppneat::Neuron::DIFFERENTIAL_CPG,
                                   params));
-      part->differential_oscillator[0] = cppneat::NeuronGenePtr(
+      _module->differential_oscillator[0] = cppneat::NeuronGenePtr(
               new cppneat::NeuronGene(first_neuron, ++innov_number, true));
 
-      neurons.push_back(part->differential_oscillator[0]);
-      std::tuple< int, int, int > first_coord(part->coordinates[0],
-                                              part->coordinates[1],
+      this->neurons_.push_back(_module->differential_oscillator[0]);
+      std::tuple< int, int, int > first_coord(_module->coordinates[0],
+                                              _module->coordinates[1],
                                               1);
-      neuron_coordinates[part->differential_oscillator[0]] = first_coord;
+      this->coordinates_[_module->differential_oscillator[0]] = first_coord;
 
       cppneat::NeuronPtr second_neuron(
-              new cppneat::Neuron(part->name + "-hidden-1",
+              new cppneat::Neuron(_module->name + "-hidden-1",
                                   cppneat::Neuron::HIDDEN_LAYER,
                                   cppneat::Neuron::DIFFERENTIAL_CPG,
                                   params));
-      part->differential_oscillator[1] = cppneat::NeuronGenePtr(
+      _module->differential_oscillator[1] = cppneat::NeuronGenePtr(
               new cppneat::NeuronGene(second_neuron, ++innov_number, true));
 
-      neurons.push_back(part->differential_oscillator[1]);
-      std::tuple< int, int, int > second_coord(part->coordinates[0],
-                                               part->coordinates[1],
+      this->neurons_.push_back(_module->differential_oscillator[1]);
+      std::tuple< int, int, int > second_coord(_module->coordinates[0],
+                                               _module->coordinates[1],
                                                -1);
-      neuron_coordinates[part->differential_oscillator[1]] = second_coord;
+      this->coordinates_[_module->differential_oscillator[1]] = second_coord;
     }
 
     cppneat::NeuronPtr output_neuron(
-            new cppneat::Neuron(part->name + "-out-0",
+            new cppneat::Neuron(_module->name + "-out-0",
                                 cppneat::Neuron::OUTPUT_LAYER,
                                 cppneat::Neuron::SIMPLE,
                                 params));
-    part->differential_oscillator[2] = cppneat::NeuronGenePtr(
+    _module->differential_oscillator[2] = cppneat::NeuronGenePtr(
             new cppneat::NeuronGene(output_neuron, ++innov_number, true));
 
-    neurons.push_back(part->differential_oscillator[2]);
-    output_neurons.push_back(part->differential_oscillator[2]);
-    std::tuple< int, int, int > output_coord(part->coordinates[0],
-                                             part->coordinates[1],
+    this->neurons_.push_back(_module->differential_oscillator[2]);
+    this->outputNeurons_.push_back(_module->differential_oscillator[2]);
+    std::tuple< int, int, int > output_coord(_module->coordinates[0],
+                                             _module->coordinates[1],
                                              0);
-    neuron_coordinates[part->differential_oscillator[2]] = output_coord;
+    this->coordinates_[_module->differential_oscillator[2]] = output_coord;
 
     // add connections between only these neurons (for now)
     cppneat::ConnectionGenePtr first_to_second(new cppneat::ConnectionGene(
-            part->differential_oscillator[1]->getInnovNumber(),
-            part->differential_oscillator[0]->getInnovNumber(),
+            _module->differential_oscillator[1]->getInnovNumber(),
+            _module->differential_oscillator[0]->getInnovNumber(),
             0,
             ++innov_number,
             true));
-    connections.push_back(first_to_second);
+    this->connections_.push_back(first_to_second);
 
     cppneat::ConnectionGenePtr second_to_first(new cppneat::ConnectionGene(
-            part->differential_oscillator[0]->getInnovNumber(),
-            part->differential_oscillator[1]->getInnovNumber(),
+            _module->differential_oscillator[0]->getInnovNumber(),
+            _module->differential_oscillator[1]->getInnovNumber(),
             0,
             ++innov_number,
             true));
-    connections.push_back(second_to_first);
+    this->connections_.push_back(second_to_first);
 
     cppneat::ConnectionGenePtr first_to_output(new cppneat::ConnectionGene(
-            part->differential_oscillator[2]->getInnovNumber(),
-            part->differential_oscillator[0]->getInnovNumber(),
+            _module->differential_oscillator[2]->getInnovNumber(),
+            _module->differential_oscillator[0]->getInnovNumber(),
             0,
             ++innov_number,
             true));
-    connections.push_back(first_to_output);
+    this->connections_.push_back(first_to_output);
   }
 
   // parse body and add initialised children to parsing queue
-  if (part->arity == 4)
+  if (_module->arity == 4)
   {
-    YAML::Node children = node["children"];
+    YAML::Node children = _yaml["children"];
     if (children.IsNull())
     {
       return;
     }
-    if (children[0].size() != 0 && part->type != "Core")
-    { // child in parent socket
-      std::cout
-              << "ERROR: child in parent socket (currently only 0 is "
-                      "accepted as parent socket)"
-              << std::endl;
-    }
+//    if (children[0].size() != 0 && part->type != "Core")
+//    { // child in parent socket
+//      std::cout
+//              << "ERROR: child in parent socket (currently only 0 is "
+//                      "accepted as parent socket)"
+//              << std::endl;
+//    }
     for (int i = 0; i < 4; i++)
     {
       if (children[i].size() == 0)
       {
         continue;
       }
-      BodyPart *child = &part->neighbours[i];
-      make_empty(child);
-      child->rotation = this->CalculateRotation(4, i, part->rotation);
-      switch (child->rotation)
-      {
-        case 0:
-          this->SetCoordinates(part->coordinates[0],
-                               part->coordinates[1] - 1,
-                               child);
-          break;
-        case 1:
-          this->SetCoordinates(part->coordinates[0] - 1,
-                               part->coordinates[1],
-                               child);
-          break;
-        case 2:
-          this->SetCoordinates(part->coordinates[0],
-                               part->coordinates[1] + 1,
-                               child);
-          break;
-        case 3:
-          this->SetCoordinates(part->coordinates[0] + 1,
-                               part->coordinates[1],
-                               child);
-          break;
-        default:
-          std::cout << "unknown error in body parsing" << std::endl;
-      }
+      BodyPart *child = &_module->neighbours[i];
+      this->InitPart(child);
+      child->rotation = this->CalculateRotation(4, i, _module->rotation);
+
+      int offsprings_x, offsprings_y;
+      std::tie(offsprings_x, offsprings_y) =
+              this->setCoordinates(child->rotation,
+                                   _module->coordinates[0],
+                                   _module->coordinates[1]);
+
+      child->coordinates[0] = offsprings_x;
+      child->coordinates[1] = offsprings_y;
 
       // add parent as neighbour of child
-      child->neighbours[0] = *part;
+      child->neighbours[0] = *_module;
 
-      body_to_node[child] = children[i];
-      to_parse.push_back(child);
+      this->bodyToNode_[child] = children[i];
+      this->toParse_.push_back(child);
     }
   }
   else
   {
-    YAML::Node children = node["children"];
+    YAML::Node children = _yaml["children"];
     if (children.IsNull())
     {
       return;
     }
-    if (children[0].size() != 0)
-    { // child in parent socket
-      std::cout << "ERROR: child in parent socket "
-              "(currently only 0 is accepted as parent socket)" << std::endl;
-    }
+//    if (children[0].size() != 0)
+//    { // child in parent socket
+//      std::cout << "ERROR: child in parent socket "
+//              "(currently only 0 is accepted as parent socket)" << std::endl;
+//    }
     for (int i = 1; i < 2; i++)
     {
       if (children[i].size() == 0)
       {
         continue;
       }
-      BodyPart *child = &part->neighbours[i];
-      make_empty(child);
-      child->rotation = CalculateRotation(2, i, part->rotation);
-      switch (child->rotation)
-      {
-        case 0:
-          SetCoordinates(part->coordinates[0], part->coordinates[1] - 1, child);
-          break;
-        case 1:
-          SetCoordinates(part->coordinates[0] - 1, part->coordinates[1], child);
-          break;
-        case 2:
-          SetCoordinates(part->coordinates[0], part->coordinates[1] + 1, child);
-          break;
-        case 3:
-          SetCoordinates(part->coordinates[0] + 1, part->coordinates[1], child);
-          break;
-        default:
-          std::cout << "unknown error in body parsing" << std::endl;
-      }
+      BodyPart *child = &_module->neighbours[i];
+      InitPart(child);
+      child->rotation = CalculateRotation(2, i, _module->rotation);
+
+      int offsprings_x, offsprings_y;
+      std::tie(offsprings_x, offsprings_y) =
+              this->setCoordinates(child->rotation,
+                                   _module->coordinates[0],
+                                   _module->coordinates[1]);
+
+      child->coordinates[0] = offsprings_x;
+      child->coordinates[1] = offsprings_y;
 
       // add parent as neighbour of child
-      child->neighbours[0] = *part;
+      child->neighbours[0] = *_module;
 
-      body_to_node[child] = children[i];
-      to_parse.push_back(child);
+      this->bodyToNode_[child] = children[i];
+      this->toParse_.push_back(child);
     }
   }
 }
