@@ -88,11 +88,11 @@ namespace tol
                                                  const int _init_x,
                                                  const int _init_y);
 
-    static int CalculateRotation(int arity,
-                                 int slot,
-                                 int parent_rotation);
+    static size_t calculateRotation(const size_t _arity,
+                                    const size_t _slot,
+                                    const size_t _parents_rotation);
 
-    void InitPart(BodyPart *_part);
+    void initPart(BodyPart *_part);
 
     private:
     void ParseYaml(BodyPart *_module,

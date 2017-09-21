@@ -55,7 +55,7 @@ void BodyParser::initParser(const YAML::Node &_yaml)
   this->bodyMap_ = new BodyPart();
   this->toParse_.push_back(this->bodyMap_);
   this->bodyToNode_[bodyMap_] = _yaml["body"];
-  this->InitPart(bodyMap_);
+  this->initPart(bodyMap_);
 
   BodyPart *cur_part;
   while (not this->toParse_.empty())
@@ -356,7 +356,7 @@ BodyParser::IdToCoordinatesMap()
 std::vector< std::pair< int, int > > BodyParser::get_coordinates_sorted(
         const std::vector< rg::MotorPtr > &actuators)
 {
-  std::vector< std::pair< int, int>> ret;
+  std::vector< std::pair< int, int>> coordinates;
 
   // map of numbers of output neurons for each body part
   std::map< std::string, size_t > outputCountMap;
@@ -391,12 +391,12 @@ std::vector< std::pair< int, int > > BodyParser::get_coordinates_sorted(
                   << " for motor could not be located" << std::endl;
         throw std::runtime_error("Robot brain error");
       }
-      ret.push_back(std::pair< int, int >(
+      coordinates.push_back(std::pair< int, int >(
               std::get< 0 >(this->coordinates_[this->outputNeurons_[j]]),
               std::get< 1 >(this->coordinates_[this->outputNeurons_[j]])));
     }
   }
-  return ret;
+  return coordinates;
 }
 
 std::tuple< int, int > BodyParser::setCoordinates(const size_t _rotation,
@@ -428,7 +428,35 @@ std::tuple< int, int > BodyParser::setCoordinates(const size_t _rotation,
   return std::make_tuple(x, y);
 }
 
-void BodyParser::InitPart(BodyPart *_part)
+size_t BodyParser::calculateRotation(const size_t _arity,
+                                     const size_t _slot,
+                                     const size_t _parents_rotation)
+{
+  if (_arity == 2 or _arity == 4)
+  {
+    switch (_slot)
+    {
+      case 0:
+        return (_parents_rotation + 2) % 4;
+      case 1:
+        return _parents_rotation;
+      case 2:
+        return (_parents_rotation + 3) % 4;
+      case 3:
+        return (_parents_rotation + 1) % 4;
+      default:
+        std::cerr << "Unsupported parents slot provided." << std::endl;
+        std::exit(-1);
+    }
+  }
+  else
+  {
+    std::cerr << "Unsupported module arity provided." << std::endl;
+    std::exit(-1);
+  }
+}
+
+void BodyParser::initPart(BodyPart *_part)
 {
   _part->name = "empty";
   _part->rotation = 0;
@@ -440,32 +468,6 @@ void BodyParser::InitPart(BodyPart *_part)
   for (int i = 0; i < 4; i++)
   {
     _part->neighbours[i].name = "empty";
-  }
-}
-
-int BodyParser::CalculateRotation(int arity,
-                                  int slot,
-                                  int parent_rotation)
-{
-  if (arity == 2)
-  {
-    return ((slot == 0) ? parent_rotation + 2 : parent_rotation) % 4;
-  }
-  else
-  {
-    switch (slot)
-    {
-      case 0:
-        return (parent_rotation + 2) % 4;
-      case 1:
-        return parent_rotation;
-      case 2:
-        return (parent_rotation + 3) % 4;
-      case 3:
-        return (parent_rotation + 1) % 4;
-      default:
-        std::cout << "unknown error in body parsing" << std::endl;
-    }
   }
 }
 
@@ -561,13 +563,14 @@ void BodyParser::ParseYaml(BodyPart *_module,
   }
 
   // parse body and add initialised children to parsing queue
+  YAML::Node children = _yaml["children"];
+  if (children.IsNull())
+  {
+      return;
+  }
+
   if (_module->arity == 4)
   {
-    YAML::Node children = _yaml["children"];
-    if (children.IsNull())
-    {
-      return;
-    }
 //    if (children[0].size() != 0 && part->type != "Core")
 //    { // child in parent socket
 //      std::cout
@@ -582,8 +585,8 @@ void BodyParser::ParseYaml(BodyPart *_module,
         continue;
       }
       BodyPart *child = &_module->neighbours[i];
-      this->InitPart(child);
-      child->rotation = this->CalculateRotation(4, i, _module->rotation);
+      this->initPart(child);
+      child->rotation = this->calculateRotation(4, i, _module->rotation);
 
       int offsprings_x, offsprings_y;
       std::tie(offsprings_x, offsprings_y) =
@@ -603,11 +606,6 @@ void BodyParser::ParseYaml(BodyPart *_module,
   }
   else
   {
-    YAML::Node children = _yaml["children"];
-    if (children.IsNull())
-    {
-      return;
-    }
 //    if (children[0].size() != 0)
 //    { // child in parent socket
 //      std::cout << "ERROR: child in parent socket "
@@ -620,8 +618,8 @@ void BodyParser::ParseYaml(BodyPart *_module,
         continue;
       }
       BodyPart *child = &_module->neighbours[i];
-      InitPart(child);
-      child->rotation = CalculateRotation(2, i, _module->rotation);
+      initPart(child);
+      child->rotation = calculateRotation(2, i, _module->rotation);
 
       int offsprings_x, offsprings_y;
       std::tie(offsprings_x, offsprings_y) =
@@ -640,3 +638,5 @@ void BodyParser::ParseYaml(BodyPart *_module,
     }
   }
 }
+
+
