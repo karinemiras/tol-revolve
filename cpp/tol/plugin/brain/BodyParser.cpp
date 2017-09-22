@@ -682,7 +682,6 @@ void BodyParser::ParseYaml(
         BodyPart *_module,
         YAML::Node &_yaml)
 {
-  std::string current_name = _yaml["id"].as< std::string >();
   _module->name = _yaml["id"].as< std::string >();
   _module->type = _yaml["type"].as< std::string >();
   _module->arity = arity_[_module->type];
@@ -700,68 +699,29 @@ void BodyParser::ParseYaml(
       return;
   }
 
-  if (_module->arity == 4)
+  for (int parents_slot = 0; parents_slot < 4; parents_slot++)
   {
-//    if (children[0].size() != 0 && part->type != "Core")
-//    { // child in parent socket
-//      std::cout
-//              << "ERROR: child in parent socket (currently only 0 is "
-//                      "accepted as parent socket)"
-//              << std::endl;
-//    }
-    for (int i = 0; i < 4; i++)
+    if (children[parents_slot].size() == 0)
     {
-      if (children[i].size() == 0)
-      {
-        continue;
-      }
-      BodyPart *child = &_module->neighbours[i];
-      this->initPart(child);
-      child->rotation = this->calculateRotation(4, i, _module->rotation);
-
-      int offsprings_x, offsprings_y;
-      std::tie(offsprings_x, offsprings_y) =
-              this->setCoordinates(child->rotation, _module->x, _module->y);
-
-      child->x = offsprings_x;
-      child->y = offsprings_y;
-
-      // add parent as neighbour of child
-      child->neighbours[0] = *_module;
-
-      this->bodyToNode_[child] = children[i];
-      this->toParse_.push_back(child);
+      continue;
     }
-  }
-  else
-  {
-//    if (children[0].size() != 0)
-//    { // child in parent socket
-//      std::cout << "ERROR: child in parent socket "
-//              "(currently only 0 is accepted as parent socket)" << std::endl;
-//    }
-    for (int i = 1; i < 2; i++)
-    {
-      if (children[i].size() == 0)
-      {
-        continue;
-      }
-      BodyPart *child = &_module->neighbours[i];
-      initPart(child);
-      child->rotation = calculateRotation(2, i, _module->rotation);
+    BodyPart *child = &_module->neighbours[parents_slot];
+    this->initPart(child);
+    child->rotation = this->calculateRotation(
+            (_module->arity == 4) ? 4 : 2,
+            parents_slot,
+            _module->rotation);
 
-      int offsprings_x, offsprings_y;
-      std::tie(offsprings_x, offsprings_y) =
-              this->setCoordinates(child->rotation, _module->x, _module->y);
+    int offsprings_x, offsprings_y;
+    std::tie(offsprings_x, offsprings_y) =
+            this->setCoordinates(child->rotation, _module->x, _module->y);
+    child->x = offsprings_x;
+    child->y = offsprings_y;
 
-      child->x = offsprings_x;
-      child->y = offsprings_y;
+    // add parent as neighbour of child
+    child->neighbours[0] = *_module;
 
-      // add parent as neighbour of child
-      child->neighbours[0] = *_module;
-
-      this->bodyToNode_[child] = children[i];
-      this->toParse_.push_back(child);
-    }
+    this->bodyToNode_[child] = children[parents_slot];
+    this->toParse_.push_back(child);
   }
 }
