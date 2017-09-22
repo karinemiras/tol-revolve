@@ -146,6 +146,7 @@ namespace tol
     void GenerateConnection(BodyPart *_module,
                                 size_t _from,
                                 size_t _to);
+    void ConnectOscillators(BodyPart *_lastPart);
 
     /// \brief innovation number
     size_t innovation_number_;
