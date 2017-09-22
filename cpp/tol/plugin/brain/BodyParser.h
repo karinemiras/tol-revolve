@@ -142,11 +142,13 @@ namespace tol
             int y);
     // Network
     void GenerateOscillator(BodyPart *_module);
-    void GenerateDifferentialNeuron(BodyPart *_module, size_t _position);
-    void GenerateConnection(BodyPart *_module,
-                                size_t _from,
-                                size_t _to);
-    void ConnectOscillators(BodyPart *_lastPart);
+    cppneat::NeuronGenePtr GenerateDifferentialNeuron(
+            BodyPart *_module,
+            size_t _position,
+            std::string _name);
+    void GenerateConnection(cppneat::NeuronGenePtr _from,
+                            cppneat::NeuronGenePtr _to);
+    void ConnectOscillators();
 
     /// \brief innovation number
     size_t innovation_number_;

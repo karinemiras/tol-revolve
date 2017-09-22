@@ -171,7 +171,7 @@ void BodyParser::initParser(const YAML::Node &_yaml)
 
   // couple neighbouring differential oscillators
   // here all oscillators must already be initialised
-  this->ConnectOscillators(current_part);
+  this->ConnectOscillators();
 }
 
 ///////////////////////////////////////////////////
@@ -496,64 +496,94 @@ void BodyParser::initPart(BodyPart *_part)
 }
 
 ///////////////////////////////////////////////////
-void BodyParser::GenerateDifferentialNeuron(BodyPart *_module,
-                                            size_t _position)
+cppneat::NeuronGenePtr BodyParser::GenerateDifferentialNeuron(BodyPart *_module,
+                                            size_t _position,
+                                            std::string _name)
 {
   std::map< std::string, double > params;
   {
     params["rv:bias"] = 0;
     params["rv:gain"] = 1;
   }
-  int z_coordinate;
-  std::string name;
+  int x_coordinate, y_coordinate, z_coordinate;
   cppneat::Neuron::Layer layer;
   cppneat::Neuron::Ntype type;
 
   switch (_position)
   {
     case 0:
+      x_coordinate = _module->x;
+      y_coordinate = _module->y;
       z_coordinate = 1;
-      name = _module->name + "-hidden-0";
       layer = cppneat::Neuron::HIDDEN_LAYER;
       type = cppneat::Neuron::DIFFERENTIAL_CPG;
       break;
     case 1:
+      x_coordinate = _module->x;
+      y_coordinate = _module->y;
       z_coordinate = -1;
-      name = _module->name + "-hidden-1";
       layer = cppneat::Neuron::HIDDEN_LAYER;
       type = cppneat::Neuron::DIFFERENTIAL_CPG;
       break;
     case 2:
+      x_coordinate = _module->x;
+      y_coordinate = _module->y;
       z_coordinate = 0;
-      name = _module->name + "-out-0";
       layer = cppneat::Neuron::OUTPUT_LAYER;
       type = cppneat::Neuron::SIMPLE;
+      break;
+    case 3:
+      x_coordinate = 0;
+      y_coordinate = 0;
+      z_coordinate = 0;
+      layer = cppneat::Neuron::INPUT_LAYER;
+      type = cppneat::Neuron::INPUT;
+      params.clear();
       break;
     default:
       std::cerr << "Unsupported neuron position provided." << std::endl;
       std::exit(1);
   }
 
-  cppneat::NeuronPtr neuron(new cppneat::Neuron(name, layer, type, params));
-  _module->differential_oscillator[_position] = cppneat::NeuronGenePtr(
+  cppneat::NeuronPtr neuron(new cppneat::Neuron(_name, layer, type, params));
+  cppneat::NeuronGenePtr neuronGene = cppneat::NeuronGenePtr(
           new cppneat::NeuronGene(neuron, ++innovation_number_, true));
 
-  this->neurons_.push_back(_module->differential_oscillator[_position]);
-  CoordsTriple coordinate(_module->x, _module->y, z_coordinate);
-  this->coordinates_[_module->differential_oscillator[_position]] = coordinate;
+  if(_position == 0 or _position == 1)
+  {
+    _module->differential_oscillator[_position] = neuronGene;
+  }
+  else if (_position == 2)
+  {
+    _module->differential_oscillator[_position] = neuronGene;
+    this->outputNeurons_.push_back(neuronGene);
+  }
+  else if (_position == 3)
+  {
+    this->inputNeurons_.push_back(neuronGene);
+  }
+
+  this->neurons_.push_back(neuronGene);
+
+  CoordsTriple coordinate(x_coordinate, y_coordinate, z_coordinate);
+  this->coordinates_[neuronGene] = coordinate;
+
+  return neuronGene;
 }
 
 ///////////////////////////////////////////////////
-void BodyParser::GenerateConnection(BodyPart *_module,
-                                    size_t _from,
-                                    size_t _to)
+void BodyParser::GenerateConnection(cppneat::NeuronGenePtr _from,
+                                    cppneat::NeuronGenePtr _to)
 {
+  double weight = 0.0;
+  bool isActive = true;
+
   cppneat::ConnectionGenePtr connection(new cppneat::ConnectionGene(
-          _module->differential_oscillator[_to]->getInnovNumber(),
-          _module->differential_oscillator[_from]->getInnovNumber(),
-          0,
+          _to->getInnovNumber(),
+          _from->getInnovNumber(),
+          weight,
           ++innovation_number_,
-          true));
+          isActive));
   this->connections_.push_back(connection);
 }
 
@@ -562,124 +592,83 @@ void BodyParser::GenerateOscillator(BodyPart *_module)
 {
   if (_module->type == "ActiveHinge")
   {
-    this->GenerateDifferentialNeuron(_module, 0);
-    this->GenerateDifferentialNeuron(_module, 1);
-
-    // TODO: Fix this. For unknown reason it does not work for a output neuron
-    // this->GenerateDifferentialNeuron(_module, 2);
-    std::map< std::string, double > params;
-    {
-      params["rv:bias"] = 0;
-      params["rv:gain"] = 1;
-    }
-    cppneat::NeuronPtr output_neuron(
-            new cppneat::Neuron(_module->name + "-out-0",
-                                cppneat::Neuron::OUTPUT_LAYER,
-                                cppneat::Neuron::SIMPLE,
-                                params));
-    _module->differential_oscillator[2] = cppneat::NeuronGenePtr(
-            new cppneat::NeuronGene(output_neuron, ++innovation_number_, true));
-
-    this->neurons_.push_back(_module->differential_oscillator[2]);
-    this->outputNeurons_.push_back(_module->differential_oscillator[2]);
-    CoordsTriple output_coord(_module->x, _module->y, 0);
-    this->coordinates_[_module->differential_oscillator[2]] = output_coord;
+    this->GenerateDifferentialNeuron(_module, 0, _module->name + "-hidden-0");
+    this->GenerateDifferentialNeuron(_module, 1, _module->name + "-hidden-1");
+    this->GenerateDifferentialNeuron(_module, 2, _module->name + "-out-0");
 
     // add connections between only these neurons (for now)
-    this->GenerateConnection(_module, 0, 1);
-    this->GenerateConnection(_module, 1, 0);
-    this->GenerateConnection(_module, 0, 2);
+    this->GenerateConnection(_module->differential_oscillator[0],
+                             _module->differential_oscillator[1]);
+    this->GenerateConnection(_module->differential_oscillator[1],
+                             _module->differential_oscillator[0]);
+    this->GenerateConnection(_module->differential_oscillator[0],
+                             _module->differential_oscillator[2]);
   }
 }
 
 ///////////////////////////////////////////////////
-void BodyParser::ConnectOscillators(BodyPart *_lastPart)
+void BodyParser::ConnectOscillators()
 {
+  BodyPart *module;
   this->toParse_.push_back(this->bodyMap_);
   while (not this->toParse_.empty())
   {
-    _lastPart = this->toParse_.back();
+    module = this->toParse_.back();
     this->toParse_.pop_back();
 
     bool isNeighbourActuator[MAX_SLOTS];
     for (size_t i = 0; i < MAX_SLOTS; ++i)
     {
-      isNeighbourActuator[i] =
-              (_lastPart->neighbours[i].type == "ActiveHinge");
+      isNeighbourActuator[i] = (module->neighbours[i].type == "ActiveHinge");
     }
     // add connections between each of the first neurons of an oscillator
     for (size_t i = 0; i < MAX_SLOTS; ++i)
     {
       for (size_t j = 0; j < MAX_SLOTS; ++j)
       {
-        // no need to add both connections other one will be added for
-        // exchanged i,j and // dont add selfreferential connection
         if (isNeighbourActuator[i] and isNeighbourActuator[j] and i != j)
         {
-          cppneat::ConnectionGenePtr first_to_first(
-                  new cppneat::ConnectionGene(
-                          _lastPart->neighbours[i].differential_oscillator[0]
-                                  ->getInnovNumber(),
-                          _lastPart->neighbours[j].differential_oscillator[0]
-                                  ->getInnovNumber(),
-                          0,
-                          ++innovation_number_,
-                          true));
-          this->connections_.push_back(first_to_first);
+          this->GenerateConnection(
+                  module->neighbours[i].differential_oscillator[0],
+                  module->neighbours[j].differential_oscillator[0]);
         }
       }
     }
 
-    // add neighbours to queue
-    // watch out for parent
-    if (_lastPart == this->bodyMap_)
+    // add neighbours to queue and watch out for parent
+    if (module == this->bodyMap_)
     {
-      if (_lastPart->neighbours[0].name != "empty")
+      if (module->neighbours[0].name != "empty")
       {
-        this->toParse_.push_back(&(_lastPart->neighbours[0]));
+        this->toParse_.push_back(&(module->neighbours[0]));
       }
     }
     for (size_t i = 1; i < MAX_SLOTS; ++i)
     {
-      if (_lastPart->neighbours[i].name != "empty")
+      if (module->neighbours[i].name != "empty")
       {
-        this->toParse_.push_back(&(_lastPart->neighbours[i]));
+        this->toParse_.push_back(&(module->neighbours[i]));
       }
     }
   }
 
-  // add input neurons and add connections between them and neurons on core
+  // Add input neurons and add connections between them and neurons on core
   for (size_t i = 0; i < 6; ++i)
   {
-    // add neuron
-    std::map< std::string, double > empty;
+    // Add input neuron
+    cppneat::NeuronGenePtr neuronGene = this->GenerateDifferentialNeuron(
+            this->bodyMap_,
+            3,
+            bodyMap_->name + "-in-" + std::to_string(i));
 
-    cppneat::NeuronPtr neuron(
-            new cppneat::Neuron(bodyMap_->name + "-in-" + std::to_string(i),
-                                cppneat::Neuron::INPUT_LAYER,
-                                cppneat::Neuron::INPUT,
-                                empty));
-    cppneat::NeuronGenePtr neuron_gene(
-            new cppneat::NeuronGene(neuron, ++innovation_number_, true));
-    this->neurons_.push_back(neuron_gene);
-    this->inputNeurons_.push_back(neuron_gene);
-    CoordsTriple coord(0, 0, 0);
-    this->coordinates_[neuron_gene] = coord;
-
-    // connect to neighbouring oscillators
+    // Connect to neighbouring oscillators
     for (size_t i = 0; i < MAX_SLOTS; ++i)
     {
       if (this->bodyMap_->neighbours[i].type == "ActiveHinge")
       {
-        cppneat::ConnectionGenePtr input_to_first(
-                new cppneat::ConnectionGene(
-                        bodyMap_->neighbours[i].differential_oscillator[0]
-                                ->getInnovNumber(),
-                        neuron_gene->getInnovNumber(),
-                        0,
-                        ++innovation_number_,
-                        true));
-        this->connections_.push_back(input_to_first);
+        this->GenerateConnection(
+                neuronGene,
+                bodyMap_->neighbours[i].differential_oscillator[0]);
       }
     }
   }
