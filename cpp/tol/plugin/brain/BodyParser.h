@@ -36,6 +36,8 @@
 
 namespace tol
 {
+  typedef std::tuple< int, int, int > CoordsTriple;
+
   const std::string CORE = "Core";
 
   const std::string A_HINGE = "ActiveHinge";
@@ -46,18 +48,47 @@ namespace tol
 
   const size_t MAX_SLOTS = 4;
 
+  class BPart
+  {
+    public:
+    BPart();
+
+    BPart(const std::string &name,
+          const std::string &type,
+          int x,
+          int y,
+          size_t rotation);
+
+    ~BPart();
+
+    std::string name = "empty";
+    std::string type = CORE;
+    int x = 0;
+    int y = 0;
+    size_t id = 0;
+    size_t arity = 4;
+    size_t rotation = 0;
+
+    BPart *neighbours[MAX_SLOTS];
+    cppneat::NeuronGenePtr diff_oscillator[3];
+  };
+
   class BodyParser
   {
     struct BodyPart
     {
-      std::string name;
-      std::string type;
-      int arity;
-      int rotation;          // 0 -> 0, 1 -> 90 degrees, etc.
-      int coordinates[2];    // the coordinates of this `bodypart`
+      std::string name = "empty";
+      std::string type = CORE;
+      int x = 0;
+      int y = 0;
+      size_t id = 0;
+      size_t arity = 4;
+      size_t rotation = 0;          // 0 -> 0, 1 -> 90 degrees, etc.
+
       BodyPart *neighbours;  // the neighbours of this `bodypart`
       cppneat::NeuronGenePtr differential_oscillator[3];
     };
+
     public:
     BodyParser(const std::string &_yamlPath);
 
@@ -71,16 +102,16 @@ namespace tol
 
     cppneat::GeneticEncodingPtr CppnNetwork();
 
-    std::map<std::string, std::tuple<int, int, int>> IdToCoordinatesMap();
+    std::map<std::string, CoordsTriple> IdToCoordinatesMap();
 
     /// \brief returns the coordinates of the actuators matching the order the
     /// actuators give coordinate of actuators[0] is in sorted_coordinates[0]
-    std::vector<std::pair<int, int>> get_coordinates_sorted(
-            const std::vector<revolve::gazebo::MotorPtr> &actuators);
+    std::vector<std::pair<int, int>> SortedCoordinates(
+            const std::vector< revolve::gazebo::MotorPtr > &actuators);
 
-    int InnovationNumber()
+    size_t InnovationNumber()
     {
-      return innov_number + 1;
+      return ++innovation_number_;
     };
 
     private:
@@ -100,10 +131,24 @@ namespace tol
 
     void initParser(const YAML::Node &_yaml);
 
+    void init(const YAML::Node &_yaml);
+
+    /// \brief
+    BPart *parseModule(
+            BPart *parent,
+            const YAML::Node &offspring,
+            const size_t rotation,
+            int x,
+            int y);
     // Network
+    void GenerateOscillator(BodyPart *_module);
+    void GenerateDifferentialNeuron(BodyPart *_module, size_t _position);
+    void GenerateConnection(BodyPart *_module,
+                                size_t _from,
+                                size_t _to);
 
     /// \brief innovation number
-    int innov_number;
+    size_t innovation_number_;
 
     std::vector<cppneat::NeuronGenePtr> neurons_;
 
@@ -113,7 +158,7 @@ namespace tol
 
     std::vector<cppneat::ConnectionGenePtr> connections_;
 
-    std::map<cppneat::NeuronGenePtr, std::tuple<int, int, int>> coordinates_;
+    std::map< cppneat::NeuronGenePtr, CoordsTriple > coordinates_;
 
     // Body parsing
     std::map<std::string, int> arity_;
@@ -123,6 +168,7 @@ namespace tol
 
     /// \brief A tree data structure representing a robot
     BodyPart *bodyMap_ = nullptr;
+    BPart *bMap_ = nullptr;
   };
 }
 

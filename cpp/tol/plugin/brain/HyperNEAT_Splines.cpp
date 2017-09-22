@@ -48,7 +48,7 @@ HyperNEAT_Splines::HyperNEAT_Splines(std::string modelName,
 //  sleep(20);
   std::string name(modelName.substr(0, modelName.find("-")) + ".yaml");
   BodyParser body(name);
-  rb::sorted_coordinates = body.get_coordinates_sorted(actuators);
+  rb::sorted_coordinates = body.SortedCoordinates(actuators);
 
   // Prepare for controller
   rb::RLPowerLearner::Config conf = parseSDF(brain);

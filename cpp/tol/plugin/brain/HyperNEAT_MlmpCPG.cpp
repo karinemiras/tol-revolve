@@ -53,7 +53,7 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
 {
   // Initialise controller
   std::string name(modelName.substr(0, modelName.find("-")) + ".yaml");
-  BodyParser body(name, true);
+  BodyParser body(name);
 
   std::pair< std::map< int, size_t >, std::map< int, size_t >> in_out =
           body.InputOutputMap(actuators, sensors);
