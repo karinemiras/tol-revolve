@@ -79,10 +79,9 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
           new cppneat::Mutator(rb::brain_spec,
                                0.8,
                                learn_conf.start_from
-                                         ->min_max_innov_numer().second,
+                                                   ->RangeInnovationNumbers().second,
                                100,
-                               std::vector< cppneat::Neuron::Ntype >(),
-                               true));
+                               std::vector< cppneat::Neuron::Ntype >()));
   std::string mutator_path =
           brain->HasAttribute("path_to_mutator") ?
           brain->GetAttribute("path_to_mutator")->GetAsString() : "none";
@@ -109,7 +108,7 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
 
   std::vector< cppneat::GeneticEncodingPtr > brains_from_init =
           boost::dynamic_pointer_cast< cppneat::NEATLearner >(learner_)
-                  ->get_init_brains();
+                  ->InitBrains();
   std::vector< cppneat::GeneticEncodingPtr > brains_from_first;
   if (path_to_first_brains == "" || path_to_first_brains == "none")
   {
@@ -118,7 +117,7 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
   else
   {
     brains_from_first = boost::dynamic_pointer_cast< cppneat::NEATLearner >(
-            learner_)->get_brains_from_yaml(path_to_first_brains, -1);
+            learner_)->YamlBrains(path_to_first_brains, -1);
   }
   std::string path_to_second_brains =
           brain->HasAttribute("path_to_second_brains") ?
@@ -131,7 +130,7 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
   else
   {
     brains_from_second = boost::dynamic_pointer_cast< cppneat::NEATLearner >(
-            learner_)->get_brains_from_yaml(path_to_second_brains, -1);
+            learner_)->YamlBrains(path_to_second_brains, -1);
   }
 
   std::vector< cppneat::GeneticEncodingPtr > init_brains;
@@ -158,7 +157,7 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
     i++;
     cur_number++;
   }
-  boost::dynamic_pointer_cast< cppneat::NEATLearner >(learner_)->initialise(
+  boost::dynamic_pointer_cast< cppneat::NEATLearner >(learner_)->Initialise(
           init_brains);
 
   // initialise evaluator

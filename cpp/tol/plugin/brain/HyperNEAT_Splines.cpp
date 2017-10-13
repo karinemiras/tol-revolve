@@ -65,13 +65,12 @@ HyperNEAT_Splines::HyperNEAT_Splines(std::string modelName,
           new cppneat::Mutator(rb::brain_spec,
                                0.8,
                                learn_conf.start_from
-                                         ->min_max_innov_numer().second,
+                                                   ->RangeInnovationNumbers().second,
                                100,
-                               std::vector< cppneat::Neuron::Ntype >(),
-                               true));
+                               std::vector< cppneat::Neuron::Ntype >()));
 
   rb::SetBrainSpec(true);
-  learn_conf.start_from = rb::get_hyper_neat_net_splines();
+  learn_conf.start_from = rb::HyperNeatSplines();
 
   // initialise controller
   controller_ = boost::shared_ptr< rb::PolicyController >(

@@ -74,8 +74,7 @@ NeatExtNN::NeatExtNN(std::string modelName,
                                0.8,
                                innov_number,
                                100,
-                               std::vector<cppneat::Neuron::Ntype>(),
-                               false));
+                               std::vector< cppneat::Neuron::Ntype >()));
   std::string mutator_path =
           node->HasAttribute("path_to_mutator") ?
           node->GetAttribute("path_to_mutator")->GetAsString() : "none";

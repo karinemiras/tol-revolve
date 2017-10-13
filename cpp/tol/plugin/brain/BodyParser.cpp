@@ -224,7 +224,7 @@ BodyParser::InputOutputMap(
       size_t j;
       for (j = 0; j < this->outputNeurons_.size(); ++j)
       {
-        if (this->outputNeurons_[j]->neuron->neuron_id == neuronId.str())
+        if (this->outputNeurons_[j]->neuron_->neuronId_ == neuronId.str())
         {
           break;
         }
@@ -235,7 +235,7 @@ BodyParser::InputOutputMap(
 //                  << " for motor could not be located" << std::endl;
 //        throw std::runtime_error("Robot brain error");
 //      }
-      output_map[this->outputNeurons_[j]->getInnovNumber()] = p++;
+      output_map[this->outputNeurons_[j]->InnovationNumber()] = p++;
     }
   }
 
@@ -266,7 +266,7 @@ BodyParser::InputOutputMap(
       size_t j;
       for (j = 0; j < this->inputNeurons_.size(); ++j)
       {
-        if (this->inputNeurons_[j]->neuron->neuron_id == neuronId.str())
+        if (this->inputNeurons_[j]->neuron_->neuronId_ == neuronId.str())
         {
           break;
         }
@@ -277,7 +277,7 @@ BodyParser::InputOutputMap(
                   << " for sensor could not be located" << std::endl;
         throw std::runtime_error("Robot brain error");
       }
-      input_map[this->inputNeurons_[j]->getInnovNumber()] = p++;
+      input_map[this->inputNeurons_[j]->InnovationNumber()] = p++;
     }
   }
   return std::make_pair(input_map, output_map);
@@ -301,7 +301,7 @@ cppneat::GeneticEncodingPtr BodyParser::CppnNetwork()
     // means innovation number is i + 1
     cppneat::NeuronGenePtr neuron_gene(
             new cppneat::NeuronGene(neuron, innov_number++, true));
-    ret->add_neuron_gene(neuron_gene, 0, i == 0);
+    ret->AddNeuron(neuron_gene, 0, i == 0);
   }
 
   // add outputs
@@ -314,7 +314,7 @@ cppneat::GeneticEncodingPtr BodyParser::CppnNetwork()
                               empty));
   cppneat::NeuronGenePtr weight_neuron_gene(
           new cppneat::NeuronGene(weight_neuron, innov_number++, true));
-  ret->add_neuron_gene(weight_neuron_gene, 1, true);
+  ret->AddNeuron(weight_neuron_gene, 1, true);
   cppneat::NeuronPtr bias_neuron(
           new cppneat::Neuron("rv:bias",
                               cppneat::Neuron::OUTPUT_LAYER,
@@ -322,7 +322,7 @@ cppneat::GeneticEncodingPtr BodyParser::CppnNetwork()
                               empty));
   cppneat::NeuronGenePtr bias_neuron_gene(
           new cppneat::NeuronGene(bias_neuron, innov_number++, true));
-  ret->add_neuron_gene(bias_neuron_gene, 1, false);
+  ret->AddNeuron(bias_neuron_gene, 1, false);
   cppneat::NeuronPtr gain_neuron(
           new cppneat::Neuron("rv:gain",
                               cppneat::Neuron::OUTPUT_LAYER,
@@ -332,31 +332,31 @@ cppneat::GeneticEncodingPtr BodyParser::CppnNetwork()
           new cppneat::NeuronGene(gain_neuron,
                                   innov_number++,
                                   true));
-  ret->add_neuron_gene(gain_neuron_gene, 1, false);
+  ret->AddNeuron(gain_neuron_gene, 1, false);
 
   // connect every input with every output
   for (size_t i = 0; i < 6; ++i)
   {
     cppneat::ConnectionGenePtr connection_to_weight(
-            new cppneat::ConnectionGene(weight_neuron_gene->getInnovNumber(),
+            new cppneat::ConnectionGene(weight_neuron_gene->InnovationNumber(),
                                         i + 1, 0,
                                         innov_number++,
                                         true, ""));
-    ret->add_connection_gene(connection_to_weight);
+    ret->AddConnection(connection_to_weight);
 
     cppneat::ConnectionGenePtr connection_to_bias(
-            new cppneat::ConnectionGene(bias_neuron_gene->getInnovNumber(),
+            new cppneat::ConnectionGene(bias_neuron_gene->InnovationNumber(),
                                         i + 1, 0,
                                         innov_number++,
                                         true, ""));
-    ret->add_connection_gene(connection_to_bias);
+    ret->AddConnection(connection_to_bias);
 
     cppneat::ConnectionGenePtr connection_to_gain(
-            new cppneat::ConnectionGene(gain_neuron_gene->getInnovNumber(),
+            new cppneat::ConnectionGene(gain_neuron_gene->InnovationNumber(),
                                         i + 1, 0,
                                         innov_number++,
                                         true, ""));
-    ret->add_connection_gene(connection_to_gain);
+    ret->AddConnection(connection_to_gain);
   }
   return ret;
 }
@@ -367,7 +367,7 @@ std::map< std::string, CoordsTriple > BodyParser::IdToCoordinatesMap()
   std::map< std::string, CoordsTriple > ret;
   for (auto pair : this->coordinates_)
   {
-    ret[pair.first->neuron->neuron_id] = pair.second;
+    ret[pair.first->neuron_->neuronId_] = pair.second;
   }
   return ret;
 }
@@ -400,7 +400,7 @@ std::vector< std::pair< int, int > > BodyParser::SortedCoordinates(
       size_t j;
       for (j = 0; j < this->outputNeurons_.size(); ++j)
       {
-        if (this->outputNeurons_[j]->neuron->neuron_id == neuronId.str())
+        if (this->outputNeurons_[j]->neuron_->neuronId_ == neuronId.str())
         {
           break;
         }
@@ -579,8 +579,8 @@ void BodyParser::GenerateConnection(cppneat::NeuronGenePtr _from,
   bool isActive = true;
 
   cppneat::ConnectionGenePtr connection(new cppneat::ConnectionGene(
-          _to->getInnovNumber(),
-          _from->getInnovNumber(),
+          _to->InnovationNumber(),
+          _from->InnovationNumber(),
           weight,
           ++innovation_number_,
           isActive));
