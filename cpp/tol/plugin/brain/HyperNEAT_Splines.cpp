@@ -35,15 +35,17 @@ namespace rg = revolve::gazebo;
 
 using namespace tol;
 
-HyperNEAT_Splines::HyperNEAT_Splines(std::string modelName,
+HyperNEAT_Splines::HyperNEAT_Splines(
+        std::string modelName,
         sdf::ElementPtr brain,
         tol::EvaluatorPtr evaluator,
         const std::vector< rg::MotorPtr > &actuators,
-        const std::vector< rg::SensorPtr > &sensors)
+        const std::vector< rg::SensorPtr > &/*sensors*/
+)
         : rb::ConverterSplitBrain< rb::PolicyPtr, cppneat::GeneticEncodingPtr >
-                  (&rb::convertForSplinesFromHyper,
-                   &rb::convertForHyperFromSplines,
-                   modelName)
+        (&rb::convertForSplinesFromHyper,
+         &rb::convertForHyperFromSplines,
+         modelName)
 {
 //  sleep(20);
   std::string name(modelName.substr(0, modelName.find("-")) + ".yaml");
@@ -61,41 +63,45 @@ HyperNEAT_Splines::HyperNEAT_Splines(std::string modelName,
   // Prepare for learner
   cppneat::NEATLearner::LearningConfiguration
           learn_conf = parseLearningSDF(brain);
-  cppneat::MutatorPtr mutator(
-          new cppneat::Mutator(rb::brain_spec,
-                               0.8,
-                               learn_conf.start_from
-                                                   ->RangeInnovationNumbers().second,
-                               100,
-                               std::vector< cppneat::Neuron::Ntype >()));
+  cppneat::MutatorPtr mutator(new cppneat::Mutator(
+          rb::brain_spec,
+          0.8,
+          learn_conf.start_from->RangeInnovationNumbers().second,
+          100,
+          std::vector< cppneat::Neuron::Ntype >()));
 
   rb::SetBrainSpec(true);
   learn_conf.start_from = rb::HyperNeatSplines();
 
   // initialise controller
-  controller_ = boost::shared_ptr< rb::PolicyController >(
+  this->controller_ = boost::shared_ptr< rb::PolicyController >(
           new rb::PolicyController(
                   rb::sorted_coordinates.size(),
                   conf.interpolation_spline_size));
 
   // initialise learner
-  learner_ = boost::shared_ptr< cppneat::NEATLearner >
-          (new cppneat::NEATLearner(mutator, mutator_path, learn_conf));
+  this->learner_ =
+          boost::shared_ptr< cppneat::NEATLearner >(new cppneat::NEATLearner(
+                  mutator,
+                  mutator_path,
+                  learn_conf));
 
   // initialise evaluator
-  evaluator_ = evaluator;
+  this->evaluator_ = evaluator;
 }
 
 HyperNEAT_Splines::~HyperNEAT_Splines()
 {
 }
 
-void HyperNEAT_Splines::update(const std::vector< rg::MotorPtr > &actuators,
-                               const std::vector< rg::SensorPtr > &sensors,
-                               double t,
-                               double step)
+void HyperNEAT_Splines::update(
+        const std::vector< rg::MotorPtr > &actuators,
+        const std::vector< rg::SensorPtr > &sensors,
+        double t,
+        double step)
 {
-  rb::ConverterSplitBrain< rb::PolicyPtr, cppneat::GeneticEncodingPtr >::update(
+  rb::ConverterSplitBrain< rb::PolicyPtr,
+                           cppneat::GeneticEncodingPtr >::update(
           Helper::createWrapper(actuators),
           Helper::createWrapper(sensors),
           t,
@@ -168,7 +174,7 @@ cppneat::NEATLearner::LearningConfiguration HyperNEAT_Splines::parseLearningSDF(
   config.param_mutation_sigma =
           brain->HasAttribute("param_mutation_sigma") ?
           std::stod(brain->GetAttribute("param_mutation_sigma")
-                                               ->GetAsString()) :
+                         ->GetAsString()) :
           cppneat::NEATLearner::PARAM_MUTATION_SIGMA;
   config.structural_augmentation_probability =
           brain->HasAttribute("structural_augmentation_probability") ?

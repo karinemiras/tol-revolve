@@ -29,11 +29,13 @@
 
 using namespace tol;
 
-RLPower::RLPower(std::string modelName,
-                 sdf::ElementPtr brain,
-                 EvaluatorPtr evaluator,
-                 std::vector< revolve::gazebo::MotorPtr > &actuators,
-                 std::vector< revolve::gazebo::SensorPtr > &sensors)
+RLPower::RLPower(
+        std::string modelName,
+        sdf::ElementPtr brain,
+        EvaluatorPtr evaluator,
+        std::vector< revolve::gazebo::MotorPtr > &actuators,
+        std::vector< revolve::gazebo::SensorPtr > &/*sensors*/
+)
         : revolve::brain::RLPower(modelName,
                                   parseSDF(brain),
                                   evaluator,
@@ -45,10 +47,11 @@ RLPower::~RLPower()
 {
 }
 
-void RLPower::update(const std::vector< revolve::gazebo::MotorPtr > &actuators,
-                     const std::vector< revolve::gazebo::SensorPtr > &sensors,
-                     double t,
-                     double step)
+void RLPower::update(
+        const std::vector< revolve::gazebo::MotorPtr > &actuators,
+        const std::vector< revolve::gazebo::SensorPtr > &sensors,
+        double t,
+        double step)
 {
   revolve::brain::RLPower::update(Helper::createWrapper(actuators),
                                   Helper::createWrapper(sensors),

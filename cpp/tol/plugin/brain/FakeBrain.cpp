@@ -27,9 +27,11 @@
 
 using namespace tol;
 
-FakeBrain::FakeBrain(std::string modelName,
-                     std::vector< revolve::gazebo::MotorPtr > &actuators,
-                     std::vector< revolve::gazebo::SensorPtr > &sensors)
+FakeBrain::FakeBrain(
+        std::string /*modelName*/,
+        std::vector< revolve::gazebo::MotorPtr > &actuators,
+        std::vector< revolve::gazebo::SensorPtr > &sensors
+)
         : nActuators_(actuators.size())
         , nSensors_(sensors.size())
         , start_eval_time_(0)
@@ -49,15 +51,16 @@ FakeBrain::~FakeBrain()
 {
 }
 
-void FakeBrain::modify(ConstModifyNeuralNetworkPtr &req)
+void FakeBrain::modify(ConstModifyNeuralNetworkPtr &/*req*/)
 {
   std::cout << "FakeBrain::modify()" << std::endl;
 }
 
-void FakeBrain::update(const std::vector< revolve::gazebo::MotorPtr > &motors,
-                       const std::vector< revolve::gazebo::SensorPtr > &sensors,
-                       double t,
-                       double step)
+void FakeBrain::update(
+        const std::vector< revolve::gazebo::MotorPtr > &/*motors*/,
+        const std::vector< revolve::gazebo::SensorPtr > &/*sensors*/,
+        double /*t*/,
+        double /*step*/)
 {
   std::cout << "FakeBrain::update()" << std::endl;
 }
