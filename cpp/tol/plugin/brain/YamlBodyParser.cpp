@@ -60,7 +60,7 @@ void YamlBodyParser::parseFile(const std::string &filepath)
 {
   /// Verify and open a YAML file on a given file path
   YAML::Node genome;
-  if (access(filepath.c_str(), F_OK) != -1)
+  if (access(filepath.c_str(), F_OK) not_eq -1)
   {
     genome = YAML::LoadFile(filepath);
 
@@ -159,11 +159,11 @@ BodyPart *YamlBodyParser::parseModule(BodyPart *parent,
       module->id = this->n_actuators_;
     }
 
-    if (A_HINGE == module->type || P_HINGE == module->type)
+    if (A_HINGE == module->type or P_HINGE == module->type)
     {
       module->arity = 2;
     }
-    else if (CORE == module->type || BRICK == module->type)
+    else if (CORE == module->type or BRICK == module->type)
     {
       module->arity = 4;
     }
@@ -264,7 +264,7 @@ void YamlBodyParser::setNormalisedCoordinates(BodyPart *module,
                                               const int range_x,
                                               const int range_y)
 {
-  if (module != nullptr)
+  if (module not_eq nullptr)
   {
     if (A_HINGE == module->type)
     {
@@ -287,20 +287,20 @@ void YamlBodyParser::setNormalisedCoordinates(BodyPart *module,
 ///////////////////////////////////////////////////////////////////////////////
 void YamlBodyParser::setConnections(BodyPart *module)
 {
-  if (module != nullptr)
+  if (module not_eq nullptr)
   {
-    if (CORE == module->type || BRICK == module->type)
+    if (CORE == module->type or BRICK == module->type)
     {
       for (size_t i = 0; i < MAX_SLOTS; ++i)
       {
-        if (module->neighbours[i] != nullptr
-            && A_HINGE == module->neighbours[i]->type)
+        if (module->neighbours[i] not_eq nullptr
+            and A_HINGE == module->neighbours[i]->type)
         {
           for (size_t j = 0; j < MAX_SLOTS; ++j)
           {
-            if (i != j
-                && module->neighbours[j] != nullptr
-                && A_HINGE == module->neighbours[j]->type)
+            if (i not_eq j
+                and module->neighbours[j] not_eq nullptr
+                and A_HINGE == module->neighbours[j]->type)
             {
               this->connections_[module->neighbours[i]->id
                                  - 1][module->neighbours[j]->id - 1] = true;

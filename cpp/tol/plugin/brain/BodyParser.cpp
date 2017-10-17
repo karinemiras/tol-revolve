@@ -107,11 +107,11 @@ BPart *BodyParser::parseModule(
 //      module->id = this->n_actuators_;
 //    }
 
-    if (A_HINGE == module->type || P_HINGE == module->type)
+    if (A_HINGE == module->type or P_HINGE == module->type)
     {
       module->arity = 2;
     }
-    else if (CORE == module->type || BRICK == module->type)
+    else if (CORE == module->type or BRICK == module->type)
     {
       module->arity = 4;
     }
@@ -205,7 +205,7 @@ BodyParser::InputOutputMap(
   // map of numbers of output neurons for each body part
   std::map< std::string, size_t > outputCountMap;
 
-  for (auto it = actuators.begin(); it != actuators.end(); ++it)
+  for (auto it = actuators.begin(); it not_eq actuators.end(); ++it)
   {
     auto motor = *it;
     auto partId = motor->partId();
@@ -247,7 +247,7 @@ BodyParser::InputOutputMap(
 
   std::map< std::string, size_t > inputCountMap;
 
-  for (auto it = sensors.begin(); it != sensors.end(); ++it)
+  for (auto it = sensors.begin(); it not_eq sensors.end(); ++it)
   {
     auto sensor = *it;
     auto partId = sensor->partId();
@@ -381,7 +381,7 @@ std::vector< std::pair< int, int > > BodyParser::SortedCoordinates(
   // map of numbers of output neurons for each body part
   std::map< std::string, size_t > outputCountMap;
 
-  for (auto it = actuators.begin(); it != actuators.end(); ++it)
+  for (auto it = actuators.begin(); it not_eq actuators.end(); ++it)
   {
     auto motor = *it;
     auto partId = motor->partId();
@@ -626,7 +626,7 @@ void BodyParser::ConnectOscillators()
     {
       for (size_t j = 0; j < MAX_SLOTS; ++j)
       {
-        if (isNeighbourActuator[i] and isNeighbourActuator[j] and i != j)
+        if (isNeighbourActuator[i] and isNeighbourActuator[j] and i not_eq j)
         {
           this->GenerateConnection(
                   module->neighbours[i].differential_oscillator[0],
@@ -638,14 +638,14 @@ void BodyParser::ConnectOscillators()
     // add neighbours to queue and watch out for parent
     if (module == this->bodyMap_)
     {
-      if (module->neighbours[0].name != "empty")
+      if (module->neighbours[0].name not_eq "empty")
       {
         this->toParse_.push_back(&(module->neighbours[0]));
       }
     }
     for (size_t i = 1; i < MAX_SLOTS; ++i)
     {
-      if (module->neighbours[i].name != "empty")
+      if (module->neighbours[i].name not_eq "empty")
       {
         this->toParse_.push_back(&(module->neighbours[i]));
       }

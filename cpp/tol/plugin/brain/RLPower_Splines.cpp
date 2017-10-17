@@ -47,7 +47,7 @@ RLPower_Splines::RLPower_Splines(std::string model_name,
 {
   rb::RLPowerLearner::Config config = parseSDF(brain);
   // initialise controller
-  unsigned int n_actuators = 0;
+  size_t n_actuators = 0;
   for (auto it : actuators)
   {
     n_actuators += it->outputs();

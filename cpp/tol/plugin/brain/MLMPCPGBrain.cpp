@@ -30,8 +30,8 @@ using namespace tol;
 
 MlmpCPGBrain::MlmpCPGBrain(std::string robot_name,
                            tol::EvaluatorPtr evaluator,
-                           unsigned int n_actuators,
-                           unsigned int n_sensors)
+                           size_t n_actuators,
+                           size_t n_sensors)
         : rb::CPGBrain(robot_name, evaluator, n_actuators, n_sensors)
 {
 }

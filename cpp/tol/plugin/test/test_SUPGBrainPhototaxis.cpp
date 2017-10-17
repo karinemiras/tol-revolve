@@ -46,7 +46,7 @@ class Motor
           nullptr,  // ::gazebo::physics::ModelPtr model
           "partId",  // std::string partId
           "motorId",  // std::string motorId
-          1 )  // unsigned int outputs
+          1 )  // size_t outputs
   {}
 
   virtual void update(double *output,
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(create_instance)
                                      float sensor_offset)
           -> revolve::brain::FakeLightSensor *
   {
-    if (coordinates.size() != 3)
+    if (coordinates.size() not_eq 3)
     {
       std::cerr << "ERROR! COORDINATES TO THE LIGHT "
               "CONSTRUCTOR ARE THE WRONG SIZE!" << std::endl;
@@ -232,7 +232,7 @@ BOOST_AUTO_TEST_CASE(run_once)
                                      float sensor_offset)
           -> revolve::brain::FakeLightSensor *
   {
-    if (coordinates.size() != 3)
+    if (coordinates.size() not_eq 3)
     {
       std::cerr
               << "ERROR! COORDINATES TO THE LIGHT "
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(run_multiple_times)
                                      float sensor_offset)
           -> revolve::brain::FakeLightSensor *
   {
-    if (coordinates.size() != 3)
+    if (coordinates.size() not_eq 3)
     {
       std::cerr
               << "ERROR! COORDINATES TO THE LIGHT "

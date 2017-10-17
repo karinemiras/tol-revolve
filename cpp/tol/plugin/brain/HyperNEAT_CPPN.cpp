@@ -104,7 +104,7 @@ HyperNEAT_CPG::HyperNEAT_CPG(std::string modelName,
           boost::dynamic_pointer_cast< cppneat::NEATLearner >(learner_)
                   ->InitBrains();
   std::vector< cppneat::GeneticEncodingPtr > brains_from_first;
-  if (path_to_first_brains == "" || path_to_first_brains == "none")
+  if (path_to_first_brains == "" or path_to_first_brains == "none")
   {
     number_of_brains_from_first = 0;
   }
@@ -117,7 +117,7 @@ HyperNEAT_CPG::HyperNEAT_CPG(std::string modelName,
           brain->HasAttribute("path_to_second_brains") ?
           brain->GetAttribute("path_to_second_brains")->GetAsString() : "";
   std::vector< cppneat::GeneticEncodingPtr > brains_from_second;
-  if (path_to_second_brains == "" || path_to_second_brains == "none")
+  if (path_to_second_brains == "" or path_to_second_brains == "none")
   {
     number_of_brains_from_second = 0;
   }

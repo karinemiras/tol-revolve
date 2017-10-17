@@ -34,7 +34,7 @@ namespace tol
             : actuatorPtr(actuatorPtr)
     {}
 
-    virtual unsigned int outputs() const
+    virtual size_t outputs() const
     {
       return actuatorPtr->outputs();
     }
@@ -42,10 +42,10 @@ namespace tol
     virtual void update(double *output_vector,
                         double step)
     {
-      unsigned int size = this->outputs();
+      size_t size = this->outputs();
       double *output_copy = new double[size];
 
-      for (unsigned int i = 0; i < size; i++)
+      for (size_t i = 0; i < size; i++)
       {
         output_copy[i] = (output_vector[i] + 1) / 2;
       }

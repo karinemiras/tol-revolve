@@ -94,7 +94,7 @@ void InteractiveEvolutionPlugin::OnReproduceButton()
           mainWindow->findChild<gz::gui::GLWidget *>("GLWidget");
 
   auto visuals = glWidget->SelectedVisuals();
-  if (visuals.size() != 2)
+  if (visuals.size() not_eq 2)
   {
     std::cerr << "Wrong number of visuals selected." << std::endl;
     return;
@@ -103,7 +103,7 @@ void InteractiveEvolutionPlugin::OnReproduceButton()
   auto modelVis1 = visuals[0]->GetRootVisual();
   auto modelVis2 = visuals[1]->GetRootVisual();
 
-  if (not modelVis1 || not modelVis2 || modelVis1 == modelVis2)
+  if (not modelVis1 or not modelVis2 or modelVis1 == modelVis2)
   {
     std::cerr << "Incorrect selection (missing model or models identical)"
               << std::endl;
@@ -121,7 +121,7 @@ void InteractiveEvolutionPlugin::OnReproduceButton()
 bool InteractiveEvolutionPlugin::OnKeyDown(
         const ::gazebo::common::KeyEvent _event)
 {
-  if (_event.text == "i" || _event.text == "I")
+  if (_event.text == "i" or _event.text == "I")
   {
     gz::msgs::Request req;
     req.set_id(ignition::math::Rand::IntUniform(1,
@@ -140,7 +140,7 @@ bool InteractiveEvolutionPlugin::OnKeyDown(
     keyPub_->Publish(req);
     return true;
   }
-  else if (_event.text == "o" || _event.text == "O")
+  else if (_event.text == "o" or _event.text == "O")
   {
     OnReproduceButton();
     return true;

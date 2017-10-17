@@ -63,8 +63,8 @@ namespace tol
     // Mutex for stepping / updating the network§
     // boost::mutex networkMutex_;
 
-    unsigned int nActuators_;
-    unsigned int nSensors_;
+    size_t nActuators_;
+    size_t nSensors_;
 
     double start_eval_time_;
 

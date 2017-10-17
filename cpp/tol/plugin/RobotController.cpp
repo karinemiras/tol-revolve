@@ -108,7 +108,7 @@ void init_asyncneat(
   {
     AsyncNeat::Init(robot_name);
   }
-  unsigned int populationSize = 10;
+  size_t populationSize = 10;
   NEAT::real_t mutate_add_node_prob = 0.01;
   NEAT::real_t mutate_add_link_prob = 0.3;
   NEAT::GeneticSearchType geneticSearchType =
@@ -118,7 +118,7 @@ void init_asyncneat(
   {
     try
     {
-      populationSize = (unsigned int)std::stoul(env_p);
+      populationSize = (size_t)std::stoul(env_p);
     } catch (const std::invalid_argument &e)
     {
       std::cout
@@ -207,12 +207,12 @@ void RobotController::LoadBrain(sdf::ElementPtr sdf)
     evaluator_ = boost::make_shared< Evaluator >();
     const std::string &robot_name = this->model->GetName();
 
-    unsigned int motor_n = 0;  // motors_.size();
+    size_t motor_n = 0;  // motors_.size();
     for (const auto &motor : motors_)
     {
       motor_n += motor->outputs();
     }
-    unsigned int sensor_n = 0;  // sensors_.size();
+    size_t sensor_n = 0;  // sensors_.size();
     for (const auto &sensor : sensors_)
     {
       sensor_n += sensor->inputs();

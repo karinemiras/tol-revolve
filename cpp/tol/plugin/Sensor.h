@@ -36,7 +36,7 @@ namespace tol
     {
     }
 
-    virtual unsigned int inputs() const
+    virtual size_t inputs() const
     {
       return sensorPtr->inputs();
     }
