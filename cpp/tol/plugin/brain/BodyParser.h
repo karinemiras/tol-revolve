@@ -53,11 +53,12 @@ namespace tol
     public:
     BPart();
 
-    BPart(const std::string &name,
-          const std::string &type,
-          int x,
-          int y,
-          size_t rotation);
+    BPart(
+            const std::string &name,
+            const std::string &type,
+            int x,
+            int y,
+            size_t rotation);
 
     ~BPart();
 
@@ -96,17 +97,18 @@ namespace tol
 
     cppneat::GeneticEncodingPtr CoupledCpgNetwork();
 
-    std::pair<std::map<int, size_t>, std::map<int, size_t>>
-    InputOutputMap(const std::vector<revolve::gazebo::MotorPtr> &actuators,
-                   const std::vector<revolve::gazebo::SensorPtr> &sensors);
+    std::pair< std::map< int, size_t >, std::map< int, size_t>>
+    InputOutputMap(
+            const std::vector< revolve::gazebo::MotorPtr > &actuators,
+            const std::vector< revolve::gazebo::SensorPtr > &sensors);
 
     cppneat::GeneticEncodingPtr CppnNetwork();
 
-    std::map<std::string, CoordsTriple> IdToCoordinatesMap();
+    std::map< std::string, CoordsTriple > IdToCoordinatesMap();
 
     /// \brief returns the coordinates of the actuators matching the order the
     /// actuators give coordinate of actuators[0] is in sorted_coordinates[0]
-    std::vector<std::pair<int, int>> SortedCoordinates(
+    std::vector< std::pair< int, int >> SortedCoordinates(
             const std::vector< revolve::gazebo::MotorPtr > &actuators);
 
     size_t InnovationNumber()
@@ -115,19 +117,22 @@ namespace tol
     };
 
     private:
-    static std::tuple< int, int > setCoordinates(const size_t _rotation,
-                                                 const int _init_x,
-                                                 const int _init_y);
+    static std::tuple< int, int > setCoordinates(
+            const size_t _rotation,
+            const int _init_x,
+            const int _init_y);
 
-    static size_t calculateRotation(const size_t _arity,
-                                    const size_t _slot,
-                                    const size_t _parents_rotation);
+    static size_t calculateRotation(
+            const size_t _arity,
+            const size_t _slot,
+            const size_t _parents_rotation);
 
     void initPart(BodyPart *_part);
 
     private:
-    void ParseYaml(BodyPart *_module,
-                   YAML::Node &_yaml);
+    void ParseYaml(
+            BodyPart *_module,
+            YAML::Node &_yaml);
 
     void initParser(const YAML::Node &_yaml);
 
@@ -140,34 +145,39 @@ namespace tol
             const size_t rotation,
             int x,
             int y);
+
     // Network
     void GenerateOscillator(BodyPart *_module);
+
     cppneat::NeuronGenePtr GenerateDifferentialNeuron(
             BodyPart *_module,
             size_t _position,
             std::string _name);
-    void GenerateConnection(cppneat::NeuronGenePtr _from,
-                            cppneat::NeuronGenePtr _to);
+
+    void GenerateConnection(
+            cppneat::NeuronGenePtr _from,
+            cppneat::NeuronGenePtr _to);
+
     void ConnectOscillators();
 
     /// \brief innovation number
     size_t innovation_number_;
 
-    std::vector<cppneat::NeuronGenePtr> neurons_;
+    std::vector< cppneat::NeuronGenePtr > neurons_;
 
-    std::vector<cppneat::NeuronGenePtr> inputNeurons_;
+    std::vector< cppneat::NeuronGenePtr > inputNeurons_;
 
-    std::vector<cppneat::NeuronGenePtr> outputNeurons_;
+    std::vector< cppneat::NeuronGenePtr > outputNeurons_;
 
-    std::vector<cppneat::ConnectionGenePtr> connections_;
+    std::vector< cppneat::ConnectionGenePtr > connections_;
 
     std::map< cppneat::NeuronGenePtr, CoordsTriple > coordinates_;
 
     // Body parsing
-    std::map<std::string, int> arity_;
-    std::vector<BodyPart *> toParse_;
-    std::vector<BodyPart *> toDelete_;
-    std::map<BodyPart *, YAML::Node> bodyToNode_;
+    std::map< std::string, int > arity_;
+    std::vector< BodyPart * > toParse_;
+    std::vector< BodyPart * > toDelete_;
+    std::map< BodyPart *, YAML::Node > bodyToNode_;
 
     /// \brief A tree data structure representing a robot
     BodyPart *bodyMap_ = nullptr;

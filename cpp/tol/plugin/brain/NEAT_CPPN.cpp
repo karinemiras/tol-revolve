@@ -18,7 +18,6 @@
 */
 
 #include <map>
-#include <utility>
 #include <string>
 #include <vector>
 
@@ -34,14 +33,15 @@
 
 using namespace tol;
 
-NeatExtNN::NeatExtNN(std::string modelName,
-                     sdf::ElementPtr node,
-                     tol::EvaluatorPtr evaluator,
-                     const std::vector<revolve::gazebo::MotorPtr> &actuators,
-                     const std::vector<revolve::gazebo::SensorPtr> &sensors)
+NeatExtNN::NeatExtNN(
+        std::string modelName,
+        sdf::ElementPtr node,
+        tol::EvaluatorPtr evaluator,
+        const std::vector< revolve::gazebo::MotorPtr > &actuators,
+        const std::vector< revolve::gazebo::SensorPtr > &sensors)
         : revolve::brain::ConverterSplitBrain
-                  <boost::shared_ptr<revolve::brain::CPPNConfig>,
-                   cppneat::GeneticEncodingPtr>(
+        < boost::shared_ptr< revolve::brain::CPPNConfig >,
+          cppneat::GeneticEncodingPtr >(
         &revolve::brain::convertForController,
         &revolve::brain::convertForLearner,
         modelName)
@@ -49,40 +49,37 @@ NeatExtNN::NeatExtNN(std::string modelName,
   // initialise controller
   std::string name(modelName.substr(0, modelName.find("-")) + ".yaml");
   BodyParser body(name);
-  std::pair<std::map<int, size_t>, std::map<int, size_t>>
-          in_out = body.InputOutputMap(actuators, sensors);
+  auto in_out = body.InputOutputMap(actuators, sensors);
   revolve::brain::InputMap = in_out.first;
   revolve::brain::OutputMap = in_out.second;
-  cppneat::NEATLearner::LearningConfiguration
-          learn_conf = parseLearningSDF(node);
+  auto learn_conf = parseLearningSDF(node);
   learn_conf.start_from = body.CoupledCpgNetwork();
-  revolve::brain::RafCPGControllerPtr
-          new_controller(
+  revolve::brain::RafCPGControllerPtr new_controller(
           new revolve::brain::RafCPGController(
                   modelName,
                   revolve::brain::convertForController(learn_conf.start_from),
                   Helper::createWrapper(actuators),
                   Helper::createWrapper(sensors)));
 
-  int innov_number = body.InnovationNumber();
+  auto innovationNumber = body.InnovationNumber();
   controller_ = new_controller;
 
   // initialise learner
   revolve::brain::SetBrainSpec(false);
-  cppneat::MutatorPtr mutator(
-          new cppneat::Mutator(revolve::brain::brain_spec,
-                               0.8,
-                               innov_number,
-                               100,
-                               std::vector< cppneat::Neuron::Ntype >()));
-  std::string mutator_path =
+  cppneat::MutatorPtr mutator(new cppneat::Mutator(
+          revolve::brain::brain_spec,
+          0.8,
+          innovationNumber,
+          100,
+          std::vector< cppneat::Neuron::Ntype >()));
+  auto mutator_path =
           node->HasAttribute("path_to_mutator") ?
           node->GetAttribute("path_to_mutator")->GetAsString() : "none";
 
-  learner_ = boost::shared_ptr<cppneat::NEATLearner>(
-          new cppneat::NEATLearner(mutator,
-                                   mutator_path,
-                                   learn_conf));
+  learner_ = boost::shared_ptr< cppneat::NEATLearner >(new cppneat::NEATLearner(
+          mutator,
+          mutator_path,
+          learn_conf));
 
   evaluator_ = evaluator;
 }
@@ -91,13 +88,14 @@ NeatExtNN::~NeatExtNN()
 {
 }
 
-void NeatExtNN::update(const std::vector<revolve::gazebo::MotorPtr> &actuators,
-                       const std::vector<revolve::gazebo::SensorPtr> &sensors,
-                       double t,
-                       double step)
+void NeatExtNN::update(
+        const std::vector< revolve::gazebo::MotorPtr > &actuators,
+        const std::vector< revolve::gazebo::SensorPtr > &sensors,
+        double t,
+        double step)
 {
-  revolve::brain::ConverterSplitBrain<revolve::brain::CPPNConfigPtr,
-                                      cppneat::GeneticEncodingPtr>::update(
+  revolve::brain::ConverterSplitBrain< revolve::brain::CPPNConfigPtr,
+                                       cppneat::GeneticEncodingPtr >::update(
           Helper::createWrapper(actuators),
           Helper::createWrapper(sensors),
           t,

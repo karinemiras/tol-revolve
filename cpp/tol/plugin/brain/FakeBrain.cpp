@@ -28,7 +28,7 @@
 using namespace tol;
 
 FakeBrain::FakeBrain(
-        std::string /*modelName*/,
+        std::string /*_name*/,
         std::vector< revolve::gazebo::MotorPtr > &actuators,
         std::vector< revolve::gazebo::SensorPtr > &sensors
 )

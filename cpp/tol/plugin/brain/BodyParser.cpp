@@ -376,14 +376,13 @@ std::map< std::string, CoordsTriple > BodyParser::IdToCoordinatesMap()
 std::vector< std::pair< int, int > > BodyParser::SortedCoordinates(
         const std::vector< rg::MotorPtr > &actuators)
 {
-  std::vector< std::pair< int, int>> coordinates;
+  std::vector< std::pair< int , int >> coordinates;
 
   // map of numbers of output neurons for each body part
   std::map< std::string, size_t > outputCountMap;
 
-  for (auto it = actuators.begin(); it not_eq actuators.end(); ++it)
+  for (const auto &motor : actuators)
   {
-    auto motor = *it;
     auto partId = motor->partId();
 
     if (not outputCountMap.count(partId))
@@ -411,9 +410,9 @@ std::vector< std::pair< int, int > > BodyParser::SortedCoordinates(
                   << " for motor could not be located" << std::endl;
         throw std::runtime_error("Robot brain error");
       }
-      coordinates.push_back(std::pair< int, int >(
+      coordinates.push_back({
               std::get< 0 >(this->coordinates_[this->outputNeurons_[j]]),
-              std::get< 1 >(this->coordinates_[this->outputNeurons_[j]])));
+              std::get< 1 >(this->coordinates_[this->outputNeurons_[j]])});
     }
   }
   return coordinates;
@@ -447,7 +446,7 @@ std::tuple< int, int > BodyParser::setCoordinates(
       std::exit(-1);
   }
 
-  return std::make_tuple(x, y);
+  return {x, y};
 }
 
 ///////////////////////////////////////////////////

@@ -61,7 +61,8 @@ namespace tol
   };
 }
 
-std::ostream &operator<<(std::ostream &os,
-                         tol::Helper::RobotType type);
+std::ostream &operator<<(
+        std::ostream &os,
+        tol::Helper::RobotType type);
 
 #endif  //  TOL_PLUGIN_HELPER_H_

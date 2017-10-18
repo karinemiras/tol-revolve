@@ -35,7 +35,7 @@ namespace tol
     virtual void start();
   };
 
-  typedef boost::shared_ptr<tol::Evaluator> EvaluatorPtr;
+  typedef boost::shared_ptr< tol::Evaluator > EvaluatorPtr;
 }
 
 #endif  //  TOL_PLUGIN_EVALUATOR_H_

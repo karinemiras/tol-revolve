@@ -22,8 +22,7 @@
 
 class TestSUPGBrain
 {
-  public:
-  TestSUPGBrain();
+  public: TestSUPGBrain();
 };
 
 #endif  //  TESTSUPGBRAIN_H

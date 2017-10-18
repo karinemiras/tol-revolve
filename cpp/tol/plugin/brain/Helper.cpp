@@ -112,8 +112,9 @@ Helper::RobotType Helper::parseRobotType(const std::string &value)
   throw std::invalid_argument("robot type impossible to parse");
 }
 
-std::ostream &operator<<(std::ostream &os,
-                         tol::Helper::RobotType type)
+std::ostream &operator<<(
+        std::ostream &os,
+        tol::Helper::RobotType type)
 {
   switch (type)
   {

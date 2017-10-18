@@ -63,8 +63,8 @@ namespace tol
 
   class HyperNEAT_MlmpCPG
           : public rg::Brain
-            , private rb::ConverterSplitBrain<rb::CPPNConfigPtr,
-                                              cppneat::GeneticEncodingPtr>
+            , private rb::ConverterSplitBrain< rb::CPPNConfigPtr,
+                                               cppneat::GeneticEncodingPtr >
   {
     public:
 
@@ -76,27 +76,29 @@ namespace tol
     /// \param actuators: vector list of robot's actuators
     /// \param sensors: vector list of robot's sensors
     /// \return pointer to the neural network
-    HyperNEAT_MlmpCPG(std::string modelName,
-                      sdf::ElementPtr brain,
-                      tol::EvaluatorPtr evaluator,
-                      const std::vector<rg::MotorPtr> &actuators,
-                      const std::vector<rg::SensorPtr> &sensors);
+    HyperNEAT_MlmpCPG(
+            std::string modelName,
+            sdf::ElementPtr brain,
+            tol::EvaluatorPtr evaluator,
+            const std::vector< rg::MotorPtr > &actuators,
+            const std::vector< rg::SensorPtr > &sensors);
 
     /// \brief Destructor
     virtual ~HyperNEAT_MlmpCPG();
 
-    using rb::ConverterSplitBrain<rb::CPPNConfigPtr,
-                                  cppneat::GeneticEncodingPtr>::update;
+    using rb::ConverterSplitBrain< rb::CPPNConfigPtr,
+                                   cppneat::GeneticEncodingPtr >::update;
 
     /// \brief Update sensors reading, actuators position, and `brain` state
     /// \param[inout] actuators List of actuators
     /// \param[inout] sensors List of sensors
     /// \param[in] t Time value
     /// \param[in] step Time step
-    virtual void update(const std::vector<rg::MotorPtr> &actuators,
-                        const std::vector<rg::SensorPtr> &sensors,
-                        double t,
-                        double step);
+    virtual void update(
+            const std::vector< rg::MotorPtr > &actuators,
+            const std::vector< rg::SensorPtr > &sensors,
+            double t,
+            double step);
 
     static cppneat::NEATLearner::LearningConfiguration
     parseLearningSDF(sdf::ElementPtr brain);

@@ -29,11 +29,13 @@ BodyPart::BodyPart()
   std::memset(neighbours, 0, sizeof(neighbours));
 }
 
-BodyPart::BodyPart(const std::string &name,
-                   const std::string &type,
-                   int x,
-                   int y,
-                   size_t rotation)
+BodyPart::BodyPart(
+        const std::string &name,
+        const std::string &type,
+        int x,
+        int y,
+        size_t rotation
+)
         : name(name)
         , type(type)
         , x(x)
@@ -125,11 +127,12 @@ YamlBodyParser::~YamlBodyParser()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-BodyPart *YamlBodyParser::parseModule(BodyPart *parent,
-                                      const YAML::Node &offspring,
-                                      const size_t rotation,
-                                      int x,
-                                      int y)
+BodyPart *YamlBodyParser::parseModule(
+        BodyPart *parent,
+        const YAML::Node &offspring,
+        const size_t rotation,
+        int x,
+        int y)
 {
   BodyPart *module = nullptr;
   if (offspring.IsDefined())
@@ -176,20 +179,22 @@ BodyPart *YamlBodyParser::parseModule(BodyPart *parent,
       {
         // Calculate coordinate for an offspring module
         int offsprings_x, offsprings_y;
-        size_t offsprings_rotation =
-                this->calculateRotation(module->arity,
-                                        parents_slot,
-                                        module->rotation);
-        std::tie(offsprings_x, offsprings_y) =
-                this->setCoordinates(offsprings_rotation, x, y);
+        size_t offsprings_rotation = this->calculateRotation(
+                module->arity,
+                parents_slot,
+                module->rotation);
+        std::tie(offsprings_x, offsprings_y) = this->setCoordinates(
+                offsprings_rotation,
+                x,
+                y);
 
         // Traverse recursively through each of offspring modules
-        module->neighbours[parents_slot] =
-                this->parseModule(module,
-                                  offspring["children"][parents_slot],
-                                  offsprings_rotation,
-                                  offsprings_x,
-                                  offsprings_y);
+        module->neighbours[parents_slot] = this->parseModule(
+                module,
+                offspring["children"][parents_slot],
+                offsprings_rotation,
+                offsprings_x,
+                offsprings_y);
       }
     }
   }
@@ -197,9 +202,10 @@ BodyPart *YamlBodyParser::parseModule(BodyPart *parent,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-size_t YamlBodyParser::calculateRotation(const size_t arity,
-                                         const size_t slot,
-                                         const size_t parents_rotation) const
+size_t YamlBodyParser::calculateRotation(
+        const size_t arity,
+        const size_t slot,
+        const size_t parents_rotation) const
 {
   if (arity == 2)
   {
@@ -230,9 +236,10 @@ size_t YamlBodyParser::calculateRotation(const size_t arity,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-std::tuple< int, int > YamlBodyParser::setCoordinates(const size_t rotation,
-                                                      const int init_x,
-                                                      const int init_y)
+std::tuple< int, int > YamlBodyParser::setCoordinates(
+        const size_t rotation,
+        const int init_x,
+        const int init_y)
 {
   int x = init_x;
   int y = init_y;
@@ -260,9 +267,10 @@ std::tuple< int, int > YamlBodyParser::setCoordinates(const size_t rotation,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void YamlBodyParser::setNormalisedCoordinates(BodyPart *module,
-                                              const int range_x,
-                                              const int range_y)
+void YamlBodyParser::setNormalisedCoordinates(
+        BodyPart *module,
+        const int range_x,
+        const int range_y)
 {
   if (module not_eq nullptr)
   {

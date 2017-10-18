@@ -38,10 +38,11 @@ namespace tol
   {
     public:
     /// \brief Constructor
-    MlmpCPGBrain(std::string robot_name,
-                 EvaluatorPtr evaluator,
-                 size_t n_actuators,
-                 size_t n_sensors);
+    MlmpCPGBrain(
+            std::string robot_name,
+            EvaluatorPtr evaluator,
+            size_t n_actuators,
+            size_t n_sensors);
 
     /// \brief Destructor
     virtual ~MlmpCPGBrain();

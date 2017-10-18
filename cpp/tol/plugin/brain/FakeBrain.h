@@ -34,12 +34,13 @@ namespace tol
           : public revolve::gazebo::Brain
   {
     public:
-    typedef const boost::shared_ptr<revolve::msgs::ModifyNeuralNetwork const>
+    typedef const boost::shared_ptr< revolve::msgs::ModifyNeuralNetwork const >
             ConstModifyNeuralNetworkPtr;
 
-    FakeBrain(std::string modelName,
-              std::vector<revolve::gazebo::MotorPtr> &actuators,
-              std::vector<revolve::gazebo::SensorPtr> &sensors);
+    FakeBrain(
+            std::string modelName,
+            std::vector< revolve::gazebo::MotorPtr > &actuators,
+            std::vector< revolve::gazebo::SensorPtr > &sensors);
 
     virtual ~FakeBrain();
 
@@ -48,10 +49,11 @@ namespace tol
      /// \param Sensor list
      */
     virtual void
-    update(const std::vector<revolve::gazebo::MotorPtr> &motors,
-           const std::vector<revolve::gazebo::SensorPtr> &sensors,
-           double t,
-           double step);
+    update(
+            const std::vector< revolve::gazebo::MotorPtr > &motors,
+            const std::vector< revolve::gazebo::SensorPtr > &sensors,
+            double t,
+            double step);
 
     protected:
     /**

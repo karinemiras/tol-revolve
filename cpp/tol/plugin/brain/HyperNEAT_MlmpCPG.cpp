@@ -44,45 +44,42 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
         sdf::ElementPtr brain,
         tol::EvaluatorPtr evaluator,
         const std::vector< rg::MotorPtr > &actuators,
-        const std::vector< rg::SensorPtr > &sensors)
+        const std::vector< rg::SensorPtr > &sensors
+)
         : rb::ConverterSplitBrain< rb::CPPNConfigPtr,
                                    cppneat::GeneticEncodingPtr >
-                  (&rb::convertGEtoNN,
-                   &rb::convertNNtoGE,
-                   modelName)
+        (&rb::convertGEtoNN,
+         &rb::convertNNtoGE,
+         modelName)
 {
   // Initialise controller
-  std::string name(modelName.substr(0, modelName.find("-")) + ".yaml");
+  std::string name(modelName.substr(0, modelName.find('-')) + ".yaml");
   BodyParser body(name);
 
-  std::pair< std::map< int, size_t >, std::map< int, size_t >> in_out =
-          body.InputOutputMap(actuators, sensors);
+  auto in_out = body.InputOutputMap(actuators, sensors);
   rb::InputMap = in_out.first;
   rb::OutputMap = in_out.second;
   rb::RafCpgNetwork = rb::convertForController(body.CoupledCpgNetwork());
   rb::neuron_coordinates = body.IdToCoordinatesMap();
 
   // Initialise controller
-  controller_ = rb::RafCPGControllerPtr(
-          new rb::RafCPGController(
-                  modelName,
-                  rb::RafCpgNetwork,
-                  Helper::createWrapper(actuators),
-                  Helper::createWrapper(sensors)));
+  controller_ = rb::RafCPGControllerPtr(new rb::RafCPGController(
+          modelName,
+          rb::RafCpgNetwork,
+          Helper::createWrapper(actuators),
+          Helper::createWrapper(sensors)));
 
   // Initialise learner
-  cppneat::NEATLearner::LearningConfiguration learn_conf =
-          parseLearningSDF(brain);
+  auto learn_conf = parseLearningSDF(brain);
   rb::SetBrainSpec(true);
   learn_conf.start_from = body.CppnNetwork();
-  cppneat::MutatorPtr mutator(
-          new cppneat::Mutator(rb::brain_spec,
-                               0.8,
-                               learn_conf.start_from
-                                                   ->RangeInnovationNumbers().second,
-                               100,
-                               std::vector< cppneat::Neuron::Ntype >()));
-  std::string mutator_path =
+  cppneat::MutatorPtr mutator(new cppneat::Mutator(
+          rb::brain_spec,
+          0.8,
+          learn_conf.start_from->RangeInnovationNumbers().second,
+          100,
+          std::vector< cppneat::Neuron::Ntype >()));
+  auto mutator_path =
           brain->HasAttribute("path_to_mutator") ?
           brain->GetAttribute("path_to_mutator")->GetAsString() : "none";
 
@@ -94,38 +91,37 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
                   learn_conf));
 
   // initialise starting population
-  int number_of_brains_from_first =
+  auto numBrainsFirst =
           brain->HasAttribute("number_of_brains_from_first") ?
           std::stoi(brain->GetAttribute("number_of_brains_from_first")
                          ->GetAsString()) : 0;
-  int number_of_brains_from_second =
+  auto numBrainsSecond =
           brain->HasAttribute("number_of_brains_from_second") ?
           std::stoi(brain->GetAttribute("number_of_brains_from_second")
                          ->GetAsString()) : 0;
-  std::string path_to_first_brains =
+  auto path_to_first_brains =
           brain->HasAttribute("path_to_first_brains") ?
           brain->GetAttribute("path_to_first_brains")->GetAsString() : "";
 
-  std::vector< cppneat::GeneticEncodingPtr > brains_from_init =
-          boost::dynamic_pointer_cast< cppneat::NEATLearner >(learner_)
-                  ->InitBrains();
+  auto brains_from_init = boost::dynamic_pointer_cast< cppneat::NEATLearner >(
+          learner_)->InitBrains();
   std::vector< cppneat::GeneticEncodingPtr > brains_from_first;
-  if (path_to_first_brains == "" or path_to_first_brains == "none")
+  if ("-" == path_to_first_brains or "none" == path_to_first_brains)
   {
-    number_of_brains_from_first = 0;
+    numBrainsFirst = 0;
   }
   else
   {
     brains_from_first = boost::dynamic_pointer_cast< cppneat::NEATLearner >(
             learner_)->YamlBrains(path_to_first_brains, -1);
   }
-  std::string path_to_second_brains =
+  auto path_to_second_brains =
           brain->HasAttribute("path_to_second_brains") ?
           brain->GetAttribute("path_to_second_brains")->GetAsString() : "";
   std::vector< cppneat::GeneticEncodingPtr > brains_from_second;
-  if (path_to_second_brains == "" or path_to_second_brains == "none")
+  if ("-" == path_to_second_brains or "none" == path_to_second_brains)
   {
-    number_of_brains_from_second = 0;
+    numBrainsSecond = 0;
   }
   else
   {
@@ -133,32 +129,25 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
             learner_)->YamlBrains(path_to_second_brains, -1);
   }
 
-  std::vector< cppneat::GeneticEncodingPtr > init_brains;
+  std::vector< cppneat::GeneticEncodingPtr > initBrains;
   int cur_number = 0;
-  int i = 0;
-  while (cur_number < number_of_brains_from_first)
+  for (size_t i = 0; cur_number < numBrainsFirst; ++i)
   {
-    init_brains.push_back(brains_from_first[i]);
-    i++;
+    initBrains.push_back(brains_from_first[i]);
     cur_number++;
   }
-  i = 0;
-  while (cur_number < number_of_brains_from_first
-                      + number_of_brains_from_second)
+  for (size_t i = 0; cur_number < numBrainsFirst + numBrainsSecond; ++i)
   {
-    init_brains.push_back(brains_from_second[i]);
-    i++;
+    initBrains.push_back(brains_from_second[i]);
     cur_number++;
   }
-  i = 0;
-  while (cur_number < learn_conf.pop_size)
+  for (size_t i = 0; cur_number < learn_conf.pop_size; ++i)
   {
-    init_brains.push_back(brains_from_init[i]);
-    i++;
+    initBrains.push_back(brains_from_init[i]);
     cur_number++;
   }
   boost::dynamic_pointer_cast< cppneat::NEATLearner >(learner_)->Initialise(
-          init_brains);
+          initBrains);
 
   // initialise evaluator
   evaluator_ = evaluator;
@@ -168,10 +157,11 @@ HyperNEAT_MlmpCPG::~HyperNEAT_MlmpCPG()
 {
 }
 
-void HyperNEAT_MlmpCPG::update(const std::vector< rg::MotorPtr > &actuators,
-                               const std::vector< rg::SensorPtr > &sensors,
-                               double t,
-                               double step)
+void HyperNEAT_MlmpCPG::update(
+        const std::vector< rg::MotorPtr > &actuators,
+        const std::vector< rg::SensorPtr > &sensors,
+        double t,
+        double step)
 {
   rb::ConverterSplitBrain< boost::shared_ptr< rb::CPPNConfig >,
                            cppneat::GeneticEncodingPtr >::update(

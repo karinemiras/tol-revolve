@@ -53,16 +53,15 @@ HyperNEAT_Splines::HyperNEAT_Splines(
   rb::sorted_coordinates = body.SortedCoordinates(actuators);
 
   // Prepare for controller
-  rb::RLPowerLearner::Config conf = parseSDF(brain);
+  auto conf = parseSDF(brain);
   rb::update_rate = conf.update_step;
   rb::spline_size = conf.source_y_size;
-  std::string mutator_path =
+  auto mutator_path =
           brain->HasAttribute("path_to_mutator") ?
           brain->GetAttribute("path_to_mutator")->GetAsString() : "none";
 
   // Prepare for learner
-  cppneat::NEATLearner::LearningConfiguration
-          learn_conf = parseLearningSDF(brain);
+  auto learn_conf = parseLearningSDF(brain);
   cppneat::MutatorPtr mutator(new cppneat::Mutator(
           rb::brain_spec,
           0.8,
@@ -80,8 +79,8 @@ HyperNEAT_Splines::HyperNEAT_Splines(
                   conf.interpolation_spline_size));
 
   // initialise learner
-  this->learner_ =
-          boost::shared_ptr< cppneat::NEATLearner >(new cppneat::NEATLearner(
+  this->learner_ = boost::shared_ptr< cppneat::NEATLearner >(
+          new cppneat::NEATLearner(
                   mutator,
                   mutator_path,
                   learn_conf));

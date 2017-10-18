@@ -48,17 +48,20 @@ RLPower_Splines::RLPower_Splines(std::string model_name,
   rb::RLPowerLearner::Config config = parseSDF(brain);
   // initialise controller
   size_t n_actuators = 0;
-  for (auto it : actuators)
+  for (const auto &actuator : actuators)
   {
-    n_actuators += it->outputs();
+    n_actuators += actuator->outputs();
   }
   controller_ = boost::shared_ptr<rb::PolicyController>(
-          new rb::PolicyController(n_actuators,
-                                   config.interpolation_spline_size));
+          new rb::PolicyController(
+                  n_actuators,
+                  config.interpolation_spline_size));
 
   // initialise learner
-  learner_ = boost::shared_ptr<rb::RLPowerLearner>(
-          new rb::RLPowerLearner(model_name, config, n_actuators));
+  learner_ = boost::shared_ptr<rb::RLPowerLearner>(new rb::RLPowerLearner(
+          model_name,
+          config,
+          n_actuators));
 
   evaluator_ = evaluator;
 }

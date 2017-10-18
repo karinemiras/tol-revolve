@@ -54,11 +54,12 @@ namespace tol
     /// \param actuators: vector list of robot's actuators
     /// \param sensors: vector list of robot's sensors
     /// \return pointer to the neural network
-    HyperNEAT_CPG(std::string modelName,
-                  sdf::ElementPtr brain,
-                  tol::EvaluatorPtr evaluator,
-                  const std::vector< rg::MotorPtr > &actuators,
-                  const std::vector< rg::SensorPtr > &sensors);
+    HyperNEAT_CPG(
+            std::string modelName,
+            sdf::ElementPtr brain,
+            tol::EvaluatorPtr evaluator,
+            const std::vector< rg::MotorPtr > &actuators,
+            const std::vector< rg::SensorPtr > &sensors);
 
     /// \brief Destructor
     virtual ~HyperNEAT_CPG();
@@ -71,10 +72,11 @@ namespace tol
     /// \param[inout] sensors List of sensors
     /// \param[in] t Time value
     /// \param[in] step Time step
-    virtual void update(const std::vector< rg::MotorPtr > &actuators,
-                        const std::vector< rg::SensorPtr > &sensors,
-                        double t,
-                        double step);
+    virtual void update(
+            const std::vector< rg::MotorPtr > &actuators,
+            const std::vector< rg::SensorPtr > &sensors,
+            double t,
+            double step);
 
     static cppneat::NEATLearner::LearningConfiguration
     parseLearningSDF(sdf::ElementPtr brain);

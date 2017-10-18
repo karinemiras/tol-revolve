@@ -39,10 +39,11 @@ class testSUPGBrainPhototaxis
           const std::vector< revolve::gazebo::MotorPtr > &motors,
           const std::vector< revolve::gazebo::SensorPtr > &sensors);
 
-  void update(const std::vector< revolve::gazebo::MotorPtr > &motors,
-              const std::vector< revolve::gazebo::SensorPtr > &sensors,
-              double t,
-              double step);
+  void update(
+          const std::vector< revolve::gazebo::MotorPtr > &motors,
+          const std::vector< revolve::gazebo::SensorPtr > &sensors,
+          double t,
+          double step);
 };
 
 #endif  //  TESTSUPGBRAINPHOTOTAXIS_H

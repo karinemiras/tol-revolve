@@ -37,7 +37,8 @@ SUPGBrainPhototaxis::SUPGBrainPhototaxis(
         double light_radius_distance,
         const std::vector< std::vector< float>> &neuron_coordinates,
         const std::vector< rg::MotorPtr > &actuators,
-        std::vector< rg::SensorPtr > &sensors)
+        std::vector< rg::SensorPtr > &sensors
+)
         : rb::SUPGBrainPhototaxis(robot_name,
                                   evaluator,
                                   nullptr,
@@ -50,28 +51,34 @@ SUPGBrainPhototaxis::SUPGBrainPhototaxis(
   this->light_constructor_left = [this](std::vector< float > coordinates)
           -> boost::shared_ptr< FakeLightSensor >
   {
-    ignition::math::Vector3d offset(coordinates[0] / 100,
-                                    coordinates[1] / 100, 0);
+    ignition::math::Vector3d offset(
+            coordinates[0] / 100,
+            coordinates[1] / 100,
+            0);
     ignition::math::Vector3d light_pos =
             this->robotPosition_.CoordPositionAdd(offset);
     // this function is not supposed to delete the light
-    this->lightSensorLeft_.reset(new FakeLightSensor("sensor_left",
-                                                      160,
-                                                      light_pos));
+    this->lightSensorLeft_.reset(new FakeLightSensor(
+            "sensor_left",
+            160,
+            light_pos));
     return this->lightSensorLeft_;
   };
 
   this->light_constructor_right = [this](std::vector< float > coordinates)
           -> boost::shared_ptr< FakeLightSensor >
   {
-    ignition::math::Vector3d offset(coordinates[0] / 100,
-                                    coordinates[1] / 100, 0);
+    ignition::math::Vector3d offset(
+            coordinates[0] / 100,
+            coordinates[1] / 100,
+            0);
     ignition::math::Vector3d light_pos =
             this->robotPosition_.CoordPositionAdd(offset);
     // this function is not supposed to delete the light
-    this->lightSensorRight_.reset(new FakeLightSensor("sensor_right",
-                                                       160,
-                                                       light_pos));
+    this->lightSensorRight_.reset(new FakeLightSensor(
+            "sensor_right",
+            160,
+            light_pos));
     return this->lightSensorRight_;
   };
 
@@ -85,15 +92,17 @@ SUPGBrainPhototaxis::~SUPGBrainPhototaxis()
 {
 }
 
-void SUPGBrainPhototaxis::update(const std::vector< rg::MotorPtr > &motors,
-                                 const std::vector< rg::SensorPtr > &sensors,
-                                 double t,
-                                 double step)
+void SUPGBrainPhototaxis::update(
+        const std::vector< rg::MotorPtr > &motors,
+        const std::vector< rg::SensorPtr > &sensors,
+        double t,
+        double step)
 {
-  rb::SUPGBrainPhototaxis::update(Helper::createWrapper(motors),
-                                  Helper::createWrapper(sensors),
-                                  t,
-                                  step);
+  rb::SUPGBrainPhototaxis::update(
+          Helper::createWrapper(motors),
+          Helper::createWrapper(sensors),
+          t,
+          step);
 }
 
 void SUPGBrainPhototaxis::updateRobotPosition(
@@ -108,7 +117,7 @@ const std::vector< rb::SensorPtr >
 tol::SUPGBrainPhototaxis::createEnhancedSensorWrapper(
         const std::vector< rg::SensorPtr > &original)
 {
-  std::vector< rb::SensorPtr > result = Helper::createWrapper(original);
+  auto result = Helper::createWrapper(original);
   result.push_back(boost::make_shared< tol::FakeLightSensor >(
           "sensor_1_fake_filler", 0, ignition::math::Vector3d()));
   result.push_back(boost::make_shared< tol::FakeLightSensor >(

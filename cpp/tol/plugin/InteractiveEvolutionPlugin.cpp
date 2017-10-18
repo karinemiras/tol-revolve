@@ -26,7 +26,8 @@ namespace gz = gazebo;
 
 using namespace tol;
 
-InteractiveEvolutionPlugin::InteractiveEvolutionPlugin() :
+InteractiveEvolutionPlugin::InteractiveEvolutionPlugin()
+        :
         GUIPlugin()
 {
   // Make the widget invisible - only listening to key events.
@@ -39,7 +40,7 @@ InteractiveEvolutionPlugin::InteractiveEvolutionPlugin() :
           "from selected robots. Requesting offspring will enable "
           "interactive mode." << std::endl;
 
-  keyPub_ = node_->Advertise<gz::msgs::Request>("~/request");
+  keyPub_ = node_->Advertise< gz::msgs::Request >("~/request");
 
   // Register key event handler
   gz::gui::KeyEventHandler::Instance()->AddPressFilter(
@@ -91,7 +92,7 @@ void InteractiveEvolutionPlugin::OnReproduceButton()
 {
   gz::gui::MainWindow *mainWindow = gz::gui::get_main_window();
   gz::gui::GLWidget *glWidget =
-          mainWindow->findChild<gz::gui::GLWidget *>("GLWidget");
+          mainWindow->findChild< gz::gui::GLWidget * >("GLWidget");
 
   auto visuals = glWidget->SelectedVisuals();
   if (visuals.size() not_eq 2)

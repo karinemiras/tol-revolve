@@ -55,10 +55,11 @@ namespace tol
     /// \param n_actuators: number of actuators
     /// \param n_sensors: number of sensors
     /// \return pointer to the RLPower class object
-    RLPower_Splines(std::string model_name,
-                    sdf::ElementPtr brain,
-                    EvaluatorPtr evaluator,
-                    std::vector< revolve::gazebo::MotorPtr > &actuators);
+    RLPower_Splines(
+            std::string model_name,
+            sdf::ElementPtr brain,
+            EvaluatorPtr evaluator,
+            std::vector< revolve::gazebo::MotorPtr > &actuators);
 
     /// \brief Destructor
     virtual ~RLPower_Splines();
@@ -72,11 +73,11 @@ namespace tol
     /// \param[inout] sensors List of sensors
     /// \param[in] t Time value
     /// \param[in] step Time step
-    virtual void
-    update(const std::vector< revolve::gazebo::MotorPtr > &actuators,
-           const std::vector< revolve::gazebo::SensorPtr > &sensors,
-           double t,
-           double step);
+    virtual void update(
+            const std::vector< revolve::gazebo::MotorPtr > &actuators,
+            const std::vector< revolve::gazebo::SensorPtr > &sensors,
+            double t,
+            double step);
 
     /// \brief
     static revolve::brain::RLPowerLearner::Config

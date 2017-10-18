@@ -36,8 +36,9 @@ namespace tol
 
     virtual ~RobotController();
 
-    virtual void Load(::gazebo::physics::ModelPtr _parent,
-                      sdf::ElementPtr _sdf);
+    virtual void Load(
+            ::gazebo::physics::ModelPtr _parent,
+            sdf::ElementPtr _sdf);
 
     virtual void LoadBrain(sdf::ElementPtr sdf);
 
@@ -60,7 +61,7 @@ namespace tol
       ignition::math::Pose3d previousPosition_;
     };
 
-    boost::shared_ptr<Evaluator> evaluator_;
+    boost::shared_ptr< Evaluator > evaluator_;
   };
 
 } /* namespace tol */

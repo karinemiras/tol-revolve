@@ -20,7 +20,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <string>
 #include <vector>
 
 #include <boost/make_shared.hpp>
@@ -193,8 +192,9 @@ RobotController::~RobotController()
   AsyncNeat::CleanUp();
 }
 
-void RobotController::Load(::gazebo::physics::ModelPtr _parent,
-                           sdf::ElementPtr _sdf)
+void RobotController::Load(
+        ::gazebo::physics::ModelPtr _parent,
+        sdf::ElementPtr _sdf)
 {
   ::revolve::gazebo::RobotController::Load(_parent, _sdf);
   std::cout << "ToL Robot loaded." << std::endl;

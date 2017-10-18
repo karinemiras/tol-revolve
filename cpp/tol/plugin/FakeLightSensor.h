@@ -35,9 +35,10 @@ namespace tol
             , public revolve::gazebo::VirtualSensor
   {
     public:
-    FakeLightSensor(std::string name,
-                    float fov,
-                    ignition::math::Vector3d light_pos);
+    FakeLightSensor(
+            std::string name,
+            float fov,
+            ignition::math::Vector3d light_pos);
 
     virtual ~FakeLightSensor();
 

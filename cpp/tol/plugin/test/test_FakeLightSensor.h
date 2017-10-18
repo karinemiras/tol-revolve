@@ -26,9 +26,10 @@ class TestFakeLightSensor
         : public tol::FakeLightSensor
 {
   public:
-  explicit TestFakeLightSensor(float fov,
-                               const ignition::math::Pose3d robot_sensor_offset,
-                               const ignition::math::Vector3d light_position)
+  explicit TestFakeLightSensor(
+          float fov,
+          const ignition::math::Pose3d robot_sensor_offset,
+          const ignition::math::Vector3d light_position)
           : tol::FakeLightSensor("test_fake_light_sensor", fov, light_position)
   {
     this->updateRobotPosition(robot_sensor_offset);

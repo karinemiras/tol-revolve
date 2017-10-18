@@ -34,12 +34,13 @@ const double angle_15 = pi / 12;
 
 const double angle_52_5 = 7 * pi / 24;
 
-void test_sensor_angle(double target_angle,
-                       double fov,
-                       const ignition::math::Pose3d robot_sensor_offset,
-                       const ignition::math::Vector3d light_position,
-                       double eps = 0.0001,
-                       std::string text = "")
+void test_sensor_angle(
+        double target_angle,
+        double fov,
+        const ignition::math::Pose3d robot_sensor_offset,
+        const ignition::math::Vector3d light_position,
+        double eps = 0.0001,
+        std::string text = "")
 {
   TestFakeLightSensor sensor(
           fov,
@@ -52,12 +53,13 @@ void test_sensor_angle(double target_angle,
                   << " does not hold (angle test)");
 }
 
-void test_sensor_distance(double target_distance,
-                          double fov,
-                          const ignition::math::Pose3d robot_sensor_offset,
-                          const ignition::math::Vector3d light_position,
-                          double eps = 0.0001,
-                          std::string text = "")
+void test_sensor_distance(
+        double target_distance,
+        double fov,
+        const ignition::math::Pose3d robot_sensor_offset,
+        const ignition::math::Vector3d light_position,
+        double eps = 0.0001,
+        std::string text = "")
 {
   TestFakeLightSensor sensor(
           fov,

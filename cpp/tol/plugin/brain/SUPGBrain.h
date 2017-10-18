@@ -38,11 +38,12 @@ namespace tol
   {
     public:
     /// \brief Constructor
-    SUPGBrain(const std::string &robot_name,
-              revolve::brain::EvaluatorPtr evaluator,
-              const std::vector<std::vector<float> > &neuron_coordinates,
-              const std::vector<revolve::gazebo::MotorPtr> &motors,
-              const std::vector<revolve::gazebo::SensorPtr> &sensors);
+    SUPGBrain(
+            const std::string &robot_name,
+            revolve::brain::EvaluatorPtr evaluator,
+            const std::vector< std::vector< float > > &neuron_coordinates,
+            const std::vector< revolve::gazebo::MotorPtr > &motors,
+            const std::vector< revolve::gazebo::SensorPtr > &sensors);
 
     /// \brief Destructor
     ~SUPGBrain();
@@ -54,10 +55,11 @@ namespace tol
     /// \param[inout] sensors List of sensors
     /// \param[in] t Time value
     /// \param[in] step Time step
-    virtual void update(const std::vector<revolve::gazebo::MotorPtr> &motors,
-                        const std::vector<revolve::gazebo::SensorPtr> &sensors,
-                        double t,
-                        double step) override;
+    virtual void update(
+            const std::vector< revolve::gazebo::MotorPtr > &motors,
+            const std::vector< revolve::gazebo::SensorPtr > &sensors,
+            double t,
+            double step) override;
   };
 }
 

@@ -29,9 +29,10 @@
 
 #include "test_YAMLBodyParser.h"
 
-void testRobot(const std::string &yaml_source,
-               const std::vector< std::vector< bool>> &connections_target,
-               const std::vector< std::vector< float>> &coordinates_target)
+void testRobot(
+        const std::string &yaml_source,
+        const std::vector< std::vector< bool>> &connections_target,
+        const std::vector< std::vector< float>> &coordinates_target)
 {
   tol::YamlBodyParser *parser = new tol::YamlBodyParser();
   parser->parseCode(yaml_source);

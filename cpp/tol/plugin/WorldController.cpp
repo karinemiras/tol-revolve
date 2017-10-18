@@ -14,7 +14,7 @@
 *
 * Description: World controller for now just registers Revolve's world
 *              controller
-* Author: TODO <Add proper author>
+* Author: Elte Hupkes
 *
 */
 

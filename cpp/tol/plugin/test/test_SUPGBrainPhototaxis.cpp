@@ -46,11 +46,12 @@ class Motor
           nullptr,  // ::gazebo::physics::ModelPtr model
           "partId",  // std::string partId
           "motorId",  // std::string motorId
-          1 )  // size_t outputs
+          1)  // size_t outputs
   {}
 
-  virtual void update(double *output,
-                      double step)
+  virtual void update(
+          double *output,
+          double step)
   {}
 };
 
@@ -67,7 +68,8 @@ class Evaluator
         : public tol::Evaluator
 {
   public:
-  Evaluator(double fitness) : _fitness(fitness)
+  Evaluator(double fitness)
+          : _fitness(fitness)
   {}
 
   virtual void start()
@@ -127,8 +129,9 @@ BOOST_AUTO_TEST_CASE(create_instance)
           std::vector< float > coordinates) >
           light_constructor_right;
 
-  auto light_constructor_common = [](const std::vector< float > &coordinates,
-                                     float sensor_offset)
+  auto light_constructor_common = [](
+          const std::vector< float > &coordinates,
+          float sensor_offset)
           -> revolve::brain::FakeLightSensor *
   {
     if (coordinates.size() not_eq 3)
@@ -228,8 +231,9 @@ BOOST_AUTO_TEST_CASE(run_once)
           std::vector< float > coordinates) >
           light_constructor_right;
 
-  auto light_constructor_common = [](const std::vector< float > &coordinates,
-                                     float sensor_offset)
+  auto light_constructor_common = [](
+          const std::vector< float > &coordinates,
+          float sensor_offset)
           -> revolve::brain::FakeLightSensor *
   {
     if (coordinates.size() not_eq 3)
@@ -331,8 +335,9 @@ BOOST_AUTO_TEST_CASE(run_multiple_times)
           std::vector< float > coordinates) >
           light_constructor_right;
 
-  auto light_constructor_common = [](const std::vector< float > &coordinates,
-                                     float sensor_offset)
+  auto light_constructor_common = [](
+          const std::vector< float > &coordinates,
+          float sensor_offset)
           -> revolve::brain::FakeLightSensor *
   {
     if (coordinates.size() not_eq 3)

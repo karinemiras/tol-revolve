@@ -44,11 +44,12 @@ namespace tol
     public:
     BodyPart();
 
-    BodyPart(const std::string &name,
-             const std::string &type,
-             int x,
-             int y,
-             size_t rotation);
+    BodyPart(
+            const std::string &name,
+            const std::string &type,
+            int x,
+            int y,
+            size_t rotation);
 
     ~BodyPart();
 
@@ -62,9 +63,9 @@ namespace tol
     BodyPart *neighbours[MAX_SLOTS];
   };
 
-  typedef std::vector<std::vector<bool>> ConnectionMatrix;
+  typedef std::vector< std::vector< bool>> ConnectionMatrix;
 
-  typedef std::vector<std::vector<float>> CoordinatesMatrix;
+  typedef std::vector< std::vector< float>> CoordinatesMatrix;
 
   class YamlBodyParser
   {
@@ -92,26 +93,30 @@ namespace tol
     void init(const YAML::Node &root_genome_node);
 
     /// \brief
-    BodyPart *parseModule(BodyPart *parent,
-                          const YAML::Node &offspring,
-                          const size_t rotation,
-                          int x,
-                          int y);
+    BodyPart *parseModule(
+            BodyPart *parent,
+            const YAML::Node &offspring,
+            const size_t rotation,
+            int x,
+            int y);
 
     /// \brief
-    size_t calculateRotation(const size_t arity,
-                             const size_t slot,
-                             const size_t parents_rotation) const;
+    size_t calculateRotation(
+            const size_t arity,
+            const size_t slot,
+            const size_t parents_rotation) const;
 
     /// \brief
-    std::tuple<int, int> setCoordinates(const size_t rotation,
-                                        const int init_x,
-                                        const int init_y);
+    std::tuple< int, int > setCoordinates(
+            const size_t rotation,
+            const int init_x,
+            const int init_y);
 
     /// \brief
-    void setNormalisedCoordinates(BodyPart *module,
-                                  const int range_x,
-                                  const int range_y);
+    void setNormalisedCoordinates(
+            BodyPart *module,
+            const int range_x,
+            const int range_y);
 
     /// \brief
     void setConnections(BodyPart *module);

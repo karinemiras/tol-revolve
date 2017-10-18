@@ -51,11 +51,12 @@ namespace tol
     /// \param actuators: vector list of robot's actuators
     /// \param sensors: vector list of robot's sensors
     /// \return pointer to the neural network
-    NeatExtNN(std::string modelName,
-              sdf::ElementPtr node,
-              tol::EvaluatorPtr evaluator,
-              const std::vector< revolve::gazebo::MotorPtr > &actuators,
-              const std::vector< revolve::gazebo::SensorPtr > &sensors);
+    NeatExtNN(
+            std::string modelName,
+            sdf::ElementPtr node,
+            tol::EvaluatorPtr evaluator,
+            const std::vector< revolve::gazebo::MotorPtr > &actuators,
+            const std::vector< revolve::gazebo::SensorPtr > &sensors);
 
     /// \brief Destructor
     virtual ~NeatExtNN();
@@ -70,10 +71,11 @@ namespace tol
     /// \param[in] t Time value
     /// \param[in] step Time step
     virtual void
-    update(const std::vector< revolve::gazebo::MotorPtr > &actuators,
-           const std::vector< revolve::gazebo::SensorPtr > &sensors,
-           double t,
-           double step);
+    update(
+            const std::vector< revolve::gazebo::MotorPtr > &actuators,
+            const std::vector< revolve::gazebo::SensorPtr > &sensors,
+            double t,
+            double step);
 
     static cppneat::NEATLearner::LearningConfiguration
     parseLearningSDF(sdf::ElementPtr brain);

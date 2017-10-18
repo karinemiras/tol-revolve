@@ -23,9 +23,11 @@
 
 using namespace tol;
 
-FakeLightSensor::FakeLightSensor(std::string name,
-                                 float fov,
-                                 ignition::math::Vector3d light_pos)
+FakeLightSensor::FakeLightSensor(
+        std::string name,
+        float fov,
+        ignition::math::Vector3d light_pos
+)
         : revolve::brain::FakeLightSensor(fov)
         , revolve::gazebo::VirtualSensor(nullptr, name, name, 1)
         , sensor_name(name)

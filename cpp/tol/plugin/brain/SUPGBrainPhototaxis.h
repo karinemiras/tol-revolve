@@ -47,10 +47,12 @@ namespace tol
     virtual ~SUPGBrainPhototaxis();
 
     using revolve::brain::SUPGBrainPhototaxis::update;
-    void update(const std::vector< revolve::gazebo::MotorPtr > &motors,
-                const std::vector< revolve::gazebo::SensorPtr > &sensors,
-                double t,
-                double step) override;
+
+    void update(
+            const std::vector< revolve::gazebo::MotorPtr > &motors,
+            const std::vector< revolve::gazebo::SensorPtr > &sensors,
+            double t,
+            double step) override;
 
     void updateRobotPosition(ignition::math::Pose3d &robot_position);
 

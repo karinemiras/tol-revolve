@@ -45,10 +45,11 @@ namespace tol
     /// \param[inout] sensors List of sensors
     /// \param[in] t Time value
     /// \param[in] step Time step
-    void update(const std::vector< revolve::gazebo::MotorPtr > &actuators,
-                const std::vector< revolve::gazebo::SensorPtr > &sensors,
-                double t,
-                double step) override;
+    void update(
+            const std::vector< revolve::gazebo::MotorPtr > &actuators,
+            const std::vector< revolve::gazebo::SensorPtr > &sensors,
+            double t,
+            double step) override;
   };
 }
 

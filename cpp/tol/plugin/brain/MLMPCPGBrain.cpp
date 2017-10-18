@@ -28,10 +28,12 @@ namespace rg  = revolve::gazebo;
 
 using namespace tol;
 
-MlmpCPGBrain::MlmpCPGBrain(std::string robot_name,
-                           tol::EvaluatorPtr evaluator,
-                           size_t n_actuators,
-                           size_t n_sensors)
+MlmpCPGBrain::MlmpCPGBrain(
+        std::string robot_name,
+        tol::EvaluatorPtr evaluator,
+        size_t n_actuators,
+        size_t n_sensors
+)
         : rb::CPGBrain(robot_name, evaluator, n_actuators, n_sensors)
 {
 }
@@ -40,10 +42,11 @@ MlmpCPGBrain::~MlmpCPGBrain()
 {
 }
 
-void MlmpCPGBrain::update(const std::vector< rg::MotorPtr > &actuators,
-                          const std::vector< rg::SensorPtr > &sensors,
-                          double t,
-                          double step)
+void MlmpCPGBrain::update(
+        const std::vector< rg::MotorPtr > &actuators,
+        const std::vector< rg::SensorPtr > &sensors,
+        double t,
+        double step)
 {
   try
   {
