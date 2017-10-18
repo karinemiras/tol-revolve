@@ -60,6 +60,7 @@ void testRobot(
       BOOST_CHECK_CLOSE(coordinates[i][j], coordinates_target[i][j], 1);
     }
   }
+  delete parser;
 }
 
 BOOST_AUTO_TEST_CASE(yaml_body_parser_just_runs)

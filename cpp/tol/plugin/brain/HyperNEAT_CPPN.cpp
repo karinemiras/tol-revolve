@@ -93,34 +93,34 @@ HyperNEAT_CPG::HyperNEAT_CPG(
           brain->HasAttribute("number_of_brains_from_second") ?
           std::stoi(brain->GetAttribute("number_of_brains_from_second")
                          ->GetAsString()) : 0;
-  auto path_to_first_brains =
+  auto pathToFirstBrains =
           brain->HasAttribute("path_to_first_brains") ?
           brain->GetAttribute("path_to_first_brains")->GetAsString() : "";
 
-  auto brains_from_init = boost::dynamic_pointer_cast< cppneat::NEATLearner >(
+  auto brainsFromInit = boost::dynamic_pointer_cast< cppneat::NEATLearner >(
           learner_)->InitBrains();
   std::vector< cppneat::GeneticEncodingPtr > brainsFromFirst;
-  if ("-" == path_to_first_brains or "none" == path_to_first_brains)
+  if ("-" == pathToFirstBrains or "none" == pathToFirstBrains)
   {
     numBrainsFirst = 0;
   }
   else
   {
     brainsFromFirst = boost::dynamic_pointer_cast< cppneat::NEATLearner >(
-            learner_)->YamlBrains(path_to_first_brains, -1);
+            learner_)->YamlBrains(pathToFirstBrains, -1);
   }
-  auto path_to_second_brains =
+  auto pathToSecondBrains =
           brain->HasAttribute("path_to_second_brains") ?
           brain->GetAttribute("path_to_second_brains")->GetAsString() : "";
   std::vector< cppneat::GeneticEncodingPtr > brainsFromSecond;
-  if ("-" == path_to_second_brains or "none" == path_to_second_brains)
+  if ("-" == pathToSecondBrains or "none" == pathToSecondBrains)
   {
     numBrainsSecond = 0;
   }
   else
   {
     brainsFromSecond = boost::dynamic_pointer_cast< cppneat::NEATLearner >(
-            learner_)->YamlBrains(path_to_second_brains, -1);
+            learner_)->YamlBrains(pathToSecondBrains, -1);
   }
 
   std::vector< cppneat::GeneticEncodingPtr > initBrains;
@@ -137,7 +137,7 @@ HyperNEAT_CPG::HyperNEAT_CPG(
   }
   for (size_t i = 0; current < learn_conf.pop_size; ++i)
   {
-    initBrains.push_back(brains_from_init[i]);
+    initBrains.push_back(brainsFromInit[i]);
     current++;
   }
   boost::dynamic_pointer_cast< cppneat::NEATLearner >(learner_)->Initialise(

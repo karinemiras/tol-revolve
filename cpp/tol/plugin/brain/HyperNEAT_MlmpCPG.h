@@ -60,7 +60,6 @@ namespace rg = revolve::gazebo;
 
 namespace tol
 {
-
   class HyperNEAT_MlmpCPG
           : public rg::Brain
             , private rb::ConverterSplitBrain< rb::CPPNConfigPtr,

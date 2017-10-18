@@ -20,6 +20,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <boost/make_shared.hpp>
@@ -283,13 +284,12 @@ void RobotController::LoadBrain(sdf::ElementPtr sdf)
     else if ("hyperneat::mlmp_cpg" == brainType)
     {
       init_asyncneat(robot_name, std::unique_ptr< NEAT::GenomeManager >());
-      std::string modelName = this->model->GetName();
+      auto modelName = this->model->GetName();
       tol::YamlBodyParser *parser = new tol::YamlBodyParser();
       modelName = modelName.substr(0, modelName.find("-")) + ".yaml";
       parser->parseFile(modelName);
-      std::vector< std::vector< bool>> connections = parser->connections();
-      std::vector< std::vector< float>>
-              cpgs_coordinates = parser->coordinates();
+      auto connections = parser->connections();
+      auto cpgs_coordinates = parser->coordinates();
       brain_.reset(new tol::GenericLearnerBrain(
               new revolve::brain::HyperAccNEATLearner_CPGController(
                       robot_name,
@@ -301,6 +301,7 @@ void RobotController::LoadBrain(sdf::ElementPtr sdf)
                       cpgs_coordinates,
                       30,  // seconds
                       999)));  //  -1 // infinite evaluations
+      delete parser;
     }
     else if ("supg::phototaxis" == brainType)
     {

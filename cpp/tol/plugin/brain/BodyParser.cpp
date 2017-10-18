@@ -19,6 +19,7 @@
 
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "brain/learner/cppneat/CPPNNeuron.h"
@@ -548,7 +549,7 @@ cppneat::NeuronGenePtr BodyParser::GenerateDifferentialNeuron(BodyPart *_module,
   cppneat::NeuronGenePtr neuronGene = cppneat::NeuronGenePtr(
           new cppneat::NeuronGene(neuron, ++innovation_number_, true));
 
-  if(_position == 0 or _position == 1)
+  if (_position == 0 or _position == 1)
   {
     _module->differential_oscillator[_position] = neuronGene;
   }
