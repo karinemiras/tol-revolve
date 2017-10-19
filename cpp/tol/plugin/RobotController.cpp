@@ -62,17 +62,17 @@ const char *getVARenv(const char *var_name)
 
 NEAT::GeneticSearchType getGeneticSearchType(const std::string &value)
 {
-  if (value.compare("PHASED") == 0)
+  if ("PHASED" == value)
   {
     return NEAT::GeneticSearchType::PHASED;
   }
 
-  if (value.compare("BLENDED") == 0)
+  if ("BLENDED" == value)
   {
     return NEAT::GeneticSearchType::BLENDED;
   }
 
-  if (value.compare("COMPLEXIFY") == 0)
+  if ("COMPLEXIFY" == value)
   {
     return NEAT::GeneticSearchType::COMPLEXIFY;
   }
@@ -237,49 +237,55 @@ void RobotController::LoadBrain(sdf::ElementPtr sdf)
     std::string brainType = brain->GetAttribute("algorithm")->GetAsString();
     if ("rlpower::spline" == brainType)
     {
-      brain_.reset(new tol::RLPower_Splines(robot_name,
-                                            brain,
-                                            evaluator_,
-                                            motors_));
+      brain_.reset(new tol::RLPower_Splines(
+              robot_name,
+              brain,
+              evaluator_,
+              motors_));
     }
     else if ("rlpower::net" == brainType)
     {
-      brain_.reset(new tol::RLPower_CPG(robot_name,
-                                        brain,
-                                        evaluator_,
-                                        motors_,
-                                        sensors_));
+      brain_.reset(new tol::RLPower_CPG(
+              robot_name,
+              brain,
+              evaluator_,
+              motors_,
+              sensors_));
     }
     else if ("hyperneat::net" == brainType)
     {
-      brain_.reset(new tol::HyperNEAT_CPG(robot_name,
-                                          brain,
-                                          evaluator_,
-                                          motors_,
-                                          sensors_));
+      brain_.reset(new tol::HyperNEAT_CPG(
+              robot_name,
+              brain,
+              evaluator_,
+              motors_,
+              sensors_));
     }
     else if ("rafhyperneat::mlmp_cpg" == brainType)
     {
-      brain_.reset(new tol::HyperNEAT_MlmpCPG(robot_name,
-                                              brain,
-                                              evaluator_,
-                                              motors_,
-                                              sensors_));
+      brain_.reset(new tol::HyperNEAT_MlmpCPG(
+              robot_name,
+              brain,
+              evaluator_,
+              motors_,
+              sensors_));
     }
     else if ("hyperneat::spline" == brainType)
     {
-      brain_.reset(new tol::HyperNEAT_Splines(robot_name,
-                                              brain,
-                                              evaluator_,
-                                              motors_,
-                                              sensors_));
+      brain_.reset(new tol::HyperNEAT_Splines(
+              robot_name,
+              brain,
+              evaluator_,
+              motors_,
+              sensors_));
     }
     else if ("rlpower::mlmp_cpg" == brainType)
     {
-      brain_.reset(new tol::MlmpCPGBrain(robot_name,
-                                         evaluator_,
-                                         motor_n,
-                                         sensor_n));
+      brain_.reset(new tol::MlmpCPGBrain(
+              robot_name,
+              evaluator_,
+              motor_n,
+              sensor_n));
     }
     else if ("hyperneat::mlmp_cpg" == brainType)
     {
@@ -637,12 +643,13 @@ void RobotController::LoadBrain(sdf::ElementPtr sdf)
 
       // brain_.reset(
       //        new SUPGBrain(evaluator_, coordinates, motors_, sensors_));
-      brain_.reset(new SUPGBrainPhototaxis(robot_name,
-                                           evaluator_,
-                                           50,
-                                           coordinates,
-                                           motors_,
-                                           sensors_));
+      brain_.reset(new SUPGBrainPhototaxis(
+              robot_name,
+              evaluator_,
+              50,
+              coordinates,
+              motors_,
+              sensors_));
     }
     else
     {

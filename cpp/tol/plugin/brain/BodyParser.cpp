@@ -42,7 +42,8 @@ BPart::BPart(
         const std::string &type,
         int x,
         int y,
-        size_t rotation)
+        size_t rotation
+)
         : name(name)
         , type(type)
         , x(x)
@@ -56,9 +57,9 @@ BPart::BPart(
 BPart::~BPart()
 {
   // Delete dynamically allocated parents slots
-  for (size_t parents_slot = 0; parents_slot < MAX_SLOTS; ++parents_slot)
+  for (auto neighbour : neighbours)
   {
-    delete neighbours[parents_slot];
+    delete neighbour;
   }
 }
 
@@ -125,20 +126,22 @@ BPart *BodyParser::parseModule(
       {
         // Calculate coordinate for an offspring module
         int offsprings_x, offsprings_y;
-        size_t offsprings_rotation =
-                this->calculateRotation(module->arity,
-                                        parents_slot,
-                                        module->rotation);
-        std::tie(offsprings_x, offsprings_y) =
-                this->setCoordinates(offsprings_rotation, x, y);
+        size_t offsprings_rotation = this->calculateRotation(
+                module->arity,
+                parents_slot,
+                module->rotation);
+        std::tie(offsprings_x, offsprings_y) = this->setCoordinates(
+                offsprings_rotation,
+                x,
+                y);
 
         // Traverse recursively through each of offspring modules
-        module->neighbours[parents_slot] =
-                this->parseModule(module,
-                                  offspring["children"][parents_slot],
-                                  offsprings_rotation,
-                                  offsprings_x,
-                                  offsprings_y);
+        module->neighbours[parents_slot] = this->parseModule(
+                module,
+                offspring["children"][parents_slot],
+                offsprings_rotation,
+                offsprings_x,
+                offsprings_y);
       }
     }
   }
@@ -196,19 +199,18 @@ cppneat::GeneticEncodingPtr BodyParser::CoupledCpgNetwork()
 ///////////////////////////////////////////////////
 std::pair< std::map< int, size_t >, std::map< int, size_t>>
 BodyParser::InputOutputMap(
-        const std::vector< rg::MotorPtr > &actuators,
-        const std::vector< rg::SensorPtr > &sensors)
+        const std::vector< rg::MotorPtr > &_actuators,
+        const std::vector< rg::SensorPtr > &_sensors)
 {
   size_t p = 0;
   std::map< int, size_t > output_map;
-  // Admapd output neurons to motors:
+  // Add map output neurons to motors:
 
   // map of numbers of output neurons for each body part
   std::map< std::string, size_t > outputCountMap;
 
-  for (auto it = actuators.begin(); it not_eq actuators.end(); ++it)
+  for (const auto &motor : _actuators)
   {
-    auto motor = *it;
     auto partId = motor->partId();
 
     if (not outputCountMap.count(partId))
@@ -230,7 +232,7 @@ BodyParser::InputOutputMap(
           break;
         }
       }
-//      if (j == output_neurons.size())
+//      if (j == outputNeurons_.size())
 //      {
 //        std::cerr << "Required output neuron " << neuronId.str()
 //                  << " for motor could not be located" << std::endl;
@@ -248,9 +250,8 @@ BodyParser::InputOutputMap(
 
   std::map< std::string, size_t > inputCountMap;
 
-  for (auto it = sensors.begin(); it not_eq sensors.end(); ++it)
+  for (const auto &sensor : _sensors)
   {
-    auto sensor = *it;
     auto partId = sensor->partId();
 
     if (not inputCountMap.count(partId))
@@ -262,7 +263,7 @@ BodyParser::InputOutputMap(
     {
       std::stringstream neuronId;
       neuronId << partId << "-in-" << inputCountMap[partId];
-      inputCountMap[partId]++;
+      ++inputCountMap[partId];
 
       size_t j;
       for (j = 0; j < this->inputNeurons_.size(); ++j)
@@ -281,85 +282,94 @@ BodyParser::InputOutputMap(
       input_map[this->inputNeurons_[j]->InnovationNumber()] = p++;
     }
   }
-  return std::make_pair(input_map, output_map);
+  return {input_map, output_map};
 }
 
 ///////////////////////////////////////////////////
 cppneat::GeneticEncodingPtr BodyParser::CppnNetwork()
 {
-  int innov_number = 1;
-  cppneat::GeneticEncodingPtr ret(new cppneat::GeneticEncoding(true));
+  size_t innovationNumber = 1;
+  cppneat::GeneticEncodingPtr cppn(new cppneat::GeneticEncoding(true));
   // add inputs
-  std::map< std::string, double > empty;
+  std::map< std::string, double > parameters;
   for (size_t i = 0; i < 6; ++i)
   {
-    cppneat::NeuronPtr neuron(
-            // better names (like input x1 etc) might help
-            new cppneat::Neuron("Input-" + std::to_string(i),
-                                cppneat::Neuron::INPUT_LAYER,
-                                cppneat::Neuron::INPUT,
-                                empty));
+    // better names (like input x1 etc) might help
+    cppneat::NeuronPtr neuron(new cppneat::Neuron(
+            "Input-" + std::to_string(i),
+            cppneat::Neuron::INPUT_LAYER,
+            cppneat::Neuron::INPUT,
+            parameters));
     // means innovation number is i + 1
-    cppneat::NeuronGenePtr neuron_gene(
-            new cppneat::NeuronGene(neuron, innov_number++, true));
-    ret->AddNeuron(neuron_gene, 0, i == 0);
+    cppneat::NeuronGenePtr neuron_gene(new cppneat::NeuronGene(
+            neuron,
+            innovationNumber++,
+            true));
+    cppn->AddNeuron(neuron_gene, 0, i == 0);
   }
 
   // add outputs
-  empty["rv:bias"] = 0;
-  empty["rv:gain"] = 0;
-  cppneat::NeuronPtr weight_neuron(
-          new cppneat::Neuron("weight",
-                              cppneat::Neuron::OUTPUT_LAYER,
-                              cppneat::Neuron::SIMPLE,
-                              empty));
-  cppneat::NeuronGenePtr weight_neuron_gene(
-          new cppneat::NeuronGene(weight_neuron, innov_number++, true));
-  ret->AddNeuron(weight_neuron_gene, 1, true);
-  cppneat::NeuronPtr bias_neuron(
-          new cppneat::Neuron("rv:bias",
-                              cppneat::Neuron::OUTPUT_LAYER,
-                              cppneat::Neuron::SIMPLE,
-                              empty));
-  cppneat::NeuronGenePtr bias_neuron_gene(
-          new cppneat::NeuronGene(bias_neuron, innov_number++, true));
-  ret->AddNeuron(bias_neuron_gene, 1, false);
-  cppneat::NeuronPtr gain_neuron(
-          new cppneat::Neuron("rv:gain",
-                              cppneat::Neuron::OUTPUT_LAYER,
-                              cppneat::Neuron::SIMPLE,
-                              empty));
-  cppneat::NeuronGenePtr gain_neuron_gene(
-          new cppneat::NeuronGene(gain_neuron,
-                                  innov_number++,
-                                  true));
-  ret->AddNeuron(gain_neuron_gene, 1, false);
+  parameters["rv:bias"] = 0;
+  parameters["rv:gain"] = 0;
+  cppneat::NeuronPtr weightNeuron(new cppneat::Neuron(
+          "weight",
+          cppneat::Neuron::OUTPUT_LAYER,
+          cppneat::Neuron::SIMPLE,
+          parameters));
+  cppneat::NeuronGenePtr weightNeuronGene(new cppneat::NeuronGene(
+          weightNeuron,
+          innovationNumber++,
+          true));
+  cppn->AddNeuron(weightNeuronGene, 1, true);
+  cppneat::NeuronPtr biasNeuron(new cppneat::Neuron(
+          "rv:bias",
+          cppneat::Neuron::OUTPUT_LAYER,
+          cppneat::Neuron::SIMPLE,
+          parameters));
+  cppneat::NeuronGenePtr biasNeuronGene(new cppneat::NeuronGene(
+          biasNeuron,
+          innovationNumber++,
+          true));
+  cppn->AddNeuron(biasNeuronGene, 1, false);
+  cppneat::NeuronPtr gainNeuron(new cppneat::Neuron(
+          "rv:gain",
+          cppneat::Neuron::OUTPUT_LAYER,
+          cppneat::Neuron::SIMPLE,
+          parameters));
+  cppneat::NeuronGenePtr gainNeuronGene(new cppneat::NeuronGene(
+          gainNeuron,
+          innovationNumber++,
+          true));
+  cppn->AddNeuron(gainNeuronGene, 1, false);
 
   // connect every input with every output
   for (size_t i = 0; i < 6; ++i)
   {
-    cppneat::ConnectionGenePtr connection_to_weight(
-            new cppneat::ConnectionGene(weight_neuron_gene->InnovationNumber(),
-                                        i + 1, 0,
-                                        innov_number++,
-                                        true, ""));
-    ret->AddConnection(connection_to_weight);
+    cppneat::ConnectionGenePtr connectionToWeight(new cppneat::ConnectionGene(
+            weightNeuronGene->InnovationNumber(),
+            i + 1,
+            0,
+            innovationNumber++,
+            true, ""));
+    cppn->AddConnection(connectionToWeight);
 
-    cppneat::ConnectionGenePtr connection_to_bias(
-            new cppneat::ConnectionGene(bias_neuron_gene->InnovationNumber(),
-                                        i + 1, 0,
-                                        innov_number++,
-                                        true, ""));
-    ret->AddConnection(connection_to_bias);
+    cppneat::ConnectionGenePtr connectionToBias(new cppneat::ConnectionGene(
+            biasNeuronGene->InnovationNumber(),
+            i + 1,
+            0,
+            innovationNumber++,
+            true, ""));
+    cppn->AddConnection(connectionToBias);
 
-    cppneat::ConnectionGenePtr connection_to_gain(
-            new cppneat::ConnectionGene(gain_neuron_gene->InnovationNumber(),
-                                        i + 1, 0,
-                                        innov_number++,
-                                        true, ""));
-    ret->AddConnection(connection_to_gain);
+    cppneat::ConnectionGenePtr connectionToGain(new cppneat::ConnectionGene(
+            gainNeuronGene->InnovationNumber(),
+            i + 1,
+            0,
+            innovationNumber++,
+            true, ""));
+    cppn->AddConnection(connectionToGain);
   }
-  return ret;
+  return cppn;
 }
 
 ///////////////////////////////////////////////////
@@ -375,14 +385,14 @@ std::map< std::string, CoordsTriple > BodyParser::IdToCoordinatesMap()
 
 ///////////////////////////////////////////////////
 std::vector< std::pair< int, int > > BodyParser::SortedCoordinates(
-        const std::vector< rg::MotorPtr > &actuators)
+        const std::vector< rg::MotorPtr > &_actuators)
 {
   std::vector< std::pair< int , int >> coordinates;
 
   // map of numbers of output neurons for each body part
   std::map< std::string, size_t > outputCountMap;
 
-  for (const auto &motor : actuators)
+  for (const auto &motor : _actuators)
   {
     auto partId = motor->partId();
 
@@ -496,9 +506,10 @@ void BodyParser::initPart(BodyPart *_part)
 }
 
 ///////////////////////////////////////////////////
-cppneat::NeuronGenePtr BodyParser::GenerateDifferentialNeuron(BodyPart *_module,
-                                            size_t _position,
-                                            std::string _name)
+cppneat::NeuronGenePtr BodyParser::GenerateDifferentialNeuron(
+        BodyPart *_module,
+        size_t _position,
+        std::string _name)
 {
   std::map< std::string, double > params;
   {
@@ -572,8 +583,9 @@ cppneat::NeuronGenePtr BodyParser::GenerateDifferentialNeuron(BodyPart *_module,
 }
 
 ///////////////////////////////////////////////////
-void BodyParser::GenerateConnection(cppneat::NeuronGenePtr _from,
-                                    cppneat::NeuronGenePtr _to)
+void BodyParser::GenerateConnection(
+        cppneat::NeuronGenePtr _from,
+        cppneat::NeuronGenePtr _to)
 {
   double weight = 0.0;
   bool isActive = true;
@@ -662,13 +674,13 @@ void BodyParser::ConnectOscillators()
             bodyMap_->name + "-in-" + std::to_string(i));
 
     // Connect to neighbouring oscillators
-    for (size_t i = 0; i < MAX_SLOTS; ++i)
+    for (size_t j = 0; j < MAX_SLOTS; ++j)
     {
-      if (this->bodyMap_->neighbours[i].type == "ActiveHinge")
+      if (this->bodyMap_->neighbours[j].type == "ActiveHinge")
       {
         this->GenerateConnection(
                 neuronGene,
-                bodyMap_->neighbours[i].differential_oscillator[0]);
+                bodyMap_->neighbours[j].differential_oscillator[0]);
       }
     }
   }

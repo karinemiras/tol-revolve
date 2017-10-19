@@ -99,8 +99,8 @@ namespace tol
 
     std::pair< std::map< int, size_t >, std::map< int, size_t>>
     InputOutputMap(
-            const std::vector< revolve::gazebo::MotorPtr > &actuators,
-            const std::vector< revolve::gazebo::SensorPtr > &sensors);
+            const std::vector< revolve::gazebo::MotorPtr > &_actuators,
+            const std::vector< revolve::gazebo::SensorPtr > &_sensors);
 
     cppneat::GeneticEncodingPtr CppnNetwork();
 
@@ -109,7 +109,7 @@ namespace tol
     /// \brief returns the coordinates of the actuators matching the order the
     /// actuators give coordinate of actuators[0] is in sorted_coordinates[0]
     std::vector< std::pair< int, int >> SortedCoordinates(
-            const std::vector< revolve::gazebo::MotorPtr > &actuators);
+            const std::vector< revolve::gazebo::MotorPtr > &_actuators);
 
     size_t InnovationNumber()
     {
@@ -174,7 +174,7 @@ namespace tol
     std::map< cppneat::NeuronGenePtr, CoordsTriple > coordinates_;
 
     // Body parsing
-    std::map< std::string, int > arity_;
+    std::map< std::string, size_t > arity_;
     std::vector< BodyPart * > toParse_;
     std::vector< BodyPart * > toDelete_;
     std::map< BodyPart *, YAML::Node > bodyToNode_;

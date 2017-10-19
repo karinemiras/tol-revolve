@@ -60,7 +60,7 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
   rb::InputMap = in_out.first;
   rb::OutputMap = in_out.second;
   rb::RafCpgNetwork = rb::convertForController(body.CoupledCpgNetwork());
-  rb::neuron_coordinates = body.IdToCoordinatesMap();
+  rb::neuronCoordinates = body.IdToCoordinatesMap();
 
   // Initialise controller
   controller_ = rb::RafCPGControllerPtr(new rb::RafCPGController(
@@ -72,11 +72,11 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
   // Initialise learner
   auto learn_conf = parseLearningSDF(brain);
   rb::SetBrainSpec(true);
-  learn_conf.start_from = body.CppnNetwork();
+  learn_conf.startFrom = body.CppnNetwork();
   cppneat::MutatorPtr mutator(new cppneat::Mutator(
           rb::brain_spec,
           0.8,
-          learn_conf.start_from->RangeInnovationNumbers().second,
+          learn_conf.startFrom->RangeInnovationNumbers().second,
           100,
           std::vector< cppneat::Neuron::Ntype >()));
   auto mutator_path =
@@ -141,7 +141,7 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
     initBrains.push_back(brains_from_second[i]);
     cur_number++;
   }
-  for (size_t i = 0; cur_number < learn_conf.pop_size; ++i)
+  for (size_t i = 0; cur_number < learn_conf.popSize; ++i)
   {
     initBrains.push_back(brains_from_init[i]);
     cur_number++;
@@ -181,53 +181,53 @@ HyperNEAT_MlmpCPG::parseLearningSDF(sdf::ElementPtr brain)
           brain->HasAttribute("asexual") ?
           (brain->GetAttribute("asexual")->GetAsString() == "true") :
           cppneat::NEATLearner::ASEXUAL;
-  config.pop_size =
+  config.popSize =
           brain->HasAttribute("pop_size") ?
           std::stoi(brain->GetAttribute("pop_size")->GetAsString()) :
           cppneat::NEATLearner::POP_SIZE;
-  config.tournament_size =
+  config.tournamentSize =
           brain->HasAttribute("tournament_size") ?
           std::stoi(brain->GetAttribute("tournament_size")->GetAsString()) :
           cppneat::NEATLearner::TOURNAMENT_SIZE;
-  config.num_children =
+  config.numChildren =
           brain->HasAttribute("num_children") ?
           std::stoi(brain->GetAttribute("num_children")->GetAsString()) :
           cppneat::NEATLearner::NUM_CHILDREN;
-  config.weight_mutation_probability =
+  config.weightMutationProbability =
           brain->HasAttribute("weight_mutation_probability") ?
           std::stod(brain->GetAttribute("weight_mutation_probability")
                          ->GetAsString()) :
           cppneat::NEATLearner::WEIGHT_MUTATION_PROBABILITY;
-  config.weight_mutation_sigma =
+  config.weightMutationSigma =
           brain->HasAttribute("weight_mutation_sigma") ?
           std::stod(brain->GetAttribute("weight_mutation_sigma")
                          ->GetAsString()) :
           cppneat::NEATLearner::WEIGHT_MUTATION_SIGMA;
-  config.param_mutation_probability =
+  config.paramMutationProbability =
           brain->HasAttribute("param_mutation_probability") ?
           std::stod(brain->GetAttribute("param_mutation_probability")
                          ->GetAsString()) :
           cppneat::NEATLearner::PARAM_MUTATION_PROBABILITY;
-  config.param_mutation_sigma =
+  config.paramMutationSigma =
           brain->HasAttribute("param_mutation_sigma") ?
           std::stod(brain->GetAttribute("param_mutation_sigma")
                          ->GetAsString()) :
           cppneat::NEATLearner::PARAM_MUTATION_SIGMA;
-  config.structural_augmentation_probability =
+  config.structuralAugmentationProbability =
           brain->HasAttribute("structural_augmentation_probability") ?
           std::stod(brain->GetAttribute("structural_augmentation_probability")
                          ->GetAsString()) :
           cppneat::NEATLearner::STRUCTURAL_AUGMENTATION_PROBABILITY;
-  config.structural_removal_probability =
+  config.structuralRemovalProbability =
           brain->HasAttribute("structural_removal_probability") ?
           std::stod(brain->GetAttribute("structural_removal_probability")
                          ->GetAsString()) :
           cppneat::NEATLearner::STRUCTURAL_REMOVAL_PROBABILITY;
-  config.max_generations =
+  config.maxGenerations =
           brain->HasAttribute("max_generations") ?
           std::stoi(brain->GetAttribute("max_generations")->GetAsString()) :
           cppneat::NEATLearner::MAX_GENERATIONS;
-  config.speciation_threshold =
+  config.speciationThreshold =
           brain->HasAttribute("speciation_threshold") ?
           std::stod(brain->GetAttribute("speciation_threshold")
                          ->GetAsString()) :
@@ -236,12 +236,12 @@ HyperNEAT_MlmpCPG::parseLearningSDF(sdf::ElementPtr brain)
           brain->HasAttribute("repeat_evaluations") ?
           std::stoi(brain->GetAttribute("repeat_evaluations")->GetAsString()) :
           cppneat::NEATLearner::REPEAT_EVALUATIONS;
-  config.initial_structural_mutations =
+  config.initialStructuralMutations =
           brain->HasAttribute("initial_structural_mutations") ?
           std::stoi(brain->GetAttribute("initial_structural_mutations")
                          ->GetAsString()) :
           cppneat::NEATLearner::INITIAL_STRUCTURAL_MUTATIONS;
-  config.interspecies_mate_probability =
+  config.interspeciesMateProbability =
           brain->HasAttribute("interspecies_mate_probability") ?
           std::stod(brain->GetAttribute("interspecies_mate_probability")
                          ->GetAsString()) :

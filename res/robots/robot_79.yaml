@@ -1,85 +1,172 @@
 body:
   children:
     0:
-      id: bodygen-6
-      label: ''
-      orientation: 270
-      params:
-        blue: 0.8513672647844526
-        green: 0.3952216929974489
-        red: 0.24564456453120076
-      slot: 1
-      type: ActiveHinge
-    1:
       children:
         1:
           children:
-            1:
+            0:
               children:
                 1:
-                  id: bodygen-7
+                  children:
+                    1:
+                      id: node-5
+                      label: ''
+                      orientation: 180
+                      params:
+                        blue: 0.6233253477103333
+                        green: 0.12172433098297841
+                        red: 0.7973848846058313
+                      slot: 0
+                      type: FixedBrick
+                  id: node-4
                   label: ''
-                  orientation: 90
+                  orientation: 180
                   params:
-                    blue: 0.8513672647844526
-                    green: 0.3952216929974489
-                    red: 0.24564456453120076
-                  slot: 1
+                    blue: 0.6233253477103333
+                    green: 0.12172433098297841
+                    red: 0.7973848846058313
+                  slot: 0
                   type: ActiveHinge
-              id: bodygen-3
+              id: node-3
               label: ''
-              orientation: 0
+              orientation: 180
               params:
-                blue: 0.8513672647844526
-                green: 0.3952216929974489
-                red: 0.24564456453120076
+                blue: 0.6233253477103333
+                green: 0.12172433098297841
+                red: 0.7973848846058313
               slot: 0
-              type: FixedBrick
-          id: bodygen-2
+              type: ActiveHinge
+          id: node-2
           label: ''
-          orientation: 0
+          orientation: 180
           params:
-            blue: 0.8513672647844526
-            green: 0.3952216929974489
-            red: 0.24564456453120076
-          slot: 0
+            blue: 0.6233253477103333
+            green: 0.12172433098297841
+            red: 0.7973848846058313
+          slot: 1
           type: ActiveHinge
-        2:
-          children:
-            1:
-              id: bodygen-5
-              label: ''
-              orientation: 270
-              params:
-                blue: 0.8513672647844526
-                green: 0.3952216929974489
-                red: 0.24564456453120076
-              slot: 0
-              type: FixedBrick
-          id: bodygen-4
-          label: ''
-          orientation: 90
-          params:
-            blue: 0.8513672647844526
-            green: 0.3952216929974489
-            red: 0.24564456453120076
-          slot: 0
-          type: ActiveHinge
-      id: bodygen-1
+      id: node-1
       label: ''
       orientation: 0
       params:
-        blue: 0.8513672647844526
-        green: 0.3952216929974489
-        red: 0.24564456453120076
-      slot: 3
-      type: FixedBrick
-  id: bodygen-root
+        blue: 0.6233253477103333
+        green: 0.12172433098297841
+        red: 0.7973848846058313
+      slot: 0
+      type: ActiveHinge
+    1:
+      children:
+        0:
+          id: node-7
+          label: ''
+          orientation: 90
+          params:
+            blue: 0.31230501648529474
+            green: 0.5557107825706292
+            red: 0.9443513330539492
+          slot: 1
+          type: FixedBrick
+      id: node-6
+      label: ''
+      orientation: 270
+      params:
+        blue: 0.6233253477103333
+        green: 0.12172433098297841
+        red: 0.7973848846058313
+      slot: 1
+      type: ActiveHinge
+    3:
+      children:
+        0:
+          children:
+            1:
+              children:
+                0:
+                  id: node-11
+                  label: ''
+                  orientation: 90
+                  params:
+                    blue: 0.6233253477103333
+                    green: 0.12172433098297841
+                    red: 0.7973848846058313
+                  slot: 0
+                  type: ActiveHinge
+                1:
+                  children:
+                    1:
+                      id: node-13
+                      label: ''
+                      orientation: 90
+                      params:
+                        blue: 0.6233253477103333
+                        green: 0.12172433098297841
+                        red: 0.7973848846058313
+                      slot: 2
+                      type: FixedBrick
+                  id: node-12
+                  label: ''
+                  orientation: 270
+                  params:
+                    blue: 0.6233253477103333
+                    green: 0.12172433098297841
+                    red: 0.7973848846058313
+                  slot: 0
+                  type: ActiveHinge
+                3:
+                  children:
+                    0:
+                      id: node-15
+                      label: ''
+                      orientation: 0
+                      params:
+                        blue: 0.6233253477103333
+                        green: 0.12172433098297841
+                        red: 0.7973848846058313
+                      slot: 0
+                      type: FixedBrick
+                  id: node-14
+                  label: ''
+                  orientation: 0
+                  params:
+                    blue: 0.6233253477103333
+                    green: 0.12172433098297841
+                    red: 0.7973848846058313
+                  slot: 1
+                  type: FixedBrick
+              id: node-10
+              label: ''
+              orientation: 0
+              params:
+                blue: 0.6233253477103333
+                green: 0.12172433098297841
+                red: 0.7973848846058313
+              slot: 2
+              type: FixedBrick
+          id: node-9
+          label: ''
+          orientation: 90
+          params:
+            blue: 0.6233253477103333
+            green: 0.12172433098297841
+            red: 0.7973848846058313
+          slot: 0
+          type: ActiveHinge
+      id: node-8
+      label: ''
+      orientation: 270
+      params:
+        blue: 0.6233253477103333
+        green: 0.12172433098297841
+        red: 0.7973848846058313
+      slot: 1
+      type: ActiveHinge
+  id: node-0
   label: ''
   orientation: 0
   params:
-    blue: 0.8513672647844526
-    green: 0.3952216929974489
-    red: 0.24564456453120076
+    blue: 0.6233253477103333
+    green: 0.12172433098297841
+    red: 0.7973848846058313
   type: Core
+
 id: 79
