@@ -49,17 +49,17 @@ namespace tol
     public:
 
     /// \brief Constructor
-    /// \param model_name: name of a robot
-    /// \param brain: configuration file
-    /// \param evaluator: pointer to fitness evaluatior
+    /// \param _name: name of a robot
+    /// \param _brain: configuration file
+    /// \param _evaluator: pointer to fitness evaluatior
     /// \param n_actuators: number of actuators
     /// \param n_sensors: number of sensors
     /// \return pointer to the RLPower class object
     RLPower_Splines(
-            std::string model_name,
-            sdf::ElementPtr brain,
-            EvaluatorPtr evaluator,
-            std::vector< revolve::gazebo::MotorPtr > &actuators);
+            const std::string &_name,
+            sdf::ElementPtr _brain,
+            EvaluatorPtr _evaluator,
+            std::vector< revolve::gazebo::MotorPtr > &_actuators);
 
     /// \brief Destructor
     virtual ~RLPower_Splines();

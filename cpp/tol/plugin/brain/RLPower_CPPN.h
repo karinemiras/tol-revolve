@@ -38,39 +38,41 @@ namespace tol
   class RLPower_CPG
           : public revolve::gazebo::Brain
             , private revolve::brain::ConverterSplitBrain
-                  <std::vector<double>,
-                   revolve::brain::PolicyPtr>
+                  < std::vector< double >,
+                    revolve::brain::PolicyPtr >
   {
     public:
 
     /// \brief Constructor
-    /// \param model_name: name of a robot
-    /// \param brain: configuration file
-    /// \param evaluator: pointer to fitness evaluatior
+    /// \param _name: name of a robot
+    /// \param _brain: configuration file
+    /// \param _evaluator: pointer to fitness evaluatior
     /// \param n_actuators: number of actuators
     /// \param n_sensors: number of sensors
     /// \return pointer to the RLPower class object
-    RLPower_CPG(std::string model_name,
-                sdf::ElementPtr brain,
-                tol::EvaluatorPtr evaluator,
-                std::vector<revolve::gazebo::MotorPtr> &actuators,
-                std::vector<revolve::gazebo::SensorPtr> &sensors);
+    RLPower_CPG(
+            const std::string &_name,
+            sdf::ElementPtr _brain,
+            tol::EvaluatorPtr _evaluator,
+            std::vector< revolve::gazebo::MotorPtr > &_actuators,
+            std::vector< revolve::gazebo::SensorPtr > &_sensors);
 
     virtual ~RLPower_CPG();
 
     using revolve::brain::ConverterSplitBrain
-            <std::vector<double>,
-             revolve::brain::PolicyPtr>::update;
+            < std::vector< double >,
+              revolve::brain::PolicyPtr >::update;
 
     /// \brief Update sensors reading, actuators position, and `brain` state
     /// \param[inout] actuators List of actuators
     /// \param[inout] sensors List of sensors
     /// \param[in] t Time value
     /// \param[in] step Time step
-    virtual void update(const std::vector<revolve::gazebo::MotorPtr> &actuators,
-                        const std::vector<revolve::gazebo::SensorPtr> &sensors,
-                        double t,
-                        double step);
+    virtual void update(
+            const std::vector< revolve::gazebo::MotorPtr > &actuators,
+            const std::vector< revolve::gazebo::SensorPtr > &sensors,
+            double t,
+            double step);
 
     /// \brief
     static revolve::brain::RLPowerLearner::Config

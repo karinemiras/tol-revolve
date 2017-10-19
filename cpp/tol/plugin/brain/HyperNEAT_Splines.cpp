@@ -54,7 +54,7 @@ HyperNEAT_Splines::HyperNEAT_Splines(
 
   // Prepare for controller
   auto conf = parseSDF(brain);
-  rb::update_rate = conf.update_step;
+  rb::update_rate = conf.updateStep;
   rb::spline_size = conf.source_y_size;
   auto mutator_path =
           brain->HasAttribute("path_to_mutator") ?
@@ -76,7 +76,7 @@ HyperNEAT_Splines::HyperNEAT_Splines(
   this->controller_ = boost::shared_ptr< rb::PolicyController >(
           new rb::PolicyController(
                   rb::sorted_coordinates.size(),
-                  conf.interpolation_spline_size));
+                  conf.interpolationSplineSize));
 
   // initialise learner
   this->learner_ = boost::shared_ptr< cppneat::NEATLearner >(
@@ -112,11 +112,11 @@ rb::RLPowerLearner::Config HyperNEAT_Splines::parseSDF(sdf::ElementPtr brain)
   rb::RLPowerLearner::Config config;
 
   // Read out brain configuration attributes
-  config.evaluation_rate =
+  config.evaluationRate =
           brain->HasAttribute("evaluation_rate") ?
           std::stod(brain->GetAttribute("evaluation_rate")->GetAsString()) :
           rb::RLPowerLearner::EVALUATION_RATE;
-  config.interpolation_spline_size =
+  config.interpolationSplineSize =
           brain->HasAttribute("interpolation_spline_size") ?
           std::stoul(brain->GetAttribute("interpolation_spline_size")
                           ->GetAsString()) :
@@ -125,7 +125,7 @@ rb::RLPowerLearner::Config HyperNEAT_Splines::parseSDF(sdf::ElementPtr brain)
           brain->HasAttribute("init_spline_size") ?
           std::stoul(brain->GetAttribute("init_spline_size")->GetAsString()) :
           rb::RLPowerLearner::INITIAL_SPLINE_SIZE;
-  config.update_step =
+  config.updateStep =
           brain->HasAttribute("update_step") ?
           std::stoul(brain->GetAttribute("update_step")->GetAsString()) :
           rb::RLPowerLearner::UPDATE_STEP;

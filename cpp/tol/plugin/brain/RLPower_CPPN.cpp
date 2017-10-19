@@ -19,7 +19,6 @@
 */
 
 #include <map>
-#include <utility>
 #include <string>
 #include <vector>
 
@@ -33,42 +32,45 @@
 #include "brain/Conversion.h"
 #include "brain/controller/ExtCPPNWeights.h"
 
+namespace rb = revolve::brain;
+namespace rg = revolve::gazebo;
+
 using namespace tol;
 
-RLPower_CPG::RLPower_CPG(std::string model_name,
-                         sdf::ElementPtr brain,
-                         EvaluatorPtr evaluator,
-                         std::vector< revolve::gazebo::MotorPtr > &actuators,
-                         std::vector< revolve::gazebo::SensorPtr > &sensors)
-        : revolve::brain::ConverterSplitBrain< std::vector< double >,
-                                               revolve::brain::PolicyPtr >
-                  (&revolve::brain::convertPolicyToDouble,
-                   &revolve::brain::convertDoubleToNull,
-                   model_name)
+RLPower_CPG::RLPower_CPG(
+        const std::string &_name,
+        sdf::ElementPtr _brain,
+        EvaluatorPtr _evaluator,
+        std::vector< rg::MotorPtr > &_actuators,
+        std::vector< rg::SensorPtr > &_sensors
+)
+        : rb::ConverterSplitBrain< std::vector< double >, rb::PolicyPtr >
+        (&rb::convertPolicyToDouble,
+         &rb::convertDoubleToNull,
+         _name)
 {
   // initialise controller
-  std::string name(model_name.substr(0, model_name.find("-")) + ".yaml");
+  std::string name(_name.substr(0, _name.find("-")) + ".yaml");
   BodyParser body(name);
 
-  std::pair< std::map< int, size_t >, std::map< int, size_t>> in_out =
-          body.InputOutputMap(actuators, sensors);
-  revolve::brain::InputMap = in_out.first;
-  revolve::brain::OutputMap = in_out.second;
+  std::tie(rb::InputMap, rb::OutputMap) = body.InputOutputMap(
+          _actuators,
+          _sensors);
 
-  controller_ = boost::shared_ptr< revolve::brain::ExtNNController >
-          (new revolve::brain::ExtNNController(
-                  model_name,
-                  revolve::brain::convertForController(
-                          body.CoupledCpgNetwork()),
-                  Helper::createWrapper(actuators),
-                  Helper::createWrapper(sensors)));
-  revolve::brain::RLPowerLearner::Config config = parseSDF(brain);
+  controller_ = boost::shared_ptr<rb::ExtNNController>(new rb::ExtNNController(
+          _name,
+          rb::convertForController(body.CoupledCpgNetwork()),
+          Helper::createWrapper(_actuators),
+          Helper::createWrapper(_sensors)));
+  auto config = parseSDF(_brain);
   config.source_y_size = (size_t)controller_->getPhenotype().size();
 
-  learner_ = boost::shared_ptr< revolve::brain::RLPowerLearner >
-          (new revolve::brain::RLPowerLearner(model_name, config, 1));
+  learner_ = boost::shared_ptr< rb::RLPowerLearner >(new rb::RLPowerLearner(
+          _name,
+          config,
+          1));
 
-  evaluator_ = evaluator;
+  evaluator_ = _evaluator;
 }
 
 RLPower_CPG::~RLPower_CPG()
@@ -76,57 +78,55 @@ RLPower_CPG::~RLPower_CPG()
 }
 
 void RLPower_CPG::update(
-        const std::vector< revolve::gazebo::MotorPtr > &actuators,
-        const std::vector< revolve::gazebo::SensorPtr > &sensors,
+        const std::vector< rg::MotorPtr > &actuators,
+        const std::vector< rg::SensorPtr > &sensors,
         double t,
         double step)
 {
-  revolve::brain::ConverterSplitBrain< std::vector< double >,
-                                       revolve::brain::PolicyPtr >::update(
+  rb::ConverterSplitBrain< std::vector< double >, rb::PolicyPtr >::update(
           Helper::createWrapper(actuators),
           Helper::createWrapper(sensors),
           t,
           step);
 }
 
-revolve::brain::RLPowerLearner::Config RLPower_CPG::parseSDF(
-        sdf::ElementPtr brain)
+rb::RLPowerLearner::Config RLPower_CPG::parseSDF(sdf::ElementPtr brain)
 {
-  revolve::brain::RLPowerLearner::Config config;
+  rb::RLPowerLearner::Config config;
 
   // Read out brain configuration attributes
-  config.algorithm_type =
+  config.algorithmType =
           brain->HasAttribute("type") ?
           brain->GetAttribute("type")->GetAsString() : "A";
-  config.evaluation_rate =
+  config.evaluationRate =
           brain->HasAttribute("evaluation_rate") ?
           std::stod(brain->GetAttribute("evaluation_rate")->GetAsString()) :
-          revolve::brain::RLPowerLearner::EVALUATION_RATE;
-  config.interpolation_spline_size =
+          rb::RLPowerLearner::EVALUATION_RATE;
+  config.interpolationSplineSize =
           brain->HasAttribute("interpolation_spline_size") ?
           std::stoul(brain->GetAttribute("interpolation_spline_size")
                           ->GetAsString()) :
-          revolve::brain::RLPowerLearner::INTERPOLATION_CACHE_SIZE;
-  config.max_evaluations =
+          rb::RLPowerLearner::INTERPOLATION_CACHE_SIZE;
+  config.maxEvaluations =
           brain->HasAttribute("max_evaluations") ?
           std::stoul(brain->GetAttribute("max_evaluations")->GetAsString()) :
-          revolve::brain::RLPowerLearner::MAX_EVALUATIONS;
-  config.max_ranked_policies =
+          rb::RLPowerLearner::MAX_EVALUATIONS;
+  config.maxRankedPolicies =
           brain->HasAttribute("max_ranked_policies") ?
           std::stoul(brain->GetAttribute("max_ranked_policies")
                           ->GetAsString()) :
-          revolve::brain::RLPowerLearner::MAX_RANKED_POLICIES;
-  config.noise_sigma =
+          rb::RLPowerLearner::MAX_RANKED_POLICIES;
+  config.noiseSigma =
           brain->HasAttribute("init_sigma") ?
           std::stod(brain->GetAttribute("init_sigma")->GetAsString()) :
-          revolve::brain::RLPowerLearner::SIGMA_START_VALUE;
-  config.sigma_tau_correction =
+          rb::RLPowerLearner::SIGMA_START_VALUE;
+  config.sigmaTauCorrection =
           brain->HasAttribute("sigma_tau_correction") ?
           std::stod(brain->GetAttribute("sigma_tau_correction")
                          ->GetAsString()) :
-          revolve::brain::RLPowerLearner::SIGMA_TAU_CORRECTION;
-  config.update_step = 0;
-  config.policy_load_path = "";
+          rb::RLPowerLearner::SIGMA_TAU_CORRECTION;
+  config.updateStep = 0;
+  config.policyLoadPath = "";
 
   return config;
 }

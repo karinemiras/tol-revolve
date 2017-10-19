@@ -37,7 +37,7 @@ namespace tol
 {
   class NeatExtNN
           : public revolve::gazebo::Brain
-            , private revolve::brain::ConverterSplitBrain
+          , private revolve::brain::ConverterSplitBrain
                   < revolve::brain::CPPNConfigPtr,
                     cppneat::GeneticEncodingPtr >
   {

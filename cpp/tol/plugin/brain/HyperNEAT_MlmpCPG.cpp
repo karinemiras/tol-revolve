@@ -56,14 +56,15 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
   std::string name(modelName.substr(0, modelName.find('-')) + ".yaml");
   BodyParser body(name);
 
-  auto in_out = body.InputOutputMap(actuators, sensors);
-  rb::InputMap = in_out.first;
-  rb::OutputMap = in_out.second;
+  std::tie(rb::InputMap, rb::OutputMap) = body.InputOutputMap(
+          actuators,
+          sensors);
+
   rb::RafCpgNetwork = rb::convertForController(body.CoupledCpgNetwork());
   rb::neuronCoordinates = body.IdToCoordinatesMap();
 
   // Initialise controller
-  controller_ = rb::RafCPGControllerPtr(new rb::RafCPGController(
+  this->controller_ = rb::RafCPGControllerPtr(new rb::RafCPGController(
           modelName,
           rb::RafCpgNetwork,
           Helper::createWrapper(actuators),
@@ -84,7 +85,7 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
           brain->GetAttribute("path_to_mutator")->GetAsString() : "none";
 
   // initialise learner
-  learner_ = boost::shared_ptr< cppneat::NEATLearner >(
+  this->learner_ = boost::shared_ptr< cppneat::NEATLearner >(
           new cppneat::NEATLearner(
                   mutator,
                   mutator_path,
@@ -150,7 +151,7 @@ HyperNEAT_MlmpCPG::HyperNEAT_MlmpCPG(
           initBrains);
 
   // initialise evaluator
-  evaluator_ = evaluator;
+  this->evaluator_ = evaluator;
 }
 
 HyperNEAT_MlmpCPG::~HyperNEAT_MlmpCPG()

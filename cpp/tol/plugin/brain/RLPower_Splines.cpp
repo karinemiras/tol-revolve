@@ -36,46 +36,50 @@ namespace rg = revolve::gazebo;
 
 using namespace tol;
 
-RLPower_Splines::RLPower_Splines(std::string model_name,
-                                 sdf::ElementPtr brain,
-                                 EvaluatorPtr evaluator,
-                                 std::vector< rg::MotorPtr > &actuators)
-        : rb::ConverterSplitBrain<rb::PolicyPtr, rb::PolicyPtr>
-                  (&rb::convertPolicyToPolicy,
-                   &rb::convertPolicyToPolicy,
-                   model_name)
+RLPower_Splines::RLPower_Splines(
+        const std::string &_name,
+        sdf::ElementPtr _brain,
+        EvaluatorPtr _evaluator,
+        std::vector< rg::MotorPtr > &_actuators
+)
+        : rb::ConverterSplitBrain< rb::PolicyPtr, rb::PolicyPtr >
+        (&rb::convertPolicyToPolicy,
+         &rb::convertPolicyToPolicy,
+         _name)
 {
-  rb::RLPowerLearner::Config config = parseSDF(brain);
+  rb::RLPowerLearner::Config config = parseSDF(_brain);
   // initialise controller
   size_t n_actuators = 0;
-  for (const auto &actuator : actuators)
+  for (const auto &actuator : _actuators)
   {
     n_actuators += actuator->outputs();
   }
-  controller_ = boost::shared_ptr<rb::PolicyController>(
+  this->controller_ = boost::shared_ptr< rb::PolicyController >(
           new rb::PolicyController(
                   n_actuators,
-                  config.interpolation_spline_size));
+                  config.interpolationSplineSize));
 
   // initialise learner
-  learner_ = boost::shared_ptr<rb::RLPowerLearner>(new rb::RLPowerLearner(
-          model_name,
-          config,
-          n_actuators));
+  this->learner_ = boost::shared_ptr< rb::RLPowerLearner >(
+          new rb::RLPowerLearner(
+                  _name,
+                  config,
+                  n_actuators));
 
-  evaluator_ = evaluator;
+  this->evaluator_ = _evaluator;
 }
 
 RLPower_Splines::~RLPower_Splines()
 {
 }
 
-void RLPower_Splines::update(const std::vector<rg::MotorPtr> &actuators,
-                             const std::vector<rg::SensorPtr> &sensors,
-                             double t,
-                             double step)
+void RLPower_Splines::update(
+        const std::vector< rg::MotorPtr > &actuators,
+        const std::vector< rg::SensorPtr > &sensors,
+        double t,
+        double step)
 {
-  rb::ConverterSplitBrain<rb::PolicyPtr, rb::PolicyPtr>::update(
+  rb::ConverterSplitBrain< rb::PolicyPtr, rb::PolicyPtr >::update(
           Helper::createWrapper(actuators),
           Helper::createWrapper(sensors),
           t,
@@ -88,33 +92,33 @@ rb::RLPowerLearner::Config RLPower_Splines::parseSDF(
   rb::RLPowerLearner::Config config;
 
   // Read out brain configuration attributes
-  config.algorithm_type =
+  config.algorithmType =
           brain->HasAttribute("type") ?
           brain->GetAttribute("type")->GetAsString() : "A";
 
-  config.evaluation_rate =
+  config.evaluationRate =
           brain->HasAttribute("evaluation_rate") ?
           std::stod(brain->GetAttribute("evaluation_rate")->GetAsString()) :
-                           rb::RLPowerLearner::EVALUATION_RATE;
-  config.interpolation_spline_size =
+          rb::RLPowerLearner::EVALUATION_RATE;
+  config.interpolationSplineSize =
           brain->HasAttribute("interpolation_spline_size") ?
           std::stoul(brain->GetAttribute("interpolation_spline_size")
                           ->GetAsString()) :
           rb::RLPowerLearner::INTERPOLATION_CACHE_SIZE;
-  config.max_evaluations =
+  config.maxEvaluations =
           brain->HasAttribute("max_evaluations") ?
           std::stoul(brain->GetAttribute("max_evaluations")->GetAsString()) :
           rb::RLPowerLearner::MAX_EVALUATIONS;
-  config.max_ranked_policies =
+  config.maxRankedPolicies =
           brain->HasAttribute("max_ranked_policies") ?
           std::stoul(brain->GetAttribute("max_ranked_policies")
                           ->GetAsString()) :
           rb::RLPowerLearner::MAX_RANKED_POLICIES;
-  config.noise_sigma =
+  config.noiseSigma =
           brain->HasAttribute("init_sigma") ?
           std::stod(brain->GetAttribute("init_sigma")->GetAsString()) :
           rb::RLPowerLearner::SIGMA_START_VALUE;
-  config.sigma_tau_correction =
+  config.sigmaTauCorrection =
           brain->HasAttribute("sigma_tau_correction") ?
           std::stod(brain->GetAttribute("sigma_tau_correction")
                          ->GetAsString()) :
@@ -123,11 +127,11 @@ rb::RLPowerLearner::Config RLPower_Splines::parseSDF(
           brain->HasAttribute("init_spline_size") ?
           std::stoul(brain->GetAttribute("init_spline_size")->GetAsString()) :
           rb::RLPowerLearner::INITIAL_SPLINE_SIZE;
-  config.update_step =
+  config.updateStep =
           brain->HasAttribute("update_step") ?
           std::stoul(brain->GetAttribute("update_step")->GetAsString()) :
           rb::RLPowerLearner::UPDATE_STEP;
-  config.policy_load_path = "";
+  config.policyLoadPath = "";
 
   return config;
 }

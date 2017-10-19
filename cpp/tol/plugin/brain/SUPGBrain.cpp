@@ -36,7 +36,8 @@ SUPGBrain::SUPGBrain(
         revolve::brain::EvaluatorPtr evaluator,
         const std::vector< std::vector< float > > &neuron_coordinates,
         const std::vector< revolve::gazebo::MotorPtr > &motors,
-        const std::vector< revolve::gazebo::SensorPtr > &sensors)
+        const std::vector< revolve::gazebo::SensorPtr > &sensors
+)
         : revolve::brain::SUPGBrain(
         robot_name,
         evaluator,
@@ -52,10 +53,11 @@ SUPGBrain::~SUPGBrain()
 {
 }
 
-void SUPGBrain::update(const std::vector< revolve::gazebo::MotorPtr > &motors,
-                       const std::vector< revolve::gazebo::SensorPtr > &sensors,
-                       double t,
-                       double step)
+void SUPGBrain::update(
+        const std::vector< revolve::gazebo::MotorPtr > &motors,
+        const std::vector< revolve::gazebo::SensorPtr > &sensors,
+        double t,
+        double step)
 {
   revolve::brain::SUPGBrain::update(
           Helper::createWrapper(motors),
