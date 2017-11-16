@@ -58,10 +58,24 @@ namespace tol
             std::vector< CPPNEAT::Neuron::Ntype >())
     );
 
-    std::string parent1(_name.substr(0, _name.find('_')) + learnConf.parent1
-                        + _name.substr(_name.find('-')) + ".innovations");
-    std::string parent2(_name.substr(0, _name.find('_')) + learnConf.parent2
-                        + _name.substr(_name.find('-'))+ ".innovations");
+    std::string parent1(_name.substr(0, _name.find('_')) + "_"
+                        + learnConf.parent1
+                        + _name.substr(_name.find('-'))
+                        + ".innovations");
+    std::string parent2(_name.substr(0, _name.find('_')) + "_"
+                        + learnConf.parent2
+                        + _name.substr(_name.find('-'))
+                        + ".innovations");
+
+    std::string parent1brain(_name.substr(0, _name.find('_')) + "_"
+                        + learnConf.parent1
+                        + _name.substr(_name.find('-'))
+                        + ".best");
+    std::string parent2brain(_name.substr(0, _name.find('_')) + "_"
+                        + learnConf.parent2
+                        + _name.substr(_name.find('-'))
+                        + ".best");
+
     // initialise learner
     this->learner_ =
             boost::shared_ptr< CPPNEAT::NEATLearner >(new CPPNEAT::NEATLearner(
@@ -72,28 +86,29 @@ namespace tol
                     learnConf)
             );
 
+    std::cout << "After learner" << std::endl;
     auto brainsFromInit =
             boost::dynamic_pointer_cast< CPPNEAT::NEATLearner >(learner_)->InitCppns();
     std::vector< CPPNEAT::GeneticEncodingPtr > brainsFromFirst;
-    if (""  == learnConf.parent1 or "none" == learnConf.parent1)
+    if ("" == learnConf.parent1 or "none" == learnConf.parent1)
     {
       learnConf.num_first = 0;
     }
     else
     {
       brainsFromFirst = boost::dynamic_pointer_cast< CPPNEAT::NEATLearner >(
-              learner_)->LoadCppns(learnConf.parent1 + ".best", -1);
+              learner_)->LoadCppns(parent1brain, -1);
     }
 
     std::vector< CPPNEAT::GeneticEncodingPtr > brainsFromSecond;
-    if (""  == learnConf.parent2 or "none" == learnConf.parent2)
+    if ("" == learnConf.parent2 or "none" == learnConf.parent2)
     {
       learnConf.num_second = 0;
     }
     else
     {
       brainsFromSecond = boost::dynamic_pointer_cast< CPPNEAT::NEATLearner >(
-              learner_)->LoadSecondCppns(learnConf.parent2 + ".best", -1);
+              learner_)->LoadSecondCppns(parent2brain, -1);
     }
 
     std::vector< CPPNEAT::GeneticEncodingPtr > init_brains;
@@ -126,9 +141,7 @@ namespace tol
     this->evaluator_ = _evaluator;
   }
 
-  HyperNEAT_CPG::~HyperNEAT_CPG()
-  {
-  }
+  HyperNEAT_CPG::~HyperNEAT_CPG() = default;
 
   void HyperNEAT_CPG::update(
           const std::vector< rg::MotorPtr > &actuators,
@@ -221,10 +234,8 @@ namespace tol
     //initialise starting population
     config.parent1 = _brain->HasAttribute("parent1") ?
                       _brain->GetAttribute("parent1")->GetAsString() : "none";
-    std::cout << "parent 1 is " << config.parent1 << std::endl;
     config.parent2 = _brain->HasAttribute("parent2") ?
                      _brain->GetAttribute("parent2")->GetAsString() : "none";
-    std::cout << "parent 2 is " << config.parent2 << std::endl;
 
     return config;
   }
