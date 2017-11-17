@@ -1,3 +1,5 @@
+#include <ios>
+
 #include "HyperNEAT_CPPN.h"
 
 #include "revolve/gazebo/motors/Motor.h"
@@ -58,24 +60,45 @@ namespace tol
             std::vector< CPPNEAT::Neuron::Ntype >())
     );
 
-    std::string parent1(_name.substr(0, _name.find('_')) + "_"
-                        + learnConf.parent1
-                        + _name.substr(_name.find('-'))
-                        + ".innovations");
-    std::string parent2(_name.substr(0, _name.find('_')) + "_"
-                        + learnConf.parent2
-                        + _name.substr(_name.find('-'))
-                        + ".innovations");
+    std::string parent1 = "none";
+    std::string parent1brain = "none";
+    std::string parent2 = "none";
+    std::string parent2brain = "none";
 
-    std::string parent1brain(_name.substr(0, _name.find('_')) + "_"
-                        + learnConf.parent1
-                        + _name.substr(_name.find('-'))
-                        + ".best");
-    std::string parent2brain(_name.substr(0, _name.find('_')) + "_"
-                        + learnConf.parent2
-                        + _name.substr(_name.find('-'))
-                        + ".best");
+    if ("none" not_eq learnConf.parent1)
+    {
+      parent1 = (_name.substr(0, _name.find('_')) + "_"
+                          + learnConf.parent1
+                          + _name.substr(_name.find('-'))
+                          + ".innovations");
+      parent1brain = (_name.substr(0, _name.find('_')) + "_"
+                               + learnConf.parent1
+                               + _name.substr(_name.find('-'))
+                               + ".best");
 
+      std::ifstream f1(name.c_str());
+      if (f1.good()) {
+        std::cout << "Experiment was already done" << std::endl;
+        std::exit(0);
+      }
+    }
+
+    if ("none" not_eq learnConf.parent1)
+    {
+      parent2 = (_name.substr(0, _name.find('_')) + "_"
+                          + learnConf.parent2
+                          + _name.substr(_name.find('-'))
+                          + ".innovations");
+      parent2brain = (_name.substr(0, _name.find('_')) + "_"
+                               + learnConf.parent2
+                               + _name.substr(_name.find('-'))
+                               + ".best");
+      std::ifstream f2(name.c_str());
+      if (f2.good()) {
+        std::cout << "Experiment was already done" << std::endl;
+        std::exit(0);
+      }
+    }
     // initialise learner
     this->learner_ =
             boost::shared_ptr< CPPNEAT::NEATLearner >(new CPPNEAT::NEATLearner(
@@ -139,6 +162,9 @@ namespace tol
 
     // initialise evaluator
     this->evaluator_ = _evaluator;
+
+    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+    std::cout << learnConf.num_first << " : " << learnConf.num_second << std::endl;
   }
 
   HyperNEAT_CPG::~HyperNEAT_CPG() = default;
