@@ -28,6 +28,12 @@ namespace tol
            &rb::convertNNtoGE,
            _name)
   {
+    auto logFile = _name + ".log";
+    std::ifstream f1(logFile.c_str());
+    if (f1.good()) {
+      std::cout << "Experiment was already done" << std::endl;
+      std::exit(0);
+    }
 
     // Initialise controller
     std::string name(_name.substr(0, _name.find('-')) + ".yaml");
@@ -75,12 +81,6 @@ namespace tol
                                + learnConf.parent1
                                + _name.substr(_name.find('-'))
                                + ".best");
-
-      std::ifstream f1(name.c_str());
-      if (f1.good()) {
-        std::cout << "Experiment was already done" << std::endl;
-        std::exit(0);
-      }
     }
 
     if ("none" not_eq learnConf.parent1)
@@ -93,11 +93,6 @@ namespace tol
                                + learnConf.parent2
                                + _name.substr(_name.find('-'))
                                + ".best");
-      std::ifstream f2(name.c_str());
-      if (f2.good()) {
-        std::cout << "Experiment was already done" << std::endl;
-        std::exit(0);
-      }
     }
     // initialise learner
     this->learner_ =
