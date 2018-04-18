@@ -4,7 +4,8 @@ import sys
 here = os.path.dirname(os.path.abspath(__file__))
 tol_path = os.path.abspath(os.path.join(here, '..', '..'))
 rv_path = os.path.abspath(os.path.join(tol_path, '..', 'revolve'))
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(tol_path)
+
 
 from revolve.util import Supervisor
 from offline_evolve import parser
@@ -39,11 +40,18 @@ os.environ['GAZEBO_PLUGIN_PATH'] = os.path.join(tol_path, 'build')
 os.environ['GAZEBO_MODEL_PATH'] = os.path.join(tol_path, 'tools', 'models') + \
                                   ':'+os.path.join(rv_path, 'tools', 'models')
 
+
 supervisor = OfflineEvolutionSupervisor(
-    manager_cmd=[sys.executable, "offline_evolve.py"],
+    manager_cmd=[sys.executable, here+"/offline_evolve.py",
+                 "--generations",
+                 str(args.generations),
+                 "--experiment-name",
+                 args.experiment_name],
     analyzer_cmd=os.path.join(rv_path, 'tools', 'analyzer', 'run-analyzer'),
-    world_file=os.path.join(here, 'offline-evolve.world'),
+    world_file=os.path.join(here, 'offline-evolve.world_6'),
     output_directory=args.output_directory,
+    gazebo_cmd='gazebo',
+    gazebo_args=["--verbose"],
     manager_args=sys.argv[1:],
     restore_directory=args.restore_directory
 )

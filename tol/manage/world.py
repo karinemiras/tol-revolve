@@ -29,6 +29,11 @@ from .robot import Robot
 from ..scenery import Wall, BirthClinic
 from ..logging import logger
 
+from revolve.convert.yaml import yaml_to_robot
+from tol.spec import get_body_spec, get_brain_spec
+from tol.config import parser
+from tol.build import get_builder, get_simulation_robot
+
 # Construct a message base from the time. This should make
 # it unique enough for consecutive use when the script
 # is restarted.
@@ -136,27 +141,50 @@ class World(WorldManager):
         fut = yield From(self.insert_model(sdf))
         raise Return(fut, hl)
 
-    @trollius.coroutine
-    def generate_population(self, n):
+
+    def generate_population(self, experiment_name, generation, validity_list):
         """
         Generates population of `n` valid robots robots.
-
+        #update:karinemiras
         :param n: Number of robots
         :return: Future with a list of valid robot trees and corresponding
                  bounding boxes.
         """
-        logger.debug("Generating population of size %d..." % n)
+        logger.debug("Generating population")
         trees = []
         bboxes = []
 
-        for _ in xrange(n):
-            gen = yield From(self.generate_valid_robot())
-            if not gen:
-                raise Return(None)
+        for g in range(0, len(validity_list)):
 
-            tree, robot, bbox = gen
-            trees.append(tree)
-            bboxes.append(bbox)
+            if validity_list[g][1] == '1':
+                bot_yaml = open('../../../l-system/experiments/'
+                               +experiment_name
+                               +'/offspringpop'+str(generation)
+                               +'/robot_'+validity_list[g][0]
+                               +'.yaml', 'r').read()
+
+                conf = parser.parse_args()
+                body_spec = get_body_spec(conf)
+                brain_spec = get_brain_spec(conf)
+                bot = yaml_to_robot(body_spec, brain_spec, bot_yaml)
+
+                robot_tree = Tree.from_body_brain(
+                    body=bot.body,
+                    brain=bot.brain,
+                    body_spec=body_spec)
+                ret = yield From(self.analyze_tree(robot_tree))
+
+                if ret is None:
+                    raise Return(None)
+
+                coll, bbox, robot = ret
+
+                if not coll:
+                    trees.append(robot_tree)
+                    bboxes.append(bbox)
+                else:
+                    validity_list[g][1] = '0'
+                    print("------INTERSECTING------"+validity_list[g][0])
 
         raise Return(trees, bboxes)
 

@@ -25,11 +25,25 @@ from sdfbuilder.math import Vector3
 
 from revolve.util import wait_for
 
+here = os.path.dirname(os.path.abspath(__file__))
+tol_path = os.path.abspath(os.path.join(here, '..', '..'))
+sys.path.append(tol_path)
+
 from tol.manage.robot import Robot
 from tol.config import parser
 from tol.manage import World
 from tol.logging import logger, output_console
 from tol.util.analyze import list_extremities, count_joints, count_motors, count_extremities, count_connections
+
+path_to_environ_indirect='/Users/karinemiras/projects/coevolution-revolve/l' \
+                         '-system/build/lib'
+sys.path.append(path_to_environ_indirect)
+import lsystem_python
+import math
+import numpy as np
+
+
+
 
 # Log output to console
 output_console()
@@ -93,7 +107,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--evaluation-threshold',
-    default=10.0, type=float,
+    default=30.0, type=float,
     help="Maximum number of seconds one evaluation can take before the "
          "decision is made to restart from snapshot. The assumption is "
          "that the world may have become slow and restarting will help."
@@ -196,7 +210,9 @@ class OfflineEvoManager(World):
         # Pause the world just in case it wasn't already
         yield From(wait_for(self.pause(True)))
 
-        pose = Pose(position=Vector3(0, 0, -bbox.min.z))
+        args = parser.parse_args()
+        pose = Pose(position=Vector3(0, 0, args.init_z))
+
         fut = yield From(self.insert_robot(tree, pose, parents=parents))
         robot = yield From(fut)
 
@@ -227,22 +243,29 @@ class OfflineEvoManager(World):
         raise Return(robot)
 
     @trollius.coroutine
-    def evaluate_population(self, trees, bboxes, parents=None):
+    def evaluate_population(self, trees, bboxes, validity_list):
         """
         :param trees:
         :param bboxes:
-        :param parents:
         :return:
         """
-        if parents is None:
-            parents = [None for _ in trees]
+        parents = [None for _ in trees]
 
         pairs = []
         print("Evaluating population...")
+        ids = 0
         for tree, bbox, par in itertools.izip(trees, bboxes, parents):
+
             print("Evaluating individual...")
             before = time.time()
             robot = yield From(self.evaluate_pair(tree, bbox, par))
+
+            #does not read ids of invalids
+            while validity_list[ids][1] == '0':
+                ids +=1
+            robot.robot.id = int(validity_list[ids][0])
+            ids +=1
+
             pairs.append((robot, time.time() - before))
             print("Done.")
 
@@ -282,103 +305,170 @@ class OfflineEvoManager(World):
         print("Done producing generation.")
         raise Return(trees, bboxes, parent_pairs)
 
-    def log_generation(self, evo, generation, pairs):
-        """
-        :param evo: The evolution run
-        :param generation:
-        :param pairs: List of tuples (robot, evaluation wallclock time)
-        :return:
-        """
-        print("================== GENERATION %d ==================" % generation)
-        if not self.output_directory:
-            return
-
-        go = self.csv_files['generations']['csv']
-        do = self.csv_files['robot_details']['csv']
-        for robot, t_eval in pairs:
-            robot_id = robot.robot.id
-            root = robot.tree.root
-            go.writerow([evo, generation, robot.robot.id, robot.velocity(),
-                         robot.displacement_velocity(), robot.fitness(), t_eval])
-
-            # TODO Write this once when robot is written instead
-            counter = 0
-            for extr in list_extremities(root):
-                num_joints = count_joints(extr)
-                num_motors = count_motors(extr)
-                do.writerow((robot_id, counter, len(extr), num_joints, num_motors))
-                counter += 1
 
     @trollius.coroutine
     def run(self):
+
         """
         :return:
+        #update:karinemiras
         """
-        conf = self.conf
+        args = parser.parse_args()
 
-        if self.do_restore:
-            # Recover from a previously cancelled / crashed experiment
-            data = self.do_restore
-            evo_start = data['evo_start']
-            gen_start = data['gen_start']
-            pairs = data['local_pairs']
+        # run an experiment
+        if args.exp_test == "e" :
+
+            # checks if there any experiment to recover
+            recovery_path = '../../../l-system/experiments/'+args.experiment_name+'/evolutionstate.txt'
+            if os.path.exists(recovery_path):
+                with open(recovery_path) as f:
+                    file = f.read().split(" ")
+
+                load_experiment = 1
+                init_generation = int(file[0])+1
+            else:
+                load_experiment = 0
+                init_generation = 1
+
+            # instantiates evolution C++ class
+            evolve_generation = lsystem_python.EvolutionIndirect(args.experiment_name,
+                                                                 "../../../l-system/")
+
+            # setup up new evolution if it is not a recovery step
+            if load_experiment == 0:
+                evolve_generation.setupEvolution()
+
+            for generation in range(init_generation, args.generations+1):
+
+                validity_list = []
+
+                # prepares genotypes
+                evolve_generation.runExperiment_part1(generation,
+                                                      load_experiment)
+
+                # load experiment applies only for the initial generation
+                load_experiment = 0
+
+                with open('../../../l-system/experiments/'
+                                  +args.experiment_name
+                                  +'/offspringpop'+str(generation)
+                                  +'/validity_list.txt') as f:
+                    file = f.read().splitlines()
+                for line in range(0,len(file)):
+                    l = file[line].split(" ")
+                    validity_list.append([l[0],l[1]])
+
+                # simulation
+                trees, bboxes = yield From(self.generate_population(
+                    args.experiment_name, generation, validity_list))
+                pairs = yield From(self.evaluate_population(trees, bboxes,
+                                                            validity_list))
+
+                # updates fitnesses
+                for robot, t_eval in pairs:
+                    evolve_generation.saveLocomotionFitness(str(robot.robot.id),
+                                                  robot.displacement_velocity())
+
+
+                # post processing of results
+                evolve_generation.runExperiment_part2(generation)
+
+
+        # testing a robot
         else:
-            # Start at the first experiment
-            evo_start = 1
-            gen_start = 1
-            pairs = None
 
-        for evo in range(evo_start, conf.num_evolutions + 1):
-            self.current_run = evo
+            validity_list = []
 
-            if not pairs:
-                # Only create initial population if we are not restoring from
-                # a previous experiment.
-                trees, bboxes = yield From(self.generate_population(conf.population_size))
-                pairs = yield From(self.evaluate_population(trees, bboxes))
-                self.log_generation(evo, 0, pairs)
+            # best of last 10 generations
+            if args.exp_test == "t1" :
 
-            for generation in xrange(gen_start, conf.num_generations):
-                if (generation % 10) == 0:
-                    # Snapshot every 10 generations
-                    self._snapshot_data = {
-                        "local_pairs": pairs,
-                        "gen_start": generation,
-                        "evo_start": evo
-                    }
-                    yield From(self.create_snapshot())
-                    print("Created snapshot of experiment state.")
+                with open('../../../l-system/experiments/'
+                                  +args.experiment_name
+                                  +'/evolution.txt') as f:
+                    file_genomes = f.read().splitlines()
+                for line in range(1,len(file_genomes)-1):
+                    l1 = file_genomes[line].split(" ")
+                    l2 = file_genomes[line+1].split(" ")
 
-                # Produce the next generation and evaluate them
-                robots = [p[0] for p in pairs]
-                if conf.disable_evolution:
-                    child_trees, child_bboxes = yield From(
-                        self.generate_population(conf.population_size))
-                    parent_pairs = None
-                else:
-                    child_trees, child_bboxes, parent_pairs = yield From(self.produce_generation(robots))
+                    if(l1[7] != l2[7] or line == len(file_genomes)-2):
+                        validity_list.append([l1[7],'1'])
 
-                child_pairs = yield From(self.evaluate_population(child_trees, child_bboxes, parent_pairs))
+            # 10 best of the last generation
+            if args.exp_test == "t2" :
 
-                if conf.keep_parents:
-                    pairs += child_pairs
-                else:
-                    pairs = child_pairs
+                genomes_list = []
+                fitness_list = {}
 
-                # Sort the bots and reduce to population size
-                if conf.disable_fitness:
-                    random.shuffle(pairs)
-                else:
-                    pairs = sorted(pairs, key=lambda r: r[0].fitness(), reverse=True)
+                with open('../../../l-system/experiments/'+args.experiment_name +'/history.txt') as f:
+                    file_genomes = f.read().splitlines()
 
-                pairs = pairs[:conf.population_size]
-                self.log_generation(evo, generation, pairs)
+                for line in range(1,len(file_genomes)):
 
-            # Clear "restore" parameters
-            gen_start = 1
-            pairs = None
+                    array_line = file_genomes[line].split(" ")
+                    fitness_list[array_line[1]] = array_line[4]
+
+                for f in os.listdir('../../../l-system/experiments/'
+                                            +args.experiment_name
+                                    +'/selectedpop'+str(args.generations)):
+
+                    filename = f.split("_")
+                    idgenome = filename[1]
+
+                    genomes_list.append([idgenome, float(fitness_list[
+                        idgenome])])
+
+                genomes_list = sorted(genomes_list,key=lambda x: x[1])
+         
+                for i in range(0,len(genomes_list)):
+                     validity_list.append([genomes_list[i][0],'1'])
+
+            validity_list = validity_list[len(validity_list)-8:
+                                          len(validity_list)]
+
+            # 10 best of the last generation
+            if args.exp_test == "t3" :
+                validity_list.append(['4404','1'])
+
+
+            for i in range(0,len(validity_list)):
+
+                genome = []
+                genome.append(validity_list[i])
+
+                trees, bboxes = yield From(self.generate_population(
+                    args.experiment_name, self.getGeneration_genome(
+                        validity_list[i][0]), genome))
+
+                pairs = yield From(self.evaluate_population(trees, bboxes,
+                                                            genome))
+                for robot, t_eval in pairs:
+                    print("id: "+str(robot.robot.id))
+                    print("fitness: "+str(robot.displacement_velocity()))
 
         yield From(self.teardown())
+
+
+    def getGeneration_genome(self, idgenome):
+
+        args = parser.parse_args()
+
+        generation_genome = 0
+        offspring_size = args.pop_size * args.offspring_prop
+
+        # generation of the genome can be found by its id, considering the size of the population and the offspring
+        if (args.offspring_prop == 1):
+            generation_genome =  math.trunc( int(idgenome) / args.pop_size) + 1
+
+        else:
+
+            generation_genome =   math.trunc((int(idgenome) - offspring_size)/ offspring_size) + 1
+
+
+        if (generation_genome == 0):
+            generation_genome = 1
+
+        return generation_genome
+
 
     @trollius.coroutine
     def teardown(self):

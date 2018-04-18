@@ -62,6 +62,89 @@ def str_to_address(v):
 
 
 parser = CustomParser(fromfile_prefix_chars='@')
+
+
+
+parser.add_argument(
+    '--pop-size',
+    default=100, type=int,
+    help='Number of individuals in the population.'
+)
+
+parser.add_argument(
+    '--offspring-prop',
+    default=0.5, type=float,
+    help='Proportion of the population for size of offspring.'
+)
+
+parser.add_argument(
+    '--exp-test',
+    default="t2", type=str,
+    help="Assumes 'e' if it is an experiment, and 't' if it is a test."
+)
+
+parser.add_argument(
+    '--generations',
+    default=100, type=int,
+    help='Number of the generations for the experiment.'
+)
+
+parser.add_argument(
+    '--experiment-name',
+    default="s3_env6", type=str,
+    help='Name of the experiment.'
+)
+
+parser.add_argument(
+    '--evaluation-time',
+    default=30#12
+    , type=float,
+    help="The size of the `speed window` for each robot, i.e. the number of past (simulation) seconds "
+         "over which its speed is evaluated. In offline evolution, this determines the length"
+         "of the experiment run."
+)
+
+parser.add_argument(
+    '--init-z',
+    default=0.12
+    ,type=int,
+    help="Initial position of robots in z axis."
+)
+
+parser.add_argument(
+    '--min-parts',
+    default=1#3
+    ,type=int,
+    help="Minimum number of parts in a robot."
+)
+
+parser.add_argument(
+    '--max-parts',
+    default=100#30
+    ,type=int,
+    help="Maximum number of parts in a robot."
+)
+
+parser.add_argument(
+    '--max-inputs',
+    default=100#10
+    , type=int,
+    help="Maximum number of inputs (i.e. sensors) in a robot."
+)
+
+parser.add_argument(
+    '--max-outputs',
+    default=100#10
+    , type=int,
+    help="Maximum number of outputs (i.e. motors) in a robot."
+)
+
+parser.add_argument(
+    '--gazebo_cmd',
+    default=1, type=int,
+    help='Decide wheather to open gazebo during simulation.'
+)
+
 parser.add_argument(
     '--sensor-update-rate',
     default=8, type=int,
@@ -76,7 +159,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--visualize-sensors',
-    default=False, type=bool,
+    default=True, type=bool,
     help='Visualize sensors (helpful for debugging purposes)'
 )
 
@@ -85,26 +168,6 @@ parser.add_argument(
     default=5, type=int,
     help="The frequency at which the world is requested to send robot pose"
          " updates (in number of times per *simulation* second)."
-)
-
-parser.add_argument(
-    '--evaluation-time',
-    default=12, type=float,
-    help="The size of the `speed window` for each robot, i.e. the number of past (simulation) seconds "
-         "over which its speed is evaluated. In offline evolution, this determines the length"
-         "of the experiment run."
-)
-
-parser.add_argument(
-    '--min-parts',
-    default=3, type=int,
-    help="Minimum number of parts in a robot."
-)
-
-parser.add_argument(
-    '--max-parts',
-    default=30, type=int,
-    help="Maximum number of parts in a robot."
 )
 
 parser.add_argument(
@@ -117,18 +180,6 @@ parser.add_argument(
     '--initial-parts-sigma',
     default=5, type=int,
     help="Standard deviation of part count in generated robots."
-)
-
-parser.add_argument(
-    '--max-inputs',
-    default=10, type=int,
-    help="Maximum number of inputs (i.e. sensors) in a robot."
-)
-
-parser.add_argument(
-    '--max-outputs',
-    default=10, type=int,
-    help="Maximum number of outputs (i.e. motors) in a robot."
 )
 
 parser.add_argument(
