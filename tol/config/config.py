@@ -67,7 +67,7 @@ parser = CustomParser(fromfile_prefix_chars='@')
 
 parser.add_argument(
     '--pop-size',
-    default=100, type=int,
+    default=2, type=int,
     help='Number of individuals in the population.'
 )
 
@@ -79,19 +79,19 @@ parser.add_argument(
 
 parser.add_argument(
     '--exp-test',
-    default="t2", type=str,
+    default="e", type=str,
     help="Assumes 'e' if it is an experiment, and 't' if it is a test."
 )
 
 parser.add_argument(
     '--generations',
-    default=100, type=int,
+    default=1, type=int,
     help='Number of the generations for the experiment.'
 )
 
 parser.add_argument(
     '--experiment-name',
-    default="s3_env6", type=str,
+    default="test_tilt", type=str,
     help='Name of the experiment.'
 )
 

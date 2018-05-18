@@ -211,7 +211,9 @@ class OfflineEvoManager(World):
         yield From(wait_for(self.pause(True)))
 
         args = parser.parse_args()
-        pose = Pose(position=Vector3(0, 0, args.init_z))
+
+        pose = Pose(position=Vector3(0, 0,  -bbox.min.z))
+        #pose = Pose(position=Vector3(0, 0, args.init_z))
 
         fut = yield From(self.insert_robot(tree, pose, parents=parents))
         robot = yield From(fut)
@@ -315,6 +317,7 @@ class OfflineEvoManager(World):
         """
         args = parser.parse_args()
 
+
         # run an experiment
         if args.exp_test == "e" :
 
@@ -369,6 +372,9 @@ class OfflineEvoManager(World):
                     evolve_generation.saveLocomotionFitness(str(robot.robot.id),
                                                   robot.displacement_velocity())
 
+                    evolve_generation.saveBalanceFitness(str(robot.robot.id),
+                                                             robot.head_balance())
+
 
                 # post processing of results
                 evolve_generation.runExperiment_part2(generation)
@@ -422,7 +428,8 @@ class OfflineEvoManager(World):
                 for i in range(0,len(genomes_list)):
                      validity_list.append([genomes_list[i][0],'1'])
 
-            validity_list = validity_list[len(validity_list)-8:
+
+                validity_list = validity_list[len(validity_list)-10:
                                           len(validity_list)]
 
             # 10 best of the last generation

@@ -48,7 +48,7 @@ supervisor = OfflineEvolutionSupervisor(
                  "--experiment-name",
                  args.experiment_name],
     analyzer_cmd=os.path.join(rv_path, 'tools', 'analyzer', 'run-analyzer'),
-    world_file=os.path.join(here, 'offline-evolve.world_6'),
+    world_file=os.path.join(here, 'offline-evolve.world'),
     output_directory=args.output_directory,
     gazebo_cmd='gazebo',
     gazebo_args=["--verbose"],
