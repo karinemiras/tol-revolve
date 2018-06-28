@@ -15,7 +15,7 @@ RobotController::RobotController() {}
 RobotController::~RobotController() {}
 
 void RobotController::Load(::gazebo::physics::ModelPtr _parent, sdf::ElementPtr _sdf) {
-	std::cout << "ToL Robot loadeddd." << std::endl;
+	std::cout << "ToL Robot loaded." << std::endl;
 	::revolve::gazebo::RobotController::Load(_parent, _sdf);
 
 }

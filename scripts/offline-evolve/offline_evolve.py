@@ -40,7 +40,7 @@ path_to_environ_indirect='/Users/karinemiras/projects/coevolution-revolve/l' \
 sys.path.append(path_to_environ_indirect)
 import lsystem_python
 import math
-import numpy as np
+
 
 
 
@@ -411,7 +411,10 @@ class OfflineEvoManager(World):
                 for line in range(1,len(file_genomes)):
 
                     array_line = file_genomes[line].split(" ")
-                    fitness_list[array_line[1]] = array_line[4]
+
+                    fitness_list[array_line[1]] = array_line[4] # fitness
+                    #fitness_list[array_line[1]] = array_line[3] # speed
+
 
                 for f in os.listdir('../../../l-system/experiments/'
                                             +args.experiment_name
@@ -434,8 +437,15 @@ class OfflineEvoManager(World):
 
             # 10 best of the last generation
             if args.exp_test == "t3" :
-                validity_list.append(['4404','1'])
-
+                validity_list.append(['535','1'])
+                validity_list.append(['502','1'])
+                validity_list.append(['443','1'])
+                validity_list.append(['137','1'])
+                validity_list.append(['500','1'])
+                validity_list.append(['504','1'])
+                validity_list.append(['540','1'])
+                validity_list.append(['488','1'])
+                validity_list.append(['422','1'])
 
             for i in range(0,len(validity_list)):
 
