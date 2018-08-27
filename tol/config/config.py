@@ -79,7 +79,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--exp-test',
-    default="e", type=str,
+    default="t2", type=str,
     help="Assumes 'e' if it is an experiment, and 't' if it is a test."
 )
 
@@ -91,13 +91,14 @@ parser.add_argument(
 
 parser.add_argument(
     '--experiment-name',
-    default="old_osc_connected", type=str,
+    default="v2_pure_velocity/v2_pure_velocity_10",
+    type=str,
     help='Name of the experiment.'
 )
 
 parser.add_argument(
     '--evaluation-time',
-    default=30#12
+    default=30
     , type=float,
     help="The size of the `speed window` for each robot, i.e. the number of past (simulation) seconds "
          "over which its speed is evaluated. In offline evolution, this determines the length"
@@ -113,28 +114,28 @@ parser.add_argument(
 
 parser.add_argument(
     '--min-parts',
-    default=1#3
+    default=1
     ,type=int,
     help="Minimum number of parts in a robot."
 )
 
 parser.add_argument(
     '--max-parts',
-    default=100#30
+    default=100
     ,type=int,
     help="Maximum number of parts in a robot."
 )
 
 parser.add_argument(
     '--max-inputs',
-    default=100#10
+    default=100
     , type=int,
     help="Maximum number of inputs (i.e. sensors) in a robot."
 )
 
 parser.add_argument(
     '--max-outputs',
-    default=100#10
+    default=100
     , type=int,
     help="Maximum number of outputs (i.e. motors) in a robot."
 )

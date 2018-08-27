@@ -411,9 +411,11 @@ class OfflineEvoManager(World):
                 for line in range(1,len(file_genomes)):
 
                     array_line = file_genomes[line].split(" ")
+                    
+                    if array_line[0] == str(args.generations):
 
-                    fitness_list[array_line[1]] = array_line[4] # fitness
-                    #fitness_list[array_line[1]] = array_line[3] # speed
+                        fitness_list[array_line[1]] = array_line[4] # fitness
+                        #fitness_list[array_line[1]] = array_line[3] # speed
 
 
                 for f in os.listdir('../../../l-system/experiments/'
@@ -423,7 +425,8 @@ class OfflineEvoManager(World):
                     filename = f.split("_")
                     idgenome = filename[1]
 
-                    genomes_list.append([idgenome, float(fitness_list[
+                    if filename[0] == "body":
+                        genomes_list.append([idgenome, float(fitness_list[
                         idgenome])])
 
                 genomes_list = sorted(genomes_list,key=lambda x: x[1])
@@ -432,20 +435,15 @@ class OfflineEvoManager(World):
                      validity_list.append([genomes_list[i][0],'1'])
 
 
-                validity_list = validity_list[len(validity_list)-10:
+                validity_list = validity_list[len(validity_list)-11:
                                           len(validity_list)]
 
-            # 10 best of the last generation
+
             if args.exp_test == "t3" :
-                validity_list.append(['535','1'])
-                validity_list.append(['502','1'])
-                validity_list.append(['443','1'])
-                validity_list.append(['137','1'])
-                validity_list.append(['500','1'])
-                validity_list.append(['504','1'])
-                validity_list.append(['540','1'])
-                validity_list.append(['488','1'])
-                validity_list.append(['422','1'])
+                validity_list.append(['11','1'])
+                #validity_list.append(['49','1'])
+               # validity_list.append(['3026','1'])
+               # validity_list.append(['2904','1'])
 
             for i in range(0,len(validity_list)):
 
