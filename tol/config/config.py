@@ -106,6 +106,12 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '--gazebocmd',
+    default='gazebo', type=str,
+    help='Decide wheather to open gazebo during simulation. gzserver/gazebo'
+)
+
+parser.add_argument(
     '--init-z',
     default=0.12
     ,type=int,
