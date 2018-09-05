@@ -415,7 +415,7 @@ class OfflineEvoManager(World):
                     if array_line[0] == str(args.generations):
 
                         fitness_list[array_line[1]] = array_line[4] # fitness
-                        #fitness_list[array_line[1]] = array_line[3] # speed
+                       # fitness_list[array_line[1]] = array_line[3] # speed
 
 
                 for f in os.listdir('../../../l-system/experiments/'
@@ -435,12 +435,12 @@ class OfflineEvoManager(World):
                      validity_list.append([genomes_list[i][0],'1'])
 
 
-                validity_list = validity_list[len(validity_list)-11:
+                validity_list = validity_list[len(validity_list)-10:
                                           len(validity_list)]
 
 
             if args.exp_test == "t3" :
-                validity_list.append(['11','1'])
+                validity_list.append(['4919','1'])
                 #validity_list.append(['49','1'])
                # validity_list.append(['3026','1'])
                # validity_list.append(['2904','1'])

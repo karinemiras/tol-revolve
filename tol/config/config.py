@@ -79,7 +79,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--exp-test',
-    default="t2", type=str,
+    default="e", type=str,
     help="Assumes 'e' if it is an experiment, and 't' if it is a test."
 )
 
@@ -91,7 +91,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--experiment-name',
-    default="v2_pure_velocity/v2_pure_velocity_10",
+    default="test",
     type=str,
     help='Name of the experiment.'
 )
