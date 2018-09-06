@@ -35,9 +35,6 @@ from tol.manage import World
 from tol.logging import logger, output_console
 from tol.util.analyze import list_extremities, count_joints, count_motors, count_extremities, count_connections
 
-path_to_environ_indirect='/Users/karinemiras/projects/coevolution-revolve/l' \
-                         '-system/build/lib'
-sys.path.append(path_to_environ_indirect)
 import lsystem_python
 import math
 

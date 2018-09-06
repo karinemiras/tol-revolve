@@ -91,7 +91,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--experiment-name',
-    default="default_experiment",
+    default="random",
     type=str,
     help='Name of the experiment.'
 )
