@@ -382,21 +382,19 @@ class OfflineEvoManager(World):
 
             validity_list = []
 
-            # best of last 10 generations
+            # best of each of X generations (uses param set in number of generations as X)
             if args.exp_test == "t1" :
 
                 with open('../../../l-system/experiments/'
                                   +args.experiment_name
                                   +'/evolution.txt') as f:
                     file_genomes = f.read().splitlines()
-                for line in range(1,len(file_genomes)-1):
+                for line in range(1, args.generations+1):
                     l1 = file_genomes[line].split(" ")
-                    l2 = file_genomes[line+1].split(" ")
 
-                    if(l1[7] != l2[7] or line == len(file_genomes)-2):
-                        validity_list.append([l1[7],'1'])
+                    validity_list.append([l1[7],'1'])
 
-            # 10 best of the last generation
+            # N best of a generation X (uses param set in number of generations as X)
             if args.exp_test == "t2" :
 
                 genomes_list = []
@@ -432,15 +430,15 @@ class OfflineEvoManager(World):
                      validity_list.append([genomes_list[i][0],'1'])
 
 
-                validity_list = validity_list[len(validity_list)-10:
+                validity_list = validity_list[len(validity_list)-args.exp_test_t2_N:
                                           len(validity_list)]
 
 
+            # specific individuals
             if args.exp_test == "t3" :
                 validity_list.append(['4919','1'])
-                #validity_list.append(['49','1'])
-               # validity_list.append(['3026','1'])
-               # validity_list.append(['2904','1'])
+                ###...add more individuals here
+
 
             for i in range(0,len(validity_list)):
 
@@ -455,7 +453,7 @@ class OfflineEvoManager(World):
                                                             genome))
                 for robot, t_eval in pairs:
                     print("id: "+str(robot.robot.id))
-                    print("fitness: "+str(robot.displacement_velocity()))
+                    print("displacement speed: "+str(robot.displacement_velocity()))
 
         yield From(self.teardown())
 

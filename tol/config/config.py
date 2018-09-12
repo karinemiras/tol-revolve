@@ -80,7 +80,13 @@ parser.add_argument(
 parser.add_argument(
     '--exp-test',
     default="e", type=str,
-    help="Assumes 'e' if it is an experiment, and 't' if it is a test."
+    help="Assumes 'e' if it is an experiment,  't1' to test best of each generation, 't2' to test N best of one generation, and 't3' to test specif individuals."
+)
+
+parser.add_argument(
+    '--exp-test-t2-N',
+    default=10, type=int,
+    help="N of individuals to test with t2."
 )
 
 parser.add_argument(
@@ -108,7 +114,7 @@ parser.add_argument(
 parser.add_argument(
     '--gazebocmd',
     default='gzserver', type=str,
-    help='Decide wheather to open gazebo during simulation. gzserver/gazebo'
+    help="Decide wheather to open gazebo during simulation. 'gzserver' runs in background / 'gazebo' shows simulation"
 )
 
 parser.add_argument(
