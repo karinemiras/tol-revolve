@@ -67,7 +67,7 @@ parser = CustomParser(fromfile_prefix_chars='@')
 
 parser.add_argument(
     '--pop-size',
-    default=100, type=int,
+    default=10, type=int,
     help='Number of individuals in the population.'
 )
 
@@ -91,13 +91,13 @@ parser.add_argument(
 
 parser.add_argument(
     '--generations',
-    default=100, type=int,
+    default=2, type=int,
     help='Number of the generations for the experiment.'
 )
 
 parser.add_argument(
     '--experiment-name',
-    default="default_experiment",
+    default="test",
     type=str,
     help='Name of the experiment.'
 )
