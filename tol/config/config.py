@@ -67,7 +67,7 @@ parser = CustomParser(fromfile_prefix_chars='@')
 
 parser.add_argument(
     '--pop-size',
-    default=10, type=int,
+    default=100, type=int,
     help='Number of individuals in the population.'
 )
 
@@ -80,7 +80,7 @@ parser.add_argument(
 parser.add_argument(
     '--exp-test',
     default="e", type=str,
-    help="Assumes 'e' if it is an experiment,  't1' to test best of each generation, 't2' to test N best of one generation, and 't3' to test specif individuals."
+    help="Assumes 'e' if it is an experiment,  't1' to test best of each generation, 't2' to test |N best of one generation, and 't3' to test specif individuals. (set individuals in file offline-evolve.py)"
 )
 
 parser.add_argument(
@@ -91,7 +91,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--generations',
-    default=2, type=int,
+    default=100, type=int,
     help='Number of the generations for the experiment.'
 )
 
@@ -119,7 +119,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--init-z',
-    default=0.12
+    default=12
     ,type=int,
     help="Initial position of robots in z axis."
 )

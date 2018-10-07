@@ -1,2 +1,2 @@
 #!/bin/bash
-for i in {1..10}; do python start.py --experiment-name v2_velocitypen_$i; done
+for i in {1..10}; do python start.py --experiment-name br_pure_velocity_$i; done

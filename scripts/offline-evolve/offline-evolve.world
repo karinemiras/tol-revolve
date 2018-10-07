@@ -24,6 +24,7 @@
           <type>quick</type>
         </solver>
       </ode>
+      <!-- playing with gravity on z axis <gravity>0  0  -7 </gravity>  -->
     </physics>
 
     <!-- A global light source -->

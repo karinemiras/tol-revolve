@@ -436,7 +436,9 @@ class OfflineEvoManager(World):
 
             # specific individuals
             if args.exp_test == "t3" :
-                validity_list.append(['4919','1'])
+                validity_list.append(['5018','1'])
+                validity_list.append(['5043','1'])
+                validity_list.append(['5006','1'])
                 ###...add more individuals here
 
 
