@@ -372,6 +372,11 @@ class OfflineEvoManager(World):
                     evolve_generation.saveBalanceFitness(str(robot.robot.id),
                                                              robot.head_balance())
 
+                    robot.export_positions(args.evaluation_time,
+                                           str(robot.robot.id),
+                                           str(generation),
+                                           args.experiment_name)
+
 
                 # post processing of results
                 evolve_generation.runExperiment_part2(generation)
@@ -389,10 +394,16 @@ class OfflineEvoManager(World):
                                   +args.experiment_name
                                   +'/evolution.txt') as f:
                     file_genomes = f.read().splitlines()
+
+                genome = -1
                 for line in range(1, args.generations+1):
                     l1 = file_genomes[line].split(" ")
 
-                    validity_list.append([l1[7],'1'])
+                    aux_genome = 7 # 7 for fitness, 4 for speed
+                    if l1[aux_genome] != genome:
+                        genome = l1[aux_genome]
+                        validity_list.append([genome,'1'])
+
 
             # N best of a generation X (uses param set in number of generations as X)
             if args.exp_test == "t2" :
@@ -421,8 +432,7 @@ class OfflineEvoManager(World):
                     idgenome = filename[1]
 
                     if filename[0] == "body":
-                        genomes_list.append([idgenome, float(fitness_list[
-                        idgenome])])
+                        genomes_list.append([idgenome, float(fitness_list[idgenome])])
 
                 genomes_list = sorted(genomes_list,key=lambda x: x[1])
          
@@ -430,15 +440,15 @@ class OfflineEvoManager(World):
                      validity_list.append([genomes_list[i][0],'1'])
 
 
-                validity_list = validity_list[len(validity_list)-args.exp_test_t2_N:
-                                          len(validity_list)]
+                validity_list = validity_list[len(validity_list)-args.exp_test_t2_N:len(validity_list)]
 
 
             # specific individuals
             if args.exp_test == "t3" :
-                validity_list.append(['5018','1'])
-                validity_list.append(['5043','1'])
-                validity_list.append(['5006','1'])
+                validity_list.append(['4404','1'])
+                validity_list.append(['4404','1'])
+               # validity_list.append(['5043','1'])
+                #validity_list.append(['5006','1'])
                 ###...add more individuals here
 
 
@@ -456,6 +466,7 @@ class OfflineEvoManager(World):
                 for robot, t_eval in pairs:
                     print("id: "+str(robot.robot.id))
                     print("displacement speed: "+str(robot.displacement_velocity()))
+
 
         yield From(self.teardown())
 
