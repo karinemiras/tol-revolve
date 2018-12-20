@@ -64,17 +64,16 @@ def str_to_address(v):
 parser = CustomParser(fromfile_prefix_chars='@')
 
 
+parser.add_argument(
+    '--offspring-prop',
+    default=0.5, type=float,
+    help='Proportion of the population for size of offspring.'
+)
 
 parser.add_argument(
     '--pop-size',
     default=100, type=int,
     help='Number of individuals in the population.'
-)
-
-parser.add_argument(
-    '--offspring-prop',
-    default=0.5, type=float,
-    help='Proportion of the population for size of offspring.'
 )
 
 parser.add_argument(
@@ -90,6 +89,18 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '--exp-test-t2-type',
+    default=2, type=int,
+    help="1 to order by final fitness, 2 to order by objective fitness"
+)
+
+parser.add_argument(
+    '--loco-fitness',
+    default=2, type=int,
+    help="1 for displacement_velocity, 2 for displacement_velocity_hill..."
+)
+
+parser.add_argument(
     '--generations',
     default=100, type=int,
     help='Number of the generations for the experiment.'
@@ -97,18 +108,9 @@ parser.add_argument(
 
 parser.add_argument(
     '--experiment-name',
-    default="test",
+    default="t15_ynew2_100comp_ns1",
     type=str,
     help='Name of the experiment.'
-)
-
-parser.add_argument(
-    '--evaluation-time',
-    default=30
-    , type=float,
-    help="The size of the `speed window` for each robot, i.e. the number of past (simulation) seconds "
-         "over which its speed is evaluated. In offline evolution, this determines the length"
-         "of the experiment run."
 )
 
 parser.add_argument(
@@ -117,9 +119,29 @@ parser.add_argument(
     help="Decide wheather to open gazebo during simulation. 'gzserver' runs in background / 'gazebo' shows simulation"
 )
 
+
+parser.add_argument(
+    '--evaluation-time',
+    default=50
+    , type=float,
+    help="The size of the `speed window` for each robot, i.e. the number of past (simulation) seconds "
+         "over which its speed is evaluated. In offline evolution, this determines the length"
+         "of the experiment run."
+)
+
+parser.add_argument(
+    '--env-name',
+    default="tilted15.world",
+    type=str,
+    help='Name of the environment.'
+)
+
+
+# use default on plain ground: 0
+# tilted 15 degres: 0.2
 parser.add_argument(
     '--init-z',
-    default=12
+    default=0.2
     ,type=int,
     help="Initial position of robots in z axis."
 )

@@ -104,7 +104,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--evaluation-threshold',
-    default=30.0, type=float,
+    default=50.0, type=float,
     help="Maximum number of seconds one evaluation can take before the "
          "decision is made to restart from snapshot. The assumption is "
          "that the world may have become slow and restarting will help."
@@ -209,8 +209,10 @@ class OfflineEvoManager(World):
 
         args = parser.parse_args()
 
-        pose = Pose(position=Vector3(0, 0,  -bbox.min.z))
-        #pose = Pose(position=Vector3(0, 0, args.init_z))
+        if args.init_z == 0:
+            pose = Pose(position=Vector3(0, 0,  -bbox.min.z))
+        else:
+            pose = Pose(position=Vector3(0, 0, args.init_z))
 
         fut = yield From(self.insert_robot(tree, pose, parents=parents))
         robot = yield From(fut)
@@ -366,11 +368,15 @@ class OfflineEvoManager(World):
 
                 # updates fitnesses
                 for robot, t_eval in pairs:
-                    evolve_generation.saveLocomotionFitness(str(robot.robot.id),
-                                                  robot.displacement_velocity())
 
-                    evolve_generation.saveBalanceFitness(str(robot.robot.id),
-                                                             robot.head_balance())
+                    if args.loco_fitness == 1:
+                        evolve_generation.saveLocomotionFitness(str(robot.robot.id), robot.displacement_velocity())
+
+                    if args.loco_fitness == 2:
+                        evolve_generation.saveLocomotionFitness(str(robot.robot.id), robot.displacement_velocity_hill())
+
+
+                    evolve_generation.saveBalanceFitness(str(robot.robot.id), robot.head_balance())
 
                     robot.export_positions(args.evaluation_time,
                                            str(robot.robot.id),
@@ -420,8 +426,12 @@ class OfflineEvoManager(World):
                     
                     if array_line[0] == str(args.generations):
 
-                        fitness_list[array_line[1]] = array_line[4] # fitness
-                       # fitness_list[array_line[1]] = array_line[3] # speed
+                        # order by fitness
+                        if args.exp_test_t2_type == 1:
+                            fitness_list[array_line[1]] = array_line[4]
+                        # order by objective
+                        if args.exp_test_t2_type == 2:
+                            fitness_list[array_line[1]] = array_line[3]
 
 
                 for f in os.listdir('../../../l-system/experiments/'
@@ -445,10 +455,15 @@ class OfflineEvoManager(World):
 
             # specific individuals
             if args.exp_test == "t3" :
-                validity_list.append(['4404','1'])
-                validity_list.append(['4404','1'])
-               # validity_list.append(['5043','1'])
-                #validity_list.append(['5006','1'])
+                validity_list.append(['4673','1'])
+                validity_list.append(['5002','1'])
+                validity_list.append(['5019','1'])
+                validity_list.append(['4984','1'])
+                validity_list.append(['5005','1'])
+                validity_list.append(['5009','1'])
+                validity_list.append(['4979','1'])
+                validity_list.append(['3886','1'])
+
                 ###...add more individuals here
 
 
@@ -465,7 +480,10 @@ class OfflineEvoManager(World):
                                                             genome))
                 for robot, t_eval in pairs:
                     print("id: "+str(robot.robot.id))
-                    print("displacement speed: "+str(robot.displacement_velocity()))
+                    if args.loco_fitness == 1:
+                        print("displacement speed: "+str(robot.displacement_velocity()))
+                    if args.loco_fitness == 2:
+                        print("displacement hill speed: "+str(robot.displacement_velocity_hill()))
 
 
         yield From(self.teardown())
