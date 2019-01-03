@@ -369,14 +369,15 @@ class OfflineEvoManager(World):
                 # updates fitnesses
                 for robot, t_eval in pairs:
 
-                    if args.loco_fitness == 1:
-                        evolve_generation.saveLocomotionFitness(str(robot.robot.id), robot.displacement_velocity())
+                    displacement_velocity_info = robot.displacement_velocity_info()
 
-                    if args.loco_fitness == 2:
-                        evolve_generation.saveLocomotionFitness(str(robot.robot.id), robot.displacement_velocity_hill())
+                    evolve_generation.saveLocomotionInfo(str(robot.robot.id),
+                                                         displacement_velocity_info[0],
+                                                         displacement_velocity_info[1],
+                                                         displacement_velocity_info[2],
+                                                         displacement_velocity_info[3])
 
-
-                    evolve_generation.saveBalanceFitness(str(robot.robot.id), robot.head_balance())
+                    evolve_generation.saveBalance(str(robot.robot.id), robot.head_balance())
 
                     robot.export_positions(args.evaluation_time,
                                            str(robot.robot.id),
@@ -402,10 +403,16 @@ class OfflineEvoManager(World):
                     file_genomes = f.read().splitlines()
 
                 genome = -1
-                for line in range(1, args.generations+1):
+                for line in range(20, args.generations+1):
                     l1 = file_genomes[line].split(" ")
 
-                    aux_genome = 7 # 7 for fitness, 4 for speed
+                    #  by fitness
+                    if args.exp_test_t2_type == 1:
+                        aux_genome = 7
+                    #  by objective
+                    if args.exp_test_t2_type == 2:
+                        aux_genome = 4
+
                     if l1[aux_genome] != genome:
                         genome = l1[aux_genome]
                         validity_list.append([genome,'1'])
@@ -455,11 +462,11 @@ class OfflineEvoManager(World):
 
             # specific individuals
             if args.exp_test == "t3" :
-                validity_list.append(['4673','1'])
-                validity_list.append(['5002','1'])
-                validity_list.append(['5019','1'])
-                validity_list.append(['4984','1'])
-                validity_list.append(['5005','1'])
+                validity_list.append(['3733','1'])
+                validity_list.append(['4886','1'])
+                validity_list.append(['4983','1'])
+                validity_list.append(['4784','1'])
+                validity_list.append(['2664','1'])
                 validity_list.append(['5009','1'])
                 validity_list.append(['4979','1'])
                 validity_list.append(['3886','1'])
