@@ -141,8 +141,27 @@ class World(WorldManager):
         fut = yield From(self.insert_model(sdf))
         raise Return(fut, hl)
 
+    
+    def getGeneration(self, idgenome,  pop_size ,offspring_prop):
+        
+        generation_genome = 0
+        offspring_size = pop_size * offspring_prop
+        
+        # generation of the genome can be found by its id, considering the size of the population and the offspring
+        if (offspring_prop == 1):
+            generation_genome =  math.trunc( int(idgenome) / pop_size) + 1
+        
+        else:
+            
+            generation_genome =   math.trunc((int(idgenome) - offspring_size)/ offspring_size) + 1
+        
+        
+        if (generation_genome == 0):
+            generation_genome = 1
+        
+        return generation_genome
 
-    def generate_population(self, experiment_name, generation, validity_list):
+    def generate_population(self, experiment_name, generation, validity_list,  pop_size ,offspring_prop):
         """
         Generates population of `n` valid robots robots.
         #update:karinemiras
@@ -155,14 +174,16 @@ class World(WorldManager):
         bboxes = []
 
         for g in range(0, len(validity_list)):
+ 
+            generation_genome = self.getGeneration( validity_list[g][0],  pop_size ,offspring_prop)
 
-            if validity_list[g][1] == '1':
+            if validity_list[g][1] == '1' :
                 bot_yaml = open('../../../l-system/experiments/'
                                +experiment_name
-                               +'/offspringpop'+str(generation)
+                               +'/offspringpop'+str(generation_genome)
                                +'/robot_'+validity_list[g][0]
                                +'.yaml', 'r').read()
-
+ 
                 conf = parser.parse_args()
                 body_spec = get_body_spec(conf)
                 brain_spec = get_brain_spec(conf)
@@ -185,6 +206,7 @@ class World(WorldManager):
                 else:
                     validity_list[g][1] = '0'
                     print("------INTERSECTING------"+validity_list[g][0])
+              
 
         raise Return(trees, bboxes)
 

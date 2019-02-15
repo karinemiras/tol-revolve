@@ -359,17 +359,19 @@ class OfflineEvoManager(World):
                 for line in range(0,len(file)):
                     l = file[line].split(" ")
                     validity_list.append([l[0],l[1]])
-
+               
                 # simulation
                 trees, bboxes = yield From(self.generate_population(
-                    args.experiment_name, generation, validity_list))
+                    args.experiment_name, generation, validity_list, args.pop_size , args.offspring_prop))
                 pairs = yield From(self.evaluate_population(trees, bboxes,
                                                             validity_list))
+               
 
                 # updates fitnesses
                 for robot, t_eval in pairs:
 
                     displacement_velocity_info = robot.displacement_velocity_info()
+                    
 
                     evolve_generation.saveLocomotionInfo(str(robot.robot.id),
                                                          displacement_velocity_info[0],
@@ -377,12 +379,14 @@ class OfflineEvoManager(World):
                                                          displacement_velocity_info[2],
                                                          displacement_velocity_info[3])
 
+
                     evolve_generation.saveBalance(str(robot.robot.id), robot.head_balance())
 
                     robot.export_positions(args.evaluation_time,
                                            str(robot.robot.id),
-                                           str(generation),
+                                           str(self.getGeneration_genome(robot.robot.id)),
                                            args.experiment_name)
+
 
 
                 # post processing of results
@@ -481,7 +485,7 @@ class OfflineEvoManager(World):
 
                 trees, bboxes = yield From(self.generate_population(
                     args.experiment_name, self.getGeneration_genome(
-                        validity_list[i][0]), genome))
+                        validity_list[i][0]), genome),  args.pop_size , args.offspring_prop)
 
                 pairs = yield From(self.evaluate_population(trees, bboxes,
                                                             genome))

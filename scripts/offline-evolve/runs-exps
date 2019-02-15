@@ -1,2 +1,5 @@
 #!/bin/bash
-for i in {1..10}; do python start.py --experiment-name br_pure_velocity_$i; done
+for i in {1..5}; do python start.py --experiment-name alife_step0/tilted_$i --env-name tilted15.world; done
+for i in {1..5}; do python start.py --experiment-name alife_step0/plain_$i --env-name plain.world; done
+for i in {6..10}; do python start.py --experiment-name alife_step0/tilted_$i --env-name tilted15.world; done
+for i in {6..10}; do python start.py --experiment-name alife_step0/plain_$i --env-name plain.world; done

@@ -108,7 +108,7 @@ parser.add_argument(
 
 parser.add_argument(
     '--experiment-name',
-    default="t15_ynew2_100comp_ns1",
+    default="test",
     type=str,
     help='Name of the experiment.'
 )
@@ -131,17 +131,20 @@ parser.add_argument(
 
 parser.add_argument(
     '--env-name',
-    default="tilted15.world",
+    default="plain.world",
     type=str,
     help='Name of the environment.'
 )
+
+
+ 
 
 
 # use default on plain ground: 0
 # tilted 15 degres: 0.2
 parser.add_argument(
     '--init-z',
-    default=0.2
+    default=0
     ,type=int,
     help="Initial position of robots in z axis."
 )
