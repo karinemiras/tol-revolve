@@ -137,15 +137,16 @@ parser.add_argument(
 )
 
 
- 
-
-
 # use default on plain ground: 0
-# tilted 15 degres: 0.2
+# tilted 15: 0.2
+# tilted 10: 1.5
+# tilted 5: 0.3
+# obstacles: 0.1
+
 parser.add_argument(
     '--init-z',
     default=0
-    ,type=int,
+    ,type=float,
     help="Initial position of robots in z axis."
 )
 

@@ -317,6 +317,7 @@ class OfflineEvoManager(World):
         args = parser.parse_args()
 
 
+
         # run an experiment
         if args.exp_test == "e" :
 
@@ -466,14 +467,12 @@ class OfflineEvoManager(World):
 
             # specific individuals
             if args.exp_test == "t3" :
-                validity_list.append(['3733','1'])
-                validity_list.append(['4886','1'])
-                validity_list.append(['4983','1'])
-                validity_list.append(['4784','1'])
-                validity_list.append(['2664','1'])
-                validity_list.append(['5009','1'])
-                validity_list.append(['4979','1'])
-                validity_list.append(['3886','1'])
+
+                validity_list.append(['10','1'])
+                validity_list.append(['10','1'])
+
+
+
 
                 ###...add more individuals here
 
@@ -483,9 +482,9 @@ class OfflineEvoManager(World):
                 genome = []
                 genome.append(validity_list[i])
 
-                trees, bboxes = yield From(self.generate_population(
-                    args.experiment_name, self.getGeneration_genome(
-                        validity_list[i][0]), genome),  args.pop_size , args.offspring_prop)
+                trees, bboxes = yield From(self.generate_population(args.experiment_name,
+                                                                    self.getGeneration_genome(validity_list[i][0]),
+                                                                    genome,  args.pop_size , args.offspring_prop))
 
                 pairs = yield From(self.evaluate_population(trees, bboxes,
                                                             genome))
